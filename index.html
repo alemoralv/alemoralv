@@ -8,22 +8,25 @@
     <!-- Google Fonts for a more professional look -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
     <header>
-        <div class="profile-container">
-            <img src="IMG_7879.JPG" alt="Alejandro Morera Alvarez" class="profile-pic">
+        <div class="container">
+            <div class="profile-container">
+                <!-- Ensure this image path is correct relative to this file -->
+                <img src="IMG_7879.JPG" alt="Alejandro Morera Alvarez" class="profile-pic" onerror="this.src='https://via.placeholder.com/150'">
+            </div>
+            <h1>Alejandro Morera Alvarez</h1>
+            <p class="subtitle">Double Degree Master Student: Mathematics | TUM & EPFL</p>
         </div>
-        <h1>Alejandro Morera Alvarez</h1>
-        <p class="subtitle">Double Degree Master Student: Mathematics | TUM & EPFL</p>
     </header>
 
     <nav>
         <ul>
             <li><a href="#about">About Me</a></li>
-            <li><a href="#visualizations">Visualizations</a></li> <!-- New Link -->
+            <li><a href="#visualizations">Visualizations</a></li>
             <li><a href="#notes">Notes</a></li>
             <li><a href="#projects">Projects</a></li>
             <li><a href="#modules">Modules</a></li>
@@ -47,12 +50,13 @@
             </ul>
         </section>
 
-        <!-- Visualizations Section (NEW) -->
+        <!-- Visualizations Section -->
         <section id="visualizations" class="card">
             <h2>Visualizations</h2>
             <p>Interactive network graphs illustrating complex systems and regulations.</p>
             <div class="button-container">
-                <a href="network.html" target="_blank" class="btn-primary">
+                <!-- CORRECTED LINK HERE -->
+                <a href="RI_graph.html" target="_blank" class="btn-primary">
                     📊 Ver Régimen en Inversiones
                 </a>
             </div>
@@ -129,7 +133,6 @@
             <h2>Modules</h2>
             <p>Below is a list of modules I have taken during my studies together with authors to look for in case of self-study.</p>
             <div class="modules-grid">
-                <!-- Using a simpler list structure for cleaner CSS styling -->
                 <ul>
                     <li>Abstract Algebra (M. Artin, G. Kemper)</li>
                     <li>Analysis 1, 2, 3 (M. Brokate, J. Zimmer, O. Forster)</li>
@@ -137,4 +140,22 @@
                     <li>Distribution Theory (L. Hoermander)</li>
                     <li>Dynamical Systems (J. Guckenheimer, P. Holmes)</li>
                     <li>Fractal Geometry (P. Massopust, M. F. Barnsley)</li>
-                    <li>Functional Analysis (R. Megg
+                    <li>Functional Analysis (R. Megginson)</li>
+                </ul>
+            </div>
+        </section>
+        
+        <section id="contact" class="card">
+            <h2>Contact</h2>
+            <p>Feel free to reach out via email for collaboration or inquiries.</p>
+            <!-- Add actual contact info here -->
+        </section>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Alejandro Morera Alvarez. All Rights Reserved.</p>
+    </footer>
+
+</body>
+</html>
