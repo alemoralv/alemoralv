@@ -1,72 +1,68 @@
-r<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
-
-<body>
-  <!-- Add Your Picture -->
-  <div style="text-align: center; margin-top: 20px;">
-    <img src="IMG_7879.JPG" alt="Picture of Alejandro Morera Alvarez" style="border-radius: 50%; width: 150px; height: 150px;">
-  </div>
-
-    
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alejandro Morera Alvarez</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts for a more professional look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+
     <header>
+        <div class="profile-container">
+            <img src="IMG_7879.JPG" alt="Alejandro Morera Alvarez" class="profile-pic">
+        </div>
         <h1>Alejandro Morera Alvarez</h1>
-        <p>Double Degree Master Student: Mathematics | TUM & EPFL</p>
+        <p class="subtitle">Double Degree Master Student: Mathematics | TUM & EPFL</p>
     </header>
 
     <nav>
         <ul>
             <li><a href="#about">About Me</a></li>
+            <li><a href="#visualizations">Visualizations</a></li> <!-- New Link -->
             <li><a href="#notes">Notes</a></li>
-          <li><a href="#projects">Projects</a></li>
-          <li><a href="#modules">Modules</a></li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#modules">Modules</a></li>
             <li><a href="#contact">Contact</a></li>
         </ul>
     </nav>
 
     <main>
         <!-- About Me Section -->
-        <section id="about">
+        <section id="about" class="card">
             <h2>About Me</h2>
             <p>
-                
-I am a double Master's degree student in pure and applied mathematics at TUM and EPFL, respectively. My research interests are stochastic analysis, operator theory, and mathematical physics.
-I hold two Bachelor degrees: one in Engineering Science, and another one in Mathematics, both from TUM.
-My hobbies include jogging, biking, swimming, reading, playing the piano, and others. Some of my songs can be found below (Spotify).
-                <!-- Add more details here, such as research interests, hobbies, or personal achievements -->
+                I am a double Master's degree student in pure and applied mathematics at TUM and EPFL, respectively. My research interests are stochastic analysis, operator theory, and mathematical physics.
+                I hold two Bachelor degrees: one in Engineering Science, and another one in Mathematics, both from TUM.
+                My hobbies include jogging, biking, swimming, reading, playing the piano, and others. Some of my songs can be found below (Spotify).
             </p>
-            <ul>
-                <li>LinkedIn: 
-  <a href="https://www.linkedin.com/in/alemoralv-a59827194" target="_blank">www.linkedin.com/in/alemoralv-a59827194</a>
-</li>
-<li>Spotify Artist: 
-  <a href="https://open.spotify.com/artist/42vgX1N8atkhRbO7dpKWmV?si=42Bd5axSShuQA-RDKxilEg" target="_blank">Spotify Profile</a>
-</li>
-
-              <li>Click here: 
-  <a href="https://utttalemoralv.tiiny.site/" target="_blank">Fun</a>
-</li>
-
+            <ul class="links-list">
+                <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/alemoralv-a59827194" target="_blank">View Profile</a></li>
+                <li><strong>Spotify Artist:</strong> <a href="https://open.spotify.com/artist/42vgX1N8atkhRbO7dpKWmV?si=42Bd5axSShuQA-RDKxilEg" target="_blank">Listen on Spotify</a></li>
+                <li><strong>Fun:</strong> <a href="https://utttalemoralv.tiiny.site/" target="_blank">Click here</a></li>
             </ul>
         </section>
 
+        <!-- Visualizations Section (NEW) -->
+        <section id="visualizations" class="card">
+            <h2>Visualizations</h2>
+            <p>Interactive network graphs illustrating complex systems and regulations.</p>
+            <div class="button-container">
+                <a href="network.html" target="_blank" class="btn-primary">
+                    📊 Ver Régimen en Inversiones
+                </a>
+            </div>
+        </section>
 
-
-
-
-      
         <!-- Notes Section -->
-        <section id="notes">
+        <section id="notes" class="card">
             <h2>Notes</h2>
             <p>Below is a collection of summaries of some lectures I have taken (beware of mistakes):</p>
-            <ul>
-                <!-- Example PDFs -->
+            <ul class="resource-list">
                 <li><a href="pdfs/Ana3.pdf" target="_blank">Analysis 3</a></li>
                 <li><a href="pdfs/BRW.pdf" target="_blank">Branching Random Walks</a></li>
                 <li><a href="pdfs/DT.pdf" target="_blank">Distribution Theory</a></li>
@@ -75,138 +71,70 @@ My hobbies include jogging, biking, swimming, reading, playing the piano, and ot
                 <li><a href="pdfs/OT.pdf" target="_blank">Operator Theory</a></li>
                 <li><a href="pdfs/PT.pdf" target="_blank">Probability Theory</a></li>
                 <li><a href="pdfs/RDS.pdf" target="_blank">Random Dynamical Systems</a></li>
-               
-          
+            </ul>
         </section>
 
-
-
-
-
-
-
-      
-<section id="projects">      
+        <!-- Projects Section -->
+        <section id="projects" class="card">
             <h2>Projects: Essays, Seminars, and Theses</h2>
-  <li>
-    Infinite-Dimensional Vector Spaces 
-    (<a href="pdfs/lpspaces_handout.pdf" target="_blank">Handout</a>) 
-    (<a href="pdfs/lpspaces_slides.pdf" target="_blank">Slides</a>)
-</li>
-
-  <li>
-    Elliptic Curves 
-    (<a href="pdfs/lpspaces_handout.pdf" target="_blank">Handout</a>) 
-    (<a href="pdfs/lpspaces_slides.pdf" target="_blank">Slides</a>)
-</li>
-            
-   <li>
-    Spectral Resolution of Symmetric Operators 
-    (<a href="pdfs/specres_handout.pdf" target="_blank">Handout</a>) 
-    (<a href="pdfs/specres_slides.pdf" target="_blank">Slides</a>)
-</li>
-  
-  <li>
-    Convergence to Equilibrium 
-    (<a href="pdfs/convtoeq_project.pdf" target="_blank">Project</a>) 
-    (<a href="pdfs/convtoeq_slides.pdf" target="_blank">Slides</a>)
-</li> 
-            
-    <li>
-    Laplace's Method
-    (<a href="pdfs/lapme_handout.pdf" target="_blank">Handout</a>) 
-    (<a href="pdfs/lapme_slides.pdf" target="_blank">Slides</a>)
-</li>   
-
-   <li>
-    Poincare Inequalities
-    (<a href="pdfs/poincare_handout.pdf" target="_blank">Handout</a>) 
-    (<a href="pdfs/poincare_slides.pdf" target="_blank">Slides</a>)
-</li>  
-
- <li>
-  Borel Functional Calculus and the Spectral Theorem 
-    (<a href="pdfs/bfc_thesis.pdf" target="_blank">Bachelor Thesis</a>) 
-</li>   
-   <li>
-  Fyodorov-Bouchaud Formula and BPZ Equations 
-    (<a href="pdfs/pdm_moralv_full.pdf" target="_blank">Semester Project (Full Version)</a>)
-    (<a href="pdfs/pdm_moralv_mini.pdf" target="_blank">Semester Project (Minimal Version)</a>) 
-</li>  
-   <li>
-    AI Manual
-    (<a href="pdfs/AI_Manual.pdf" target="_blank">Manual</a>)
-</li>  
-  
+            <ul class="project-list">
+                <li>
+                    <strong>Infinite-Dimensional Vector Spaces</strong><br>
+                    <a href="pdfs/lpspaces_handout.pdf" target="_blank">[Handout]</a> 
+                    <a href="pdfs/lpspaces_slides.pdf" target="_blank">[Slides]</a>
+                </li>
+                <li>
+                    <strong>Elliptic Curves</strong><br>
+                    <a href="pdfs/lpspaces_handout.pdf" target="_blank">[Handout]</a> 
+                    <a href="pdfs/lpspaces_slides.pdf" target="_blank">[Slides]</a>
+                </li>
+                <li>
+                    <strong>Spectral Resolution of Symmetric Operators</strong><br>
+                    <a href="pdfs/specres_handout.pdf" target="_blank">[Handout]</a> 
+                    <a href="pdfs/specres_slides.pdf" target="_blank">[Slides]</a>
+                </li>
+                <li>
+                    <strong>Convergence to Equilibrium</strong><br>
+                    <a href="pdfs/convtoeq_project.pdf" target="_blank">[Project]</a> 
+                    <a href="pdfs/convtoeq_slides.pdf" target="_blank">[Slides]</a>
+                </li>
+                <li>
+                    <strong>Laplace's Method</strong><br>
+                    <a href="pdfs/lapme_handout.pdf" target="_blank">[Handout]</a> 
+                    <a href="pdfs/lapme_slides.pdf" target="_blank">[Slides]</a>
+                </li>
+                <li>
+                    <strong>Poincare Inequalities</strong><br>
+                    <a href="pdfs/poincare_handout.pdf" target="_blank">[Handout]</a> 
+                    <a href="pdfs/poincare_slides.pdf" target="_blank">[Slides]</a>
+                </li>
+                <li>
+                    <strong>Borel Functional Calculus and the Spectral Theorem</strong><br>
+                    <a href="pdfs/bfc_thesis.pdf" target="_blank">[Bachelor Thesis]</a>
+                </li>
+                <li>
+                    <strong>Fyodorov-Bouchaud Formula and BPZ Equations</strong><br>
+                    <a href="pdfs/pdm_moralv_full.pdf" target="_blank">[Semester Project (Full)]</a>
+                    <a href="pdfs/pdm_moralv_mini.pdf" target="_blank">[Semester Project (Mini)]</a>
+                </li>
+                <li>
+                    <strong>AI Manual</strong><br>
+                    <a href="pdfs/AI_Manual.pdf" target="_blank">[Manual]</a>
+                </li>
             </ul>
-          </section>
+        </section>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      
-        
-
-
-        <section id="modules">
+        <!-- Modules Section -->
+        <section id="modules" class="card">
             <h2>Modules</h2>
             <p>Below is a list of modules I have taken during my studies together with authors to look for in case of self-study.</p>
-             <ul>
-  <li>Abstract Algebra (M. Artin, G. Kemper)</li>
-  <li>Analysis 1, 2, 3 (M. Brokate, J. Zimmer, O. Forster)</li>
-  <li>Complex Analysis 1, 2 (F. Bornemann)</li>
-  <li>Distribution Theory (L. Hoermander)</li>
-  <li>Dynamical Systems (J. Guckenheimer, P. Holmes, S. Strogatz)</li>
-  <li>Fractal Geometry (P. Massopust, M. F. Barnsley)</li>
-  <li>Functional Analysis (R. Megginson, N. Weaver, D. Werner)</li>
-  <li>Geometry (J. Richter-Gebert)</li>
-  <li>Introduction to Nonlinear Dynamics (S. Strogatz)</li>
-  <li>Introduction to Optimization (M. Ulbrich)</li>
-  <li>Introduction to Probability and Statistics (O. Georgii)</li>
-  <li>Lattice Models</li>
-  <li>Markov Processes (T. Liggett, P. Moerters, Y. Peres)</li>
-  <li>Martingales in Financial Mathematics</li>             
-  <li>Numerical Analysis and Linear Algebra (F. Bornemann, P. Deuflhard)</li>
-  <li>Optimal Transport (L. Ambrosio, A. Figalli, F. Glaudo, C. Villani, F. Santambrogio)</li>
-  <li>Operator Theory (P. Lax, B. Simon)</li>
-  <li>Partial Differential Equations (L. C. Evans)</li>
-  <li>Probability Theory (R. Durrett)</li>
-  <li>Random Dynamical Systems</li>
-  <li>Spectral Theory</li>
-  <li>Stochastic Analysis</li>
-  <li>Stochastic Partial Differential Equations</li>
-  <li>Theoretical Electrodynamics</li>
-  <li>Topics in High-Dimensional Probability</li>
-  <li>Topics in Stochastic Analysis</li>
-  <li>Topology</li>
-</ul>
-
-        </section>
-
-
-        
-        <!-- Contact Section -->
-        <section id="contact">
-            <h2>Contact</h2>
-            <p>Email: alexmorera.a@gmail.com</p>
-            <p>GitHub: <a href="https://github.com/alemoralv" target="_blank">alemoralv</a></p>
-        </section>
-    </main>
-
-    <footer>
-        <p>© 2024 Alejandro Morera Alvarez</p>
-    </footer>
-</body>
-</html>
+            <div class="modules-grid">
+                <!-- Using a simpler list structure for cleaner CSS styling -->
+                <ul>
+                    <li>Abstract Algebra (M. Artin, G. Kemper)</li>
+                    <li>Analysis 1, 2, 3 (M. Brokate, J. Zimmer, O. Forster)</li>
+                    <li>Complex Analysis 1, 2 (F. Bornemann)</li>
+                    <li>Distribution Theory (L. Hoermander)</li>
+                    <li>Dynamical Systems (J. Guckenheimer, P. Holmes)</li>
+                    <li>Fractal Geometry (P. Massopust, M. F. Barnsley)</li>
+                    <li>Functional Analysis (R. Megg
