@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualización de Red: Sistema de Ahorro para el Retiro (Extendido)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        #graph-container { width: 100%; height: 100vh; position: relative; }
+        
+        .tooltip {
+            position: absolute;
+            opacity: 0;
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            pointer-events: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            max-width: 400px;
+            font-size: 0.875rem;
+            color: #1e293b;
+            transition: opacity 0.2s;
+            z-index: 10;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .legend-item { display: flex; align-items: center; margin-bottom: 4px; font-size: 0.75rem; color: #475569; }
+        .legend-color { width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; }
+        
+        /* Node and Link Styles */
+        line { stroke: #cbd5e1; stroke-opacity: 0.6; stroke-width: 1px; transition: stroke 0.2s, stroke-width 0.2s; }
+        circle { stroke: #fff; stroke-width: 2px; transition: r 0.2s, stroke-width 0.2s, stroke 0.2s; cursor: grab; }
+        circle:active { cursor: grabbing; }
+        /* Style for pinned nodes */
+        circle.pinned { stroke: #1e293b; stroke-width: 3px; stroke-dasharray: 2 1; } 
+        text { font-family: sans-serif; pointer-events: none; text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff; }
+    </style>
+</head>
+<body>
+
+<div id="graph-container"></div>
+<div id="tooltip" class="tooltip"></div>
+
+<!-- Legend / UI Overlay -->
+<div class="absolute top-4 left-4 bg-white p-4 rounded-lg shadow-md border border-slate-200 pointer-events-auto max-h-[90vh] overflow-y-auto">
+    <h1 class="text-sm font-bold text-slate-800 mb-2">Leyenda de Nodos</h1>
+    <div id="legend-content"></div>
+    <div class="mt-4 text-xs text-slate-500 border-t pt-2">
+        <p>🖱️ <strong>Drag</strong> to move & pin node</p>
+        <p>👆 <strong>Double Click</strong> to unpin</p>
+        <p>🔍 <strong>Scroll</strong> to zoom</p>
+        <p>✨ <strong>Hover</strong> for details</p>
+    </div>
+</div>
+
+<script>
+    // --- 1. Data Injection ---
+    const graphData = {
+      "nodes": [
+        { "id": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "type": "ORGANIZATION", "degree": 24, "description": "CONSAR: The national regulatory body in Mexico responsible for overseeing the retirement savings system." },
+        { "id": "MOODY'S CORPORATION", "type": "ORGANIZATION", "degree": 1, "description": "Global credit rating agency." },
+        { "id": "MOODY'S LOCAL MÉXICO", "type": "ORGANIZATION", "degree": 11, "description": "Subsidiary of Moody's Corporation, specializing in local credit ratings." },
+        { "id": "COMISIÓN NACIONAL BANCARIA Y DE VALORES", "type": "ORGANIZATION", "degree": 13, "description": "CNBV: Government agency overseeing financial markets and institutions." },
+        { "id": "DIARIO OFICIAL DE LA FEDERACIÓN", "type": "ORGANIZATION", "degree": 23, "description": "Official journal of the Mexican government." },
+        { "id": "COMITÉ DE ANÁLISIS DE RIESGOS", "type": "ORGANIZATION", "degree": 31, "description": "Committee tasked with risk analysis, setting investment limits, and credit risk criteria." },
+        { "id": "MOODY'S DE MÉXICO", "type": "ORGANIZATION", "degree": 1, "description": "Former name of Moody's Local México." },
+        { "id": "SOCIEDADES DE INVERSIÓN ESPECIALIZADAS DE FONDOS PARA EL RETIRO", "type": "", "degree": 5, "description": "SIEFORES." },
+        { "id": "DBRS MÉXICO", "type": "ORGANIZATION", "degree": 4, "description": "Liquidated credit rating agency." },
+        { "id": "HR RATINGS", "type": "ORGANIZATION", "degree": 2, "description": "Credit rating agency taking over DBRS activities." },
+        { "id": "COMISIÓN NACIONAL BANCARIA Y DE VALORES (CNBV)", "type": "ORGANIZATION", "degree": 1, "description": "CNBV." },
+        { "id": "MORNINGSTAR", "type": "ORGANIZATION", "degree": 1, "description": "Global financial services firm." },
+        { "id": "SIEFORE", "type": "ORGANIZATION", "degree": 1, "description": "Specialized retirement fund investment companies." },
+        { "id": "LEY DE LOS SISTEMAS DE AHORRO PARA EL RETIRO", "type": "EVENT", "degree": 3, "description": "Legal framework governing retirement savings." },
+        { "id": "REGULATIONS UPDATE", "type": "EVENT", "degree": 2, "description": "Modifications to investment regimes." },
+        { "id": "MÉXICO", "type": "", "degree": 8, "description": "" },
+        { "id": "COMISIÓN NACIONAL DE MEJORA REGULATORIA", "type": "ORGANIZATION", "degree": 1, "description": "Oversight of regulatory improvements." },
+        { "id": "LEY GENERAL DE MEJORA REGULATORIA", "type": "EVENT", "degree": 2, "description": "Framework for enhancing regulatory practices." },
+        { "id": "LEY DEL MERCADO DE VALORES", "type": "EVENT", "degree": 6, "description": "Law governing the securities market." },
+        { "id": "INSTRUMENTOS ESTRUCTURADOS", "type": "EVENT", "degree": 7, "description": "Investment instruments with predetermined outcomes." },
+        { "id": "FIBRAS", "type": "EVENT", "degree": 10, "description": "Real Estate Investment Trusts (REITs)." },
+        { "id": "VEHÍCULOS DE INVERSIÓN INMOBILIARIA", "type": "EVENT", "degree": 6, "description": "Investment vehicles focused on real estate." },
+        { "id": "EMISORA SIMPLIFICADA", "type": "EVENT", "degree": 3, "description": "New issuer category to expand investment opportunities." },
+        { "id": "ESTADOS UNIDOS MEXICANOS", "type": "GEO", "degree": 3, "description": "Mexico." },
+        { "id": "EMPRESAS PÚBLICAS DEL ESTADO", "type": "ORGANIZATION", "degree": 2, "description": "State-owned enterprises." },
+        { "id": "TRABAJADORES", "type": "PERSON", "degree": 7, "description": "Workers whose resources are invested." },
+        { "id": "ADMINISTRADORAS", "type": "ORGANIZATION", "degree": 17, "description": "AFORES: Entities managing retirement funds." },
+        { "id": "SOCIEDAD DE INVERSIÓN", "type": "ORGANIZATION", "degree": 47, "description": "Investment Company managing portfolios." },
+        { "id": "DECRETO", "type": "EVENT", "degree": 1, "description": "Constitutional reform decree." },
+        { "id": "ANEXO S", "type": "ORGANIZATION", "degree": 3, "description": "Investment limits for structured instruments." },
+        { "id": "ANEXO S BIS", "type": "ORGANIZATION", "degree": 4, "description": "Expanded investment limits." },
+        { "id": "CONSTITUCIÓN POLÍTICA DE LOS ESTADOS UNIDOS MEXICANOS", "type": "", "degree": 1, "description": "" },
+        { "id": "BANCO DE MÉXICO", "type": "ORGANIZATION", "degree": 20, "description": "Central Bank of Mexico." },
+        { "id": "SECRETARÍA DE ENERGÍA", "type": "ORGANIZATION", "degree": 1, "description": "Ministry of Energy." },
+        { "id": "ESTADOS UNIDOS DE AMÉRICA", "type": "GEO", "degree": 1, "description": "USA." },
+        { "id": "EUROPA", "type": "GEO", "degree": 1, "description": "Europe." },
+        { "id": "JAPÓN", "type": "GEO", "degree": 2, "description": "Japan." },
+        { "id": "EMPRESAS PRIVADAS", "type": "ORGANIZATION", "degree": 1, "description": "Private commercial companies." },
+        { "id": "INSTITUCIONES CALIFICADORAS DE VALORES", "type": "ORGANIZATION", "degree": 3, "description": "Rating agencies." },
+        { "id": "SOCIEDADES DE INVERSIÓN", "type": "ORGANIZATION", "degree": 34, "description": "Investment Societies." },
+        { "id": "COMITÉ DE INVERSIÓN", "type": "ORGANIZATION", "degree": 5, "description": "Investment Committee." },
+        { "id": "COMITÉ DE RIESGOS FINANCIEROS", "type": "ORGANIZATION", "degree": 2, "description": "Financial Risk Committee." },
+        { "id": "COMITÉ DE VALUACIÓN", "type": "ORGANIZATION", "degree": 3, "description": "Valuation Committee." },
+        { "id": "INSTITUCIONES DE CRÉDITO", "type": "", "degree": 3, "description": "" },
+        { "id": "PETRÓLEOS MEXICANOS", "type": "ORGANIZATION", "degree": 1, "description": "Pemex." },
+        { "id": "COMISIÓN FEDERAL DE ELECTRICIDAD", "type": "ORGANIZATION", "degree": 1, "description": "CFE." },
+        { "id": "GOBIERNO FEDERAL", "type": "ORGANIZATION", "degree": 4, "description": "Federal Government." },
+        { "id": "GOBIERNO DE LA CIUDAD DE MÉXICO", "type": "ORGANIZATION", "degree": 1, "description": "Mexico City Government." },
+        { "id": "ENTIDADES FINANCIERAS", "type": "ORGANIZATION", "degree": 5, "description": "Financial entities." },
+        { "id": "EMISORES NACIONALES", "type": "ORGANIZATION", "degree": 8, "description": "National issuers." },
+        { "id": "EMISORES EXTRANJEROS", "type": "ORGANIZATION", "degree": 4, "description": "Foreign issuers." },
+        { "id": "FIBRAS GENÉRICAS", "type": "ORGANIZATION", "degree": 1, "description": "Generic REITs." },
+        { "id": "FIBRA-E", "type": "ORGANIZATION", "degree": 1, "description": "Energy/Infrastructure REITs." },
+        { "id": "FIBRAS HIPOTECARIAS", "type": "ORGANIZATION", "degree": 0, "description": "Mortgage REITs." },
+        { "id": "FONDOS MUTUOS", "type": "ORGANIZATION", "degree": 2, "description": "Mutual funds." },
+        { "id": "FONDOS MUTUOS EXTRANJEROS", "type": "ORGANIZATION", "degree": 0, "description": "Foreign Mutual Funds." },
+        { "id": "FONDOS MUTUOS NACIONALES", "type": "ORGANIZATION", "degree": 0, "description": "National Mutual Funds." },
+        { "id": "GRUPOS FINANCIEROS", "type": "ORGANIZATION", "degree": 0, "description": "Financial Groups." },
+        { "id": "ÍNDICES ACCIONARIOS DE PAÍSES ELEGIBLES PARA INVERSIONES", "type": "ORGANIZATION", "degree": 1, "description": "Eligible Stock Indices." },
+        { "id": "ÍNDICES INMOBILIARIOS DE PAÍSES ELEGIBLES PARA INVERSIONES", "type": "ORGANIZATION", "degree": 1, "description": "Eligible Real Estate Indices." },
+        { "id": "ÍNDICES DE DEUDA DE PAÍSES ELEGIBLES PARA INVERSIONES", "type": "ORGANIZATION", "degree": 1, "description": "Eligible Debt Indices." },
+        { "id": "ÍNDICES DE MERCANCÍAS", "type": "ORGANIZATION", "degree": 1, "description": "Commodity Indices." },
+        { "id": "LEY DEL IMPUESTO SOBRE LA RENTA", "type": "ORGANIZATION", "degree": 1, "description": "Income Tax Law." },
+        { "id": "PAÍSES ELEGIBLES PARA INVERSIONES", "type": "GEO", "degree": 9, "description": "Countries eligible for investment." },
+        { "id": "DOF", "type": "", "degree": 11, "description": "" },
+        { "id": "SISTEMAS DE AHORRO PARA EL RETIRO", "type": "ORGANIZATION", "degree": 11, "description": "Retirement Savings Systems (SAR)." },
+        { "id": "LEY DE INSTITUCIONES DE CRÉDITO", "type": "EVENT", "degree": 1, "description": "Credit Institutions Law." },
+        { "id": "INSTRUMENTOS BURSATILIZADOS", "type": "EVENT", "degree": 4, "description": "Securitized instruments." },
+        { "id": "INSTRUMENTOS DE DEUDA", "type": "EVENT", "degree": 7, "description": "Debt instruments." },
+        { "id": "INSTRUMENTOS DE DEUDA HÍBRIDOS", "type": "EVENT", "degree": 2, "description": "Hybrid debt instruments." },
+        { "id": "CERTIFICADOS BURSÁTILES FIDUCIARIOS DE PROYECTOS DE INVERSIÓN", "type": "EVENT", "degree": 2, "description": "Investment Project Trust Certificates." },
+        { "id": "COMISIÓN", "type": "ORGANIZATION", "degree": 24, "description": "The Commission (Regulator)." },
+        { "id": "SOCIEDADES ANÓNIMAS BURSÁTILES", "type": "ORGANIZATION", "degree": 0, "description": "Public limited companies." },
+        { "id": "EMPRESA PRIVADA", "type": "ORGANIZATION", "degree": 0, "description": "Private company." },
+        { "id": "MANDATARIOS", "type": "", "degree": 6, "description": "" },
+        { "id": "MERCANCÍAS", "type": "", "degree": 2, "description": "" },
+        { "id": "GRUPO FINANCIERO", "type": "ORGANIZATION", "degree": 1, "description": "Financial Group." },
+        { "id": "COMITÉ SOBRE EL SISTEMA FINANCIERO GLOBAL", "type": "ORGANIZATION", "degree": 1, "description": "Committee on the Global Financial System." },
+        { "id": "BANCO DE PAGOS INTERNACIONALES", "type": "ORGANIZATION", "degree": 1, "description": "Bank for International Settlements (BIS)." },
+        { "id": "ALIANZA DEL PACÍFICO", "type": "ORGANIZATION", "degree": 5, "description": "Pacific Alliance trade bloc." },
+        { "id": "MERCADO INTEGRADO LATINOAMERICANO", "type": "ORGANIZATION", "degree": 1, "description": "MILA." },
+        { "id": "UNIÓN EUROPEA", "type": "ORGANIZATION", "degree": 0, "description": "EU." },
+        { "id": "ORGANIZACIÓN PARA LA COOPERACIÓN Y EL DESARROLLO ECONÓMICO", "type": "ORGANIZATION", "degree": 1, "description": "OECD." },
+        { "id": "SOCIEDADES DE INVERSIÓN ADICIONALES", "type": "ORGANIZATION", "degree": 1, "description": "Additional Investment Societies." },
+        { "id": "INSTITUTO DE SEGURIDAD Y SERVICIOS SOCIALES DE LOS TRABAJADORES DEL ESTADO", "type": "ORGANIZATION", "degree": 1, "description": "ISSSTE." },
+        { "id": "LEY DEL SEGURO SOCIAL", "type": "EVENT", "degree": 2, "description": "Social Security Law." },
+        { "id": "LEY DEL INSTITUTO DE SEGURIDAD Y SERVICIOS SOCIALES DE LOS TRABAJADORES DEL ESTADO", "type": "EVENT", "degree": 3, "description": "ISSSTE Law." },
+        { "id": "CASAS DE BOLSA", "type": "ORGANIZATION", "degree": 1, "description": "Brokerage houses." },
+        { "id": "PROVEEDOR DE PRECIOS", "type": "ORGANIZATION", "degree": 6, "description": "Price Provider." },
+        { "id": "SOCIEDAD VALUADORA", "type": "ORGANIZATION", "degree": 7, "description": "Valuation Society." },
+        { "id": "SUBCUENTA DEL SEGURO DE RETIRO", "type": "EVENT", "degree": 2, "description": "Retirement Insurance Sub-account." },
+        { "id": "SUBCUENTA DE AHORRO PARA EL RETIRO", "type": "EVENT", "degree": 2, "description": "Retirement Savings Sub-account." },
+        { "id": "SUBCUENTA DE AHORRO SOLIDARIO", "type": "EVENT", "degree": 2, "description": "Solidarity Savings Sub-account." },
+        { "id": "SUBCUENTA DE RCV IMSS", "type": "EVENT", "degree": 1, "description": "RCV IMSS Sub-account." },
+        { "id": "IMSS", "type": "ORGANIZATION", "degree": 3, "description": "Mexican Social Security Institute." },
+        { "id": "ISSSTE", "type": "ORGANIZATION", "degree": 3, "description": "ISSSTE." },
+        { "id": "MEXICO", "type": "GEO", "degree": 10, "description": "Mexico." },
+        { "id": "UNIDADES DE INVERSIÓN", "type": "EVENT", "degree": 2, "description": "UDIs." },
+        { "id": "REITS", "type": "ORGANIZATION", "degree": 1, "description": "REITs." },
+        { "id": "MERCADOS NACIONALES", "type": "GEO", "degree": 1, "description": "National Markets." },
+        { "id": "MERCADOS EXTRANJEROS", "type": "GEO", "degree": 1, "description": "Foreign Markets." },
+        { "id": "CONTRAPARTES", "type": "ORGANIZATION", "degree": 2, "description": "Counterparties." },
+        { "id": "COMITÉ CONSULTIVO Y DE VIGILANCIA", "type": "ORGANIZATION", "degree": 2, "description": "Advisory and Vigilance Committee." },
+        { "id": "JUNTA DE GOBIERNO", "type": "ORGANIZATION", "degree": 1, "description": "Governing Board." },
+        { "id": "VEHÍCULOS", "type": "ORGANIZATION", "degree": 7, "description": "Investment Vehicles." },
+        { "id": "ÍNDICES ACCIONARIOS", "type": "ORGANIZATION", "degree": 1, "description": "Stock Indices." },
+        { "id": "ÍNDICES INMOBILIARIOS", "type": "ORGANIZATION", "degree": 1, "description": "Real Estate Indices." },
+        { "id": "ÍNDICES DE DEUDA", "type": "ORGANIZATION", "degree": 1, "description": "Debt Indices." },
+        { "id": "BASE DE DATOS NACIONAL SAR", "type": "ORGANIZATION", "degree": 2, "description": "SAR National Database." },
+        { "id": "TRAYECTORIA DE INVERSIÓN", "type": "EVENT", "degree": 2, "description": "Investment Trajectory." },
+        { "id": "ANEXO O", "type": "EVENT", "degree": 1, "description": "Annex O (Loss compensation formula)." },
+        { "id": "ANEXO W", "type": "EVENT", "degree": 1, "description": "Annex W (Alternative formula)." },
+        { "id": "ADMINISTRADORA", "type": "", "degree": 13, "description": "" },
+        { "id": "ÍNDICES DE MERCANCÍAS DE PAÍSES ELEGIBLES PARA INVERSIONES", "type": "ORGANIZATION", "degree": 0, "description": "Commodity indices from eligible countries." },
+        { "id": "SOCIEDADES DE INVERSIÓN BÁSICAS", "type": "ORGANIZATION", "degree": 24, "description": "Basic Investment Societies." },
+        { "id": "SOCIEDAD DE INVERSIÓN BÁSICA INICIAL", "type": "ORGANIZATION", "degree": 2, "description": "Initial Basic Investment Society." },
+        { "id": "SOCIEDAD DE INVERSIÓN BÁSICA DE PENSIONES", "type": "ORGANIZATION", "degree": 9, "description": "Pension Basic Investment Society (65+)." },
+        { "id": "RCV ISSSTE", "type": "ORGANIZATION", "degree": 1, "description": "RCV ISSSTE." },
+        { "id": "RCV IMSS", "type": "", "degree": 1, "description": "" },
+        { "id": "SOCIEDAD DE INVERSIÓN BÁSICA", "type": "ORGANIZATION", "degree": 15, "description": "Basic Investment Society." },
+        { "id": "CERTIFICADOS BURSÁTILES FIDUCIARIOS", "type": "ORGANIZATION", "degree": 1, "description": "Trust Certificates." },
+        { "id": "VALORES EXTRANJEROS", "type": "", "degree": 2, "description": "" },
+        { "id": "BOLSA DE VALORES", "type": "ORGANIZATION", "degree": 1, "description": "Stock Exchange." },
+        { "id": "ANEXO K", "type": "EVENT", "degree": 1, "description": "Annex K (Minimum ratings for foreign debt)." },
+        { "id": "ANEXO J", "type": "EVENT", "degree": 1, "description": "Annex J (Pension investment ratings)." },
+        { "id": "DÉCIMA TERCERA", "type": "EVENT", "degree": 1, "description": "13th Provision." },
+        { "id": "DÉCIMA OCTAVA", "type": "EVENT", "degree": 1, "description": "18th Provision." },
+        { "id": "SOCIEDADES DE INVERSIÓN BÁSICAS DE PENSIONES", "type": "", "degree": 4, "description": "" },
+        { "id": "NEXOS PATRIMONIALES", "type": "EVENT", "degree": 1, "description": "Patrimonial Links." },
+        { "id": "CERTIFICADOS BURSÁTILES", "type": "EVENT", "degree": 2, "description": "Exchange Certificates." },
+        { "id": "CERTIFICADOS DE PARTICIPACIÓN", "type": "EVENT", "degree": 3, "description": "Participation Certificates." },
+        { "id": "ENTIDAD FINANCIERA", "type": "ORGANIZATION", "degree": 2, "description": "Financial Entity." },
+        { "id": "CASA DE BOLSA", "type": "ORGANIZATION", "degree": 2, "description": "Brokerage Firm." },
+        { "id": "VEHÍCULOS DE INVERSIÓN", "type": "ORGANIZATION", "degree": 1, "description": "Investment Vehicles." },
+        { "id": "BANCO", "type": "", "degree": 5, "description": "" },
+        { "id": "CONTRAPARTE", "type": "ORGANIZATION", "degree": 1, "description": "Counterparty." },
+        { "id": "SOCIEDAD ANÓNIMA", "type": "ORGANIZATION", "degree": 1, "description": "Corporation." },
+        { "id": "VALOR EXTRANJERO DE DEUDA", "type": "EVENT", "degree": 1, "description": "Foreign Debt Security." },
+        { "id": "INSTRUMENTO DE DEUDA", "type": "", "degree": 1, "description": "" },
+        { "id": "CONSEJO DE ADMINISTRACIÓN", "type": "ORGANIZATION", "degree": 1, "description": "Board of Directors." },
+        { "id": "SOCIEDADES DE INVERSIÓN BÁSICA", "type": "ORGANIZATION", "degree": 4, "description": "Basic Investment Societies." },
+        { "id": "VALORES EXTRANJEROS DE DEUDA", "type": "EVENT", "degree": 1, "description": "Foreign Debt Securities." },
+        { "id": "CERTIFICADOS BURSÁTILES VINCULADOS A PROYECTOS REALES", "type": "EVENT", "degree": 1, "description": "Project-Linked Certificates." },
+        { "id": "FUSIÓN O CESIÓN DE CARTERA", "type": "", "degree": 1, "description": "" },
+        { "id": "SOCIEDAD DE INVERSIÓN BÁSICA 1", "type": "ORGANIZATION", "degree": 1, "description": "SIB 1." },
+        { "id": "SOCIEDAD DE INVERSIÓN BÁSICA 2", "type": "ORGANIZATION", "degree": 1, "description": "SIB 2." },
+        { "id": "SOCIEDAD DE INVERSIÓN BÁSICA 3", "type": "ORGANIZATION", "degree": 1, "description": "SIB 3." },
+        { "id": "SOCIEDAD DE INVERSIÓN BÁSICA 4", "type": "ORGANIZATION", "degree": 1, "description": "SIB 4." },
+        { "id": "SOCIEDADES DE INVERSIÓN BÁSICAS INICIAL, 90-94, 80-84, 70-74, 65-69", "type": "ORGANIZATION", "degree": 3, "description": "New Investment Societies." },
+        { "id": "INDEVAL, S.D.", "type": "ORGANIZATION", "degree": 1, "description": "Indeval." },
+        { "id": "VIERNES 13 DE DICIEMBRE DE 2019", "type": "EVENT", "degree": 2, "description": "Transfer Date." },
+        { "id": "SOCIEDAD DE INVERSIÓN BÁSICA 55-59", "type": "ORGANIZATION", "degree": 1, "description": "SIB 55-59." },
+        { "id": "SOCIEDAD DE INVERSIÓN BÁSICA 60-64", "type": "ORGANIZATION", "degree": 1, "description": "SIB 60-64." },
+        { "id": "SOCIEDAD DE INVERSIÓN BÁSICA 65-69", "type": "ORGANIZATION", "degree": 1, "description": "SIB 65-69." },
+        { "id": "SOCIEDAD DE INVERSIÓN BÁSICA 70-74", "type": "ORGANIZATION", "degree": 1, "description": "SIB 70-74." },
+        { "id": "SOCIEDAD DE INVERSIÓN BÁSICA 75-79", "type": "ORGANIZATION", "degree": 1, "description": "SIB 75-79." },
+        { "id": "SOCIEDAD DE INVERSIÓN BÁSICA 80-84", "type": "ORGANIZATION", "degree": 1, "description": "SIB 80-84." },
+        { "id": "SOCIEDAD DE INVERSIÓN BÁSICA 85-89", "type": "ORGANIZATION", "degree": 1, "description": "SIB 85-89." },
+        { "id": "SOCIEDAD DE INVERSIÓN BÁSICA 90-94", "type": "ORGANIZATION", "degree": 1, "description": "SIB 90-94." },
+        { "id": "ANEXO L", "type": "EVENT", "degree": 1, "description": "Annex L (VaR limits methodology)." },
+        { "id": "ABRAHAM E. VELA DIB", "type": "PERSON", "degree": 1, "description": "President of CONSAR." },
+        { "id": "CIUDAD DE MÉXICO", "type": "GEO", "degree": 2, "description": "Mexico City." },
+        { "id": "DISPOSICIONES DE CARÁCTER GENERAL", "type": "EVENT", "degree": 1, "description": "General Provisions." },
+        { "id": "PROGRAMA DE RECOMPOSICIÓN DE CARTERAS", "type": "EVENT", "degree": 1, "description": "Portfolio Recomposition Program." },
+        { "id": "ANEXOS A, F, J, B, G, K, C, H, I, D, E", "type": "EVENT", "degree": 1, "description": "Annexes A-K." },
+        { "id": "IVÁN HILMARDEL PLIEGO MORENO", "type": "PERSON", "degree": 1, "description": "President of CONSAR." },
+        { "id": "MÉXICO, D.F.", "type": "GEO", "degree": 1, "description": "Mexico D.F." },
+        { "id": "ACUERDO", "type": "EVENT", "degree": 5, "description": "Agreement." },
+        { "id": "ANEXOS “A”, “B”, “C”, “D”, Y “E”", "type": "EVENT", "degree": 1, "description": "Annexes A-E." },
+        { "id": "JULIO CÉSAR CERVANTES PARRA", "type": "PERSON", "degree": 1, "description": "President of CONSAR." },
+        { "id": "ANEXOS A, B, C, D, E, F, G, H, I, J, K", "type": "EVENT", "degree": 2, "description": "Annexes A-K Updated." },
+        { "id": "FITCH MEXICO", "type": "ORGANIZATION", "degree": 8, "description": "Fitch Mexico." },
+        { "id": "MOODY’S LOCAL MÉXICO", "type": "ORGANIZATION", "degree": 1, "description": "Moody's Local." },
+        { "id": "VERUM", "type": "ORGANIZATION", "degree": 8, "description": "Verum." },
+        { "id": "STANDARD & POOR’S", "type": "ORGANIZATION", "degree": 1, "description": "S&P." },
+        { "id": "HR RATINGS DE MEXICO", "type": "ORGANIZATION", "degree": 11, "description": "HR Ratings." },
+        { "id": "MAYO DE 2021", "type": "EVENT", "degree": 1, "description": "Date." },
+        { "id": "JUNIO DE 2022", "type": "EVENT", "degree": 1, "description": "Date." },
+        { "id": "AGOSTO DE 2023", "type": "EVENT", "degree": 1, "description": "Date." },
+        { "id": "MAYO DE 2024", "type": "EVENT", "degree": 1, "description": "Date." },
+        { "id": "OCTUBRE DE 2024", "type": "EVENT", "degree": 1, "description": "Date." },
+        { "id": "JUNIO DE 2025", "type": "EVENT", "degree": 1, "description": "Date." },
+        { "id": "MAYO DE 2019", "type": "", "degree": 1, "description": "" },
+        { "id": "STANDARD & POOR'S", "type": "ORGANIZATION", "degree": 10, "description": "S&P." },
+        { "id": "ACTIVO OBJETO DE INVERSIÓN", "type": "EVENT", "degree": 6, "description": "Investment Asset." },
+        { "id": "MOODY'S", "type": "ORGANIZATION", "degree": 4, "description": "Moody's." },
+        { "id": "FITCH IBCA", "type": "ORGANIZATION", "degree": 4, "description": "Fitch IBCA." },
+        { "id": "MERCADO MEXICANO", "type": "GEO", "degree": 1, "description": "Mexican Market." },
+        { "id": "DERIVADOS", "type": "ORGANIZATION", "degree": 4, "description": "Derivatives." },
+        { "id": "ACTIVOS PERMITIDOS", "type": "ORGANIZATION", "degree": 3, "description": "Allowed Assets." },
+        { "id": "ESCENARIOS", "type": "EVENT", "degree": 1, "description": "Scenarios." },
+        { "id": "VAR", "type": "EVENT", "degree": 3, "description": "Value at Risk." },
+        { "id": "MANDATARIO", "type": "ORGANIZATION", "degree": 4, "description": "Mandatary." },
+        { "id": "ACTIVO PERMITIDO", "type": "EVENT", "degree": 1, "description": "Allowed Asset." },
+        { "id": "CÁLCULO DEL VAR", "type": "EVENT", "degree": 2, "description": "VaR Calculation." },
+        { "id": "PORTAFOLIO DE REFERENCIA (PR)", "type": "ORGANIZATION", "degree": 1, "description": "Reference Portfolio." },
+        { "id": "HOLGURA", "type": "EVENT", "degree": 1, "description": "Slack/Gap." },
+        { "id": "ESCENARIO", "type": "", "degree": 2, "description": "" },
+        { "id": "BOLSA MEXICANA DE VALORES", "type": "ORGANIZATION", "degree": 2, "description": "Mexican Stock Exchange." },
+        { "id": "PROVEEDORES DE PRECIOS", "type": "ORGANIZATION", "degree": 1, "description": "Price Providers." },
+        { "id": "SOCIEDADES VALUADORAS", "type": "ORGANIZATION", "degree": 1, "description": "Valuation Societies." },
+        { "id": "EXPERTO INDEPENDIENTE", "type": "PERSON", "degree": 3, "description": "Independent Expert." },
+        { "id": "JUNTA DE GOBIERNO DE LA COMISIÓN", "type": "ORGANIZATION", "degree": 1, "description": "Commission Governing Board." },
+        { "id": "NOTAS", "type": "EVENT", "degree": 3, "description": "Notes." },
+        { "id": "ESTRUCTURAS VINCULADAS A SUBYACENTES", "type": "EVENT", "degree": 3, "description": "Linked Structures." },
+        { "id": "COMPONENTES DE RENTA VARIABLE", "type": "", "degree": 3, "description": "" },
+        { "id": "DELTA DEL VEHÍCULO", "type": "EVENT", "degree": 0, "description": "Vehicle Delta." },
+        { "id": "NOTA J", "type": "EVENT", "degree": 4, "description": "Note J." },
+        { "id": "ESTRUCTURA VINCULADA A SUBYACENTE J", "type": "EVENT", "degree": 4, "description": "Structure Linked to Underlying J." },
+        { "id": "COMPONENTE DE RENTA VARIABLE J", "type": "EVENT", "degree": 4, "description": "Equity Component J." },
+        { "id": "RENTA VARIABLE", "type": "EVENT", "degree": 2, "description": "Equity." },
+        { "id": "FIBRA", "type": "ORGANIZATION", "degree": 4, "description": "FIBRA." },
+        { "id": "VEHÍCULO DE INVERSIÓN INMOBILIARIA", "type": "ORGANIZATION", "degree": 4, "description": "Real Estate Investment Vehicle." },
+        { "id": "ESTRUCTURA VINCULADA A SUBYACENTE", "type": "EVENT", "degree": 2, "description": "Structure Linked to Underlying." },
+        { "id": "NOTA", "type": "", "degree": 2, "description": "" },
+        { "id": "PESOS MEXICANOS", "type": "ORGANIZATION", "degree": 1, "description": "MXN." },
+        { "id": "DIVISAS", "type": "", "degree": 1, "description": "" },
+        { "id": "ALEMANIA", "type": "GEO", "degree": 1, "description": "Germany." },
+        { "id": "HONG KONG", "type": "GEO", "degree": 1, "description": "Hong Kong." },
+        { "id": "ARABIA SAUDITA", "type": "GEO", "degree": 1, "description": "Saudi Arabia." },
+        { "id": "INDIA", "type": "GEO", "degree": 1, "description": "India." },
+        { "id": "AUSTRALIA", "type": "GEO", "degree": 1, "description": "Australia." },
+        { "id": "INGLATERRA", "type": "GEO", "degree": 1, "description": "England." },
+        { "id": "BÉLGICA", "type": "GEO", "degree": 1, "description": "Belgium." },
+        { "id": "ITALIA", "type": "GEO", "degree": 1, "description": "Italy." },
+        { "id": "BRASIL", "type": "GEO", "degree": 1, "description": "Brazil." },
+        { "id": "CANADÁ", "type": "GEO", "degree": 1, "description": "Canada." },
+        { "id": "LUXEMBURGO", "type": "GEO", "degree": 1, "description": "Luxembourg." },
+        { "id": "CHINA", "type": "GEO", "degree": 1, "description": "China." },
+        { "id": "COREA DEL SUR", "type": "GEO", "degree": 1, "description": "South Korea." },
+        { "id": "PAÍSES BAJOS", "type": "GEO", "degree": 1, "description": "Netherlands." },
+        { "id": "ESPAÑA", "type": "GEO", "degree": 1, "description": "Spain." },
+        { "id": "SINGAPUR", "type": "GEO", "degree": 1, "description": "Singapore." },
+        { "id": "ESTADOS UNIDOS", "type": "GEO", "degree": 1, "description": "USA." },
+        { "id": "SUECIA", "type": "GEO", "degree": 1, "description": "Sweden." },
+        { "id": "FRANCIA", "type": "GEO", "degree": 1, "description": "France." },
+        { "id": "SUIZA", "type": "GEO", "degree": 1, "description": "Switzerland." },
+        { "id": "CHILE", "type": "", "degree": 1, "description": "" },
+        { "id": "COLOMBIA", "type": "GEO", "degree": 1, "description": "Colombia." },
+        { "id": "PERÚ", "type": "GEO", "degree": 1, "description": "Peru." },
+        { "id": "HUNGRÍA", "type": "GEO", "degree": 0, "description": "Hungary." },
+        { "id": "AUSTRIA", "type": "GEO", "degree": 0, "description": "Austria." },
+        { "id": "BULGARIA", "type": "GEO", "degree": 0, "description": "Bulgaria." },
+        { "id": "LETONIA", "type": "GEO", "degree": 0, "description": "Latvia." },
+        { "id": "CHIPRE", "type": "GEO", "degree": 0, "description": "Cyprus." },
+        { "id": "LITUANIA", "type": "GEO", "degree": 0, "description": "Lithuania." },
+        { "id": "CROACIA", "type": "GEO", "degree": 0, "description": "Croatia." },
+        { "id": "DINAMARCA", "type": "GEO", "degree": 0, "description": "Denmark." },
+        { "id": "MALTA", "type": "GEO", "degree": 0, "description": "Malta." },
+        { "id": "ESLOVAQUIA", "type": "GEO", "degree": 0, "description": "Slovakia." },
+        { "id": "ESLOVENIA", "type": "GEO", "degree": 0, "description": "Slovenia." },
+        { "id": "POLONIA", "type": "GEO", "degree": 0, "description": "Poland." },
+        { "id": "PORTUGAL", "type": "GEO", "degree": 0, "description": "Portugal." },
+        { "id": "ESTONIA", "type": "GEO", "degree": 0, "description": "Estonia." },
+        { "id": "REINO UNIDO", "type": "GEO", "degree": 0, "description": "UK." },
+        { "id": "FINLANDIA", "type": "GEO", "degree": 0, "description": "Finland." },
+        { "id": "REPÚBLICA CHECA", "type": "GEO", "degree": 0, "description": "Czech Republic." },
+        { "id": "RUMANÍA", "type": "GEO", "degree": 0, "description": "Romania." },
+        { "id": "GRECIA", "type": "GEO", "degree": 0, "description": "Greece." },
+        { "id": "OCDE", "type": "ORGANIZATION", "degree": 1, "description": "OECD." },
+        { "id": "ISRAEL", "type": "GEO", "degree": 0, "description": "Israel." },
+        { "id": "ISLANDIA", "type": "GEO", "degree": 0, "description": "Iceland." },
+        { "id": "NORUEGA", "type": "GEO", "degree": 0, "description": "Norway." },
+        { "id": "EMIRATOS ÁRABES UNIDOS", "type": "GEO", "degree": 0, "description": "UAE." },
+        { "id": "TAILANDIA", "type": "GEO", "degree": 0, "description": "Thailand." },
+        { "id": "INDONESIA", "type": "GEO", "degree": 0, "description": "Indonesia." },
+        { "id": "TAIWÁN", "type": "GEO", "degree": 0, "description": "Taiwan." },
+        { "id": "MALASIA", "type": "GEO", "degree": 0, "description": "Malaysia." },
+        { "id": "SUDÁFRICA", "type": "GEO", "degree": 0, "description": "South Africa." },
+        { "id": "NUEVA ZELANDA", "type": "GEO", "degree": 0, "description": "New Zealand." },
+        { "id": "SOCIEDAD DE INVERSIÓN BÁSICA 95-99", "type": "ORGANIZATION", "degree": 0, "description": "SIB 95-99." },
+        { "id": "SOCIEDAD DE INVERSIÓN BÁSICA 00-04", "type": "ORGANIZATION", "degree": 0, "description": "SIB 00-04." },
+        { "id": "SOCIEDAD DE INVERSIÓN BÁSICA 05-09", "type": "ORGANIZATION", "degree": 0, "description": "SIB 05-09." },
+        { "id": "SOCIEDAD DE INVERSIÓN BÁSICA 10-14", "type": "ORGANIZATION", "degree": 0, "description": "SIB 10-14." },
+        { "id": "SOCIEDAD DE INVERSIÓN BÁSICA 15-19", "type": "ORGANIZATION", "degree": 0, "description": "SIB 15-19." },
+        { "id": "BÁSICA", "type": "EVENT", "degree": 1, "description": "Basic." },
+        { "id": "TRIMESTRE", "type": "EVENT", "degree": 1, "description": "Quarter." },
+        { "id": "ANEXO T100", "type": "EVENT", "degree": 2, "description": "Annex T100." },
+        { "id": "ANEXO U", "type": "EVENT", "degree": 2, "description": "Annex U." }
+      ],
+      "edges": [
+        { "source": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "target": "DIARIO OFICIAL DE LA FEDERACIÓN" },
+        { "source": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "target": "SOCIEDADES DE INVERSIÓN ESPECIALIZADAS DE FONDOS PARA EL RETIRO" },
+        { "source": "MOODY'S CORPORATION", "target": "MOODY'S LOCAL MÉXICO" },
+        { "source": "MOODY'S LOCAL MÉXICO", "target": "COMISIÓN NACIONAL BANCARIA Y DE VALORES" },
+        { "source": "MOODY'S LOCAL MÉXICO", "target": "COMITÉ DE ANÁLISIS DE RIESGOS" },
+        { "source": "MOODY'S LOCAL MÉXICO", "target": "MOODY'S DE MÉXICO" },
+        { "source": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "target": "SIEFORE" },
+        { "source": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "target": "LEY DE LOS SISTEMAS DE AHORRO PARA EL RETIRO" },
+        { "source": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "target": "REGULATIONS UPDATE" },
+        { "source": "DIARIO OFICIAL DE LA FEDERACIÓN", "target": "REGULATIONS UPDATE" },
+        { "source": "DBRS MÉXICO", "target": "HR RATINGS" },
+        { "source": "DBRS MÉXICO", "target": "COMISIÓN NACIONAL BANCARIA Y DE VALORES (CNBV)" },
+        { "source": "DBRS MÉXICO", "target": "MORNINGSTAR" },
+        { "source": "DBRS MÉXICO", "target": "MÉXICO" },
+        { "source": "HR RATINGS", "target": "MÉXICO" },
+        { "source": "DIARIO OFICIAL DE LA FEDERACIÓN", "target": "COMITÉ DE ANÁLISIS DE RIESGOS" },
+        { "source": "COMISIÓN NACIONAL DE MEJORA REGULATORIA", "target": "LEY GENERAL DE MEJORA REGULATORIA" },
+        { "source": "LEY DE LOS SISTEMAS DE AHORRO PARA EL RETIRO", "target": "LEY DEL MERCADO DE VALORES" },
+        { "source": "LEY DEL MERCADO DE VALORES", "target": "EMISORA SIMPLIFICADA" },
+        { "source": "INSTRUMENTOS ESTRUCTURADOS", "target": "SOCIEDADES DE INVERSIÓN ESPECIALIZADAS DE FONDOS PARA EL RETIRO" },
+        { "source": "FIBRAS", "target": "SOCIEDADES DE INVERSIÓN ESPECIALIZADAS DE FONDOS PARA EL RETIRO" },
+        { "source": "VEHÍCULOS DE INVERSIÓN INMOBILIARIA", "target": "SOCIEDADES DE INVERSIÓN ESPECIALIZADAS DE FONDOS PARA EL RETIRO" },
+        { "source": "ESTADOS UNIDOS MEXICANOS", "target": "DIARIO OFICIAL DE LA FEDERACIÓN" },
+        { "source": "ESTADOS UNIDOS MEXICANOS", "target": "EMPRESAS PÚBLICAS DEL ESTADO" },
+        { "source": "TRABAJADORES", "target": "SOCIEDAD DE INVERSIÓN" },
+        { "source": "ADMINISTRADORAS", "target": "SOCIEDAD DE INVERSIÓN" },
+        { "source": "ADMINISTRADORAS", "target": "COMISIÓN NACIONAL BANCARIA Y DE VALORES" },
+        { "source": "DECRETO", "target": "CONSTITUCIÓN POLÍTICA DE LOS ESTADOS UNIDOS MEXICANOS" },
+        { "source": "INSTRUMENTOS ESTRUCTURADOS", "target": "ANEXO S" },
+        { "source": "INSTRUMENTOS ESTRUCTURADOS", "target": "ANEXO S BIS" },
+        { "source": "COMISIÓN NACIONAL BANCARIA Y DE VALORES", "target": "BANCO DE MÉXICO" },
+        { "source": "COMISIÓN NACIONAL BANCARIA Y DE VALORES", "target": "INSTITUCIONES DE CRÉDITO" },
+        { "source": "COMISIÓN NACIONAL BANCARIA Y DE VALORES", "target": "INSTITUCIONES CALIFICADORAS DE VALORES" },
+        { "source": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "target": "BANCO DE MÉXICO" },
+        { "source": "BANCO DE MÉXICO", "target": "ESTADOS UNIDOS DE AMÉRICA" },
+        { "source": "BANCO DE MÉXICO", "target": "EUROPA" },
+        { "source": "BANCO DE MÉXICO", "target": "JAPÓN" },
+        { "source": "BANCO DE MÉXICO", "target": "SOCIEDADES DE INVERSIÓN" },
+        { "source": "BANCO DE MÉXICO", "target": "COMITÉ DE ANÁLISIS DE RIESGOS" },
+        { "source": "BANCO DE MÉXICO", "target": "COMITÉ DE INVERSIÓN" },
+        { "source": "BANCO DE MÉXICO", "target": "COMITÉ DE RIESGOS FINANCIEROS" },
+        { "source": "BANCO DE MÉXICO", "target": "COMITÉ DE VALUACIÓN" },
+        { "source": "SECRETARÍA DE ENERGÍA", "target": "EMPRESAS PÚBLICAS DEL ESTADO" },
+        { "source": "PETRÓLEOS MEXICANOS", "target": "COMISIÓN FEDERAL DE ELECTRICIDAD" },
+        { "source": "GOBIERNO FEDERAL", "target": "BANCO DE MÉXICO" },
+        { "source": "GOBIERNO DE LA CIUDAD DE MÉXICO", "target": "ENTIDADES FINANCIERAS" },
+        { "source": "ENTIDADES FINANCIERAS", "target": "FIBRAS" },
+        { "source": "ENTIDADES FINANCIERAS", "target": "COMITÉ DE ANÁLISIS DE RIESGOS" },
+        { "source": "FIBRAS", "target": "FIBRAS GENÉRICAS" },
+        { "source": "EMISORA SIMPLIFICADA", "target": "EMISORES NACIONALES" },
+        { "source": "EMISORES NACIONALES", "target": "EMISORES EXTRANJEROS" },
+        { "source": "FIBRA-E", "target": "COMISIÓN NACIONAL BANCARIA Y DE VALORES" },
+        { "source": "FONDOS MUTUOS", "target": "COMITÉ DE ANÁLISIS DE RIESGOS" },
+        { "source": "FONDOS MUTUOS", "target": "PAÍSES ELEGIBLES PARA INVERSIONES" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "ÍNDICES ACCIONARIOS DE PAÍSES ELEGIBLES PARA INVERSIONES" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "ÍNDICES INMOBILIARIOS DE PAÍSES ELEGIBLES PARA INVERSIONES" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "ÍNDICES DE DEUDA DE PAÍSES ELEGIBLES PARA INVERSIONES" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "ÍNDICES DE MERCANCÍAS" },
+        { "source": "LEY DEL IMPUESTO SOBRE LA RENTA", "target": "DOF" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "BANCO DE MÉXICO" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "SISTEMAS DE AHORRO PARA EL RETIRO" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "INSTRUMENTOS BURSATILIZADOS" },
+        { "source": "BANCO DE MÉXICO", "target": "EMISORES NACIONALES" },
+        { "source": "LEY DE INSTITUCIONES DE CRÉDITO", "target": "INSTITUCIONES DE CRÉDITO" },
+        { "source": "EMISORES NACIONALES", "target": "INSTRUMENTOS DE DEUDA" },
+        { "source": "EMISORES NACIONALES", "target": "FIBRAS" },
+        { "source": "COMISIÓN NACIONAL BANCARIA Y DE VALORES", "target": "INSTRUMENTOS DE DEUDA HÍBRIDOS" },
+        { "source": "COMISIÓN NACIONAL BANCARIA Y DE VALORES", "target": "INSTRUMENTOS ESTRUCTURADOS" },
+        { "source": "COMISIÓN NACIONAL BANCARIA Y DE VALORES", "target": "LEY DEL MERCADO DE VALORES" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "INSTRUMENTOS DE DEUDA HÍBRIDOS" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "INSTRUMENTOS ESTRUCTURADOS" },
+        { "source": "INSTRUMENTOS BURSATILIZADOS", "target": "LEY DEL MERCADO DE VALORES" },
+        { "source": "CERTIFICADOS BURSÁTILES FIDUCIARIOS DE PROYECTOS DE INVERSIÓN", "target": "LEY DEL MERCADO DE VALORES" },
+        { "source": "COMISIÓN", "target": "SOCIEDADES DE INVERSIÓN" },
+        { "source": "COMISIÓN", "target": "LEY DE LOS SISTEMAS DE AHORRO PARA EL RETIRO" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "MANDATARIOS" },
+        { "source": "EMISORES NACIONALES", "target": "LEY DEL MERCADO DE VALORES" },
+        { "source": "ADMINISTRADORAS", "target": "SOCIEDADES DE INVERSIÓN" },
+        { "source": "ADMINISTRADORAS", "target": "GRUPO FINANCIERO" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "MANDATARIOS" },
+        { "source": "BANCO DE MÉXICO", "target": "MERCANCÍAS" },
+        { "source": "ESTADOS UNIDOS MEXICANOS", "target": "PAÍSES ELEGIBLES PARA INVERSIONES" },
+        { "source": "COMITÉ SOBRE EL SISTEMA FINANCIERO GLOBAL", "target": "BANCO DE PAGOS INTERNACIONALES" },
+        { "source": "ALIANZA DEL PACÍFICO", "target": "MERCADO INTEGRADO LATINOAMERICANO" },
+        { "source": "ORGANIZACIÓN PARA LA COOPERACIÓN Y EL DESARROLLO ECONÓMICO", "target": "MÉXICO" },
+        { "source": "COMISIÓN NACIONAL BANCARIA Y DE VALORES", "target": "SOCIEDADES DE INVERSIÓN" },
+        { "source": "COMISIÓN NACIONAL BANCARIA Y DE VALORES", "target": "SOCIEDADES DE INVERSIÓN ADICIONALES" },
+        { "source": "COMISIÓN NACIONAL BANCARIA Y DE VALORES", "target": "PROVEEDOR DE PRECIOS" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "SOCIEDAD VALUADORA" },
+        { "source": "INSTITUTO DE SEGURIDAD Y SERVICIOS SOCIALES DE LOS TRABAJADORES DEL ESTADO", "target": "LEY DEL INSTITUTO DE SEGURIDAD Y SERVICIOS SOCIALES DE LOS TRABAJADORES DEL ESTADO" },
+        { "source": "LEY DEL SEGURO SOCIAL", "target": "SUBCUENTA DEL SEGURO DE RETIRO" },
+        { "source": "LEY DEL SEGURO SOCIAL", "target": "SUBCUENTA DE RCV IMSS" },
+        { "source": "LEY DEL INSTITUTO DE SEGURIDAD Y SERVICIOS SOCIALES DE LOS TRABAJADORES DEL ESTADO", "target": "SUBCUENTA DE AHORRO PARA EL RETIRO" },
+        { "source": "LEY DEL INSTITUTO DE SEGURIDAD Y SERVICIOS SOCIALES DE LOS TRABAJADORES DEL ESTADO", "target": "SUBCUENTA DE AHORRO SOLIDARIO" },
+        { "source": "CASAS DE BOLSA", "target": "ENTIDADES FINANCIERAS" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "PAÍSES ELEGIBLES PARA INVERSIONES" },
+        { "source": "IMSS", "target": "ISSSTE" },
+        { "source": "IMSS", "target": "MEXICO" },
+        { "source": "IMSS", "target": "TRABAJADORES" },
+        { "source": "ISSSTE", "target": "MEXICO" },
+        { "source": "ISSSTE", "target": "TRABAJADORES" },
+        { "source": "BANCO DE MÉXICO", "target": "DIARIO OFICIAL DE LA FEDERACIÓN" },
+        { "source": "BANCO DE MÉXICO", "target": "MEXICO" },
+        { "source": "BANCO DE MÉXICO", "target": "UNIDADES DE INVERSIÓN" },
+        { "source": "DIARIO OFICIAL DE LA FEDERACIÓN", "target": "MEXICO" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "FIBRAS" },
+        { "source": "GOBIERNO FEDERAL", "target": "SOCIEDADES DE INVERSIÓN" },
+        { "source": "VEHÍCULOS DE INVERSIÓN INMOBILIARIA", "target": "REITS" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "COMITÉ DE ANÁLISIS DE RIESGOS" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "PAÍSES ELEGIBLES PARA INVERSIONES" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "MERCADOS NACIONALES" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "MERCADOS EXTRANJEROS" },
+        { "source": "BANCO DE MÉXICO", "target": "INSTITUCIONES CALIFICADORAS DE VALORES" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "INSTITUCIONES CALIFICADORAS DE VALORES" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "INSTITUCIONES DE CRÉDITO" },
+        { "source": "EMISORES NACIONALES", "target": "CONTRAPARTES" },
+        { "source": "CONTRAPARTES", "target": "EMISORES EXTRANJEROS" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "COMISIÓN" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "SOCIEDADES DE INVERSIÓN" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "ADMINISTRADORAS" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "VEHÍCULOS" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "ÍNDICES ACCIONARIOS" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "ÍNDICES INMOBILIARIOS" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "ÍNDICES DE DEUDA" },
+        { "source": "COMISIÓN", "target": "COMITÉ CONSULTIVO Y DE VIGILANCIA" },
+        { "source": "COMISIÓN", "target": "JUNTA DE GOBIERNO" },
+        { "source": "COMISIÓN", "target": "ADMINISTRADORAS" },
+        { "source": "COMISIÓN", "target": "SISTEMAS DE AHORRO PARA EL RETIRO" },
+        { "source": "COMISIÓN", "target": "DIARIO OFICIAL DE LA FEDERACIÓN" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO" },
+        { "source": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "target": "ADMINISTRADORAS" },
+        { "source": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "target": "SISTEMAS DE AHORRO PARA EL RETIRO" },
+        { "source": "ADMINISTRADORAS", "target": "BASE DE DATOS NACIONAL SAR" },
+        { "source": "COMITÉ DE INVERSIÓN", "target": "SOCIEDAD DE INVERSIÓN" },
+        { "source": "COMITÉ DE INVERSIÓN", "target": "COMITÉ DE RIESGOS FINANCIEROS" },
+        { "source": "COMITÉ DE INVERSIÓN", "target": "TRAYECTORIA DE INVERSIÓN" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "SISTEMAS DE AHORRO PARA EL RETIRO" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "ADMINISTRADORA" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "ANEXO O" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "ANEXO W" },
+        { "source": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "target": "BASE DE DATOS NACIONAL SAR" },
+        { "source": "COMISIÓN", "target": "COMITÉ DE VALUACIÓN" },
+        { "source": "COMISIÓN", "target": "VEHÍCULOS" },
+        { "source": "COMISIÓN", "target": "SOCIEDAD DE INVERSIÓN" },
+        { "source": "COMISIÓN", "target": "MANDATARIOS" },
+        { "source": "COMISIÓN", "target": "FIBRAS" },
+        { "source": "COMISIÓN", "target": "INSTRUMENTOS ESTRUCTURADOS" },
+        { "source": "COMITÉ DE VALUACIÓN", "target": "COMISIÓN" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "ADMINISTRADORA" },
+        { "source": "SISTEMAS DE AHORRO PARA EL RETIRO", "target": "SOCIEDADES DE INVERSIÓN BÁSICAS" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS", "target": "SOCIEDAD DE INVERSIÓN BÁSICA INICIAL" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS", "target": "SOCIEDAD DE INVERSIÓN BÁSICA DE PENSIONES" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS", "target": "RCV IMSS" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS", "target": "RCV ISSSTE" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS", "target": "SUBCUENTA DE AHORRO SOLIDARIO" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS", "target": "SUBCUENTA DEL SEGURO DE RETIRO" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS", "target": "SUBCUENTA DE AHORRO PARA EL RETIRO" },
+        { "source": "SOCIEDAD DE INVERSIÓN BÁSICA", "target": "BANCO DE MÉXICO" },
+        { "source": "SOCIEDAD DE INVERSIÓN BÁSICA", "target": "GOBIERNO FEDERAL" },
+        { "source": "SOCIEDAD DE INVERSIÓN BÁSICA", "target": "COMISIÓN" },
+        { "source": "SOCIEDAD DE INVERSIÓN BÁSICA", "target": "TRABAJADORES" },
+        { "source": "BANCO DE MÉXICO", "target": "INSTRUMENTOS DE DEUDA" },
+        { "source": "GOBIERNO FEDERAL", "target": "INSTRUMENTOS DE DEUDA" },
+        { "source": "UNIDADES DE INVERSIÓN", "target": "INSTRUMENTOS DE DEUDA" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "VALORES EXTRANJEROS" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "CERTIFICADOS BURSÁTILES FIDUCIARIOS" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "VEHÍCULOS DE INVERSIÓN INMOBILIARIA" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "INSTRUMENTOS ESTRUCTURADOS" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "BOLSA DE VALORES" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "COMISIÓN" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "ANEXO S" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "ANEXO K" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "DÉCIMA OCTAVA" },
+        { "source": "COMISIÓN", "target": "COMITÉ DE ANÁLISIS DE RIESGOS" },
+        { "source": "ANEXO J", "target": "SOCIEDADES DE INVERSIÓN BÁSICAS DE PENSIONES" },
+        { "source": "DÉCIMA TERCERA", "target": "SOCIEDADES DE INVERSIÓN BÁSICAS" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS", "target": "COMISIÓN" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS", "target": "BANCO DE MÉXICO" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS", "target": "COMITÉ DE ANÁLISIS DE RIESGOS" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS", "target": "MANDATARIOS" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS", "target": "SISTEMAS DE AHORRO PARA EL RETIRO" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS", "target": "ENTIDADES FINANCIERAS" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS", "target": "DOF" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS", "target": "PAÍSES ELEGIBLES PARA INVERSIONES" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS", "target": "MERCANCÍAS" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS", "target": "FIBRAS" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS", "target": "VEHÍCULOS DE INVERSIÓN INMOBILIARIA" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS", "target": "EMPRESAS PRIVADAS" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS", "target": "NEXOS PATRIMONIALES" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "SOCIEDADES DE INVERSIÓN BÁSICAS" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "SOCIEDADES DE INVERSIÓN BÁSICAS DE PENSIONES" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS", "target": "SOCIEDAD VALUADORA" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS DE PENSIONES", "target": "SOCIEDAD VALUADORA" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS DE PENSIONES", "target": "SISTEMAS DE AHORRO PARA EL RETIRO" },
+        { "source": "ADMINISTRADORA", "target": "PROVEEDOR DE PRECIOS" },
+        { "source": "DOF", "target": "SOCIEDAD DE INVERSIÓN" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "INSTRUMENTOS DE DEUDA" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "CERTIFICADOS BURSÁTILES" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "CERTIFICADOS DE PARTICIPACIÓN" },
+        { "source": "INSTRUMENTOS DE DEUDA", "target": "VEHÍCULOS DE INVERSIÓN" },
+        { "source": "CERTIFICADOS BURSÁTILES", "target": "ENTIDAD FINANCIERA" },
+        { "source": "CERTIFICADOS DE PARTICIPACIÓN", "target": "BANCO" },
+        { "source": "CERTIFICADOS DE PARTICIPACIÓN", "target": "CASA DE BOLSA" },
+        { "source": "BANCO", "target": "CONTRAPARTE" },
+        { "source": "BANCO", "target": "CASA DE BOLSA" },
+        { "source": "BANCO", "target": "ENTIDAD FINANCIERA" },
+        { "source": "BANCO", "target": "SOCIEDAD ANÓNIMA" },
+        { "source": "COMITÉ DE INVERSIÓN", "target": "COMITÉ DE ANÁLISIS DE RIESGOS" },
+        { "source": "FIBRAS", "target": "VEHÍCULOS DE INVERSIÓN INMOBILIARIA" },
+        { "source": "VALOR EXTRANJERO DE DEUDA", "target": "INSTRUMENTO DE DEUDA" },
+        { "source": "INSTRUMENTOS BURSATILIZADOS", "target": "SISTEMAS DE AHORRO PARA EL RETIRO" },
+        { "source": "COMISIÓN", "target": "ADMINISTRADORA" },
+        { "source": "CONSEJO DE ADMINISTRACIÓN", "target": "ADMINISTRADORA" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "ADMINISTRADORA" },
+        { "source": "ADMINISTRADORA", "target": "SOCIEDADES DE INVERSIÓN BÁSICA" },
+        { "source": "ADMINISTRADORA", "target": "MANDATARIOS" },
+        { "source": "ADMINISTRADORA", "target": "VEHÍCULOS" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICA", "target": "EMISORES EXTRANJEROS" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICA", "target": "EMISORES NACIONALES" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICA", "target": "FIBRAS" },
+        { "source": "EMISORES EXTRANJEROS", "target": "PAÍSES ELEGIBLES PARA INVERSIONES" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "INSTRUMENTOS DE DEUDA" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "VALORES EXTRANJEROS DE DEUDA" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "INSTRUMENTOS BURSATILIZADOS" },
+        { "source": "ADMINISTRADORA", "target": "COMISIÓN" },
+        { "source": "ADMINISTRADORA", "target": "SISTEMAS DE AHORRO PARA EL RETIRO" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "BANCO DE MÉXICO" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "GOBIERNO FEDERAL" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "CERTIFICADOS BURSÁTILES FIDUCIARIOS DE PROYECTOS DE INVERSIÓN" },
+        { "source": "DIARIO OFICIAL DE LA FEDERACIÓN", "target": "COMISIÓN" },
+        { "source": "COMISIÓN", "target": "TRAYECTORIA DE INVERSIÓN" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "ADMINISTRADORAS" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "FUSIÓN O CESIÓN DE CARTERA" },
+        { "source": "ADMINISTRADORAS", "target": "SOCIEDAD DE INVERSIÓN BÁSICA DE PENSIONES" },
+        { "source": "SISTEMAS DE AHORRO PARA EL RETIRO", "target": "CERTIFICADOS BURSÁTILES VINCULADOS A PROYECTOS REALES" },
+        { "source": "SOCIEDAD DE INVERSIÓN BÁSICA DE PENSIONES", "target": "SOCIEDAD DE INVERSIÓN BÁSICA 1" },
+        { "source": "SOCIEDAD DE INVERSIÓN BÁSICA DE PENSIONES", "target": "SOCIEDAD DE INVERSIÓN BÁSICA 2" },
+        { "source": "SOCIEDAD DE INVERSIÓN BÁSICA DE PENSIONES", "target": "SOCIEDAD DE INVERSIÓN BÁSICA 3" },
+        { "source": "SOCIEDAD DE INVERSIÓN BÁSICA DE PENSIONES", "target": "SOCIEDAD DE INVERSIÓN BÁSICA 4" },
+        { "source": "SOCIEDAD DE INVERSIÓN BÁSICA DE PENSIONES", "target": "VIERNES 13 DE DICIEMBRE DE 2019" },
+        { "source": "SOCIEDAD DE INVERSIÓN BÁSICA DE PENSIONES", "target": "TRABAJADORES" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS INICIAL, 90-94, 80-84, 70-74, 65-69", "target": "COMISIÓN" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS INICIAL, 90-94, 80-84, 70-74, 65-69", "target": "INDEVAL, S.D." },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS INICIAL, 90-94, 80-84, 70-74, 65-69", "target": "TRABAJADORES" },
+        { "source": "VIERNES 13 DE DICIEMBRE DE 2019", "target": "ADMINISTRADORAS" },
+        { "source": "ADMINISTRADORAS", "target": "TRABAJADORES" },
+        { "source": "SOCIEDAD DE INVERSIÓN BÁSICA", "target": "COMITÉ DE ANÁLISIS DE RIESGOS" },
+        { "source": "SOCIEDAD DE INVERSIÓN BÁSICA", "target": "SOCIEDAD DE INVERSIÓN BÁSICA DE PENSIONES" },
+        { "source": "SOCIEDAD DE INVERSIÓN BÁSICA", "target": "SOCIEDAD DE INVERSIÓN BÁSICA 55-59" },
+        { "source": "SOCIEDAD DE INVERSIÓN BÁSICA", "target": "SOCIEDAD DE INVERSIÓN BÁSICA 60-64" },
+        { "source": "SOCIEDAD DE INVERSIÓN BÁSICA", "target": "SOCIEDAD DE INVERSIÓN BÁSICA 65-69" },
+        { "source": "SOCIEDAD DE INVERSIÓN BÁSICA", "target": "SOCIEDAD DE INVERSIÓN BÁSICA 70-74" },
+        { "source": "SOCIEDAD DE INVERSIÓN BÁSICA", "target": "SOCIEDAD DE INVERSIÓN BÁSICA 75-79" },
+        { "source": "SOCIEDAD DE INVERSIÓN BÁSICA", "target": "SOCIEDAD DE INVERSIÓN BÁSICA 80-84" },
+        { "source": "SOCIEDAD DE INVERSIÓN BÁSICA", "target": "SOCIEDAD DE INVERSIÓN BÁSICA 85-89" },
+        { "source": "SOCIEDAD DE INVERSIÓN BÁSICA", "target": "SOCIEDAD DE INVERSIÓN BÁSICA 90-94" },
+        { "source": "SOCIEDAD DE INVERSIÓN BÁSICA", "target": "SOCIEDAD DE INVERSIÓN BÁSICA INICIAL" },
+        { "source": "ANEXO L", "target": "DOF" },
+        { "source": "DOF", "target": "ANEXO S" },
+        { "source": "DIARIO OFICIAL DE LA FEDERACIÓN", "target": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO" },
+        { "source": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "target": "ABRAHAM E. VELA DIB" },
+        { "source": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "target": "CIUDAD DE MÉXICO" },
+        { "source": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "target": "LEY GENERAL DE MEJORA REGULATORIA" },
+        { "source": "COMISIÓN", "target": "DISPOSICIONES DE CARÁCTER GENERAL" },
+        { "source": "PROGRAMA DE RECOMPOSICIÓN DE CARTERAS", "target": "SOCIEDAD DE INVERSIÓN" },
+        { "source": "ANEXOS A, F, J, B, G, K, C, H, I, D, E", "target": "SOCIEDAD DE INVERSIÓN" },
+        { "source": "DIARIO OFICIAL DE LA FEDERACIÓN", "target": "CIUDAD DE MÉXICO" },
+        { "source": "DIARIO OFICIAL DE LA FEDERACIÓN", "target": "ACUERDO" },
+        { "source": "DIARIO OFICIAL DE LA FEDERACIÓN", "target": "MÉXICO, D.F." },
+        { "source": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "target": "IVÁN HILMARDEL PLIEGO MORENO" },
+        { "source": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "target": "ACUERDO" },
+        { "source": "ACUERDO", "target": "SOCIEDADES DE INVERSIÓN ESPECIALIZADAS DE FONDOS PARA EL RETIRO" },
+        { "source": "ACUERDO", "target": "ANEXOS “A”, “B”, “C”, “D”, Y “E”" },
+        { "source": "ACUERDO", "target": "COMITÉ DE ANÁLISIS DE RIESGOS" },
+        { "source": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "target": "JULIO CÉSAR CERVANTES PARRA" },
+        { "source": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "target": "ANEXOS A, B, C, D, E, F, G, H, I, J, K" },
+        { "source": "DIARIO OFICIAL DE LA FEDERACIÓN", "target": "ANEXOS A, B, C, D, E, F, G, H, I, J, K" },
+        { "source": "COMISIÓN NACIONAL BANCARIA Y DE VALORES", "target": "SISTEMAS DE AHORRO PARA EL RETIRO" },
+        { "source": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "target": "EMISORA SIMPLIFICADA" },
+        { "source": "SISTEMAS DE AHORRO PARA EL RETIRO", "target": "COMITÉ DE ANÁLISIS DE RIESGOS" },
+        { "source": "DIARIO OFICIAL DE LA FEDERACIÓN", "target": "MAYO DE 2019" },
+        { "source": "DIARIO OFICIAL DE LA FEDERACIÓN", "target": "MAYO DE 2021" },
+        { "source": "DIARIO OFICIAL DE LA FEDERACIÓN", "target": "JUNIO DE 2022" },
+        { "source": "DIARIO OFICIAL DE LA FEDERACIÓN", "target": "AGOSTO DE 2023" },
+        { "source": "DIARIO OFICIAL DE LA FEDERACIÓN", "target": "MAYO DE 2024" },
+        { "source": "DIARIO OFICIAL DE LA FEDERACIÓN", "target": "OCTUBRE DE 2024" },
+        { "source": "DIARIO OFICIAL DE LA FEDERACIÓN", "target": "JUNIO DE 2025" },
+        { "source": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "target": "FITCH MEXICO" },
+        { "source": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "target": "MOODY’S LOCAL MÉXICO" },
+        { "source": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "target": "VERUM" },
+        { "source": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "target": "STANDARD & POOR’S" },
+        { "source": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "target": "HR RATINGS DE MEXICO" },
+        { "source": "FITCH MEXICO", "target": "MOODY'S LOCAL MÉXICO" },
+        { "source": "FITCH MEXICO", "target": "VERUM" },
+        { "source": "FITCH MEXICO", "target": "STANDARD & POOR'S" },
+        { "source": "FITCH MEXICO", "target": "HR RATINGS DE MEXICO" },
+        { "source": "FITCH MEXICO", "target": "DIARIO OFICIAL DE LA FEDERACIÓN" },
+        { "source": "FITCH MEXICO", "target": "MEXICO" },
+        { "source": "FITCH MEXICO", "target": "ACTIVO OBJETO DE INVERSIÓN" },
+        { "source": "MOODY'S LOCAL MÉXICO", "target": "VERUM" },
+        { "source": "MOODY'S LOCAL MÉXICO", "target": "STANDARD & POOR'S" },
+        { "source": "MOODY'S LOCAL MÉXICO", "target": "HR RATINGS DE MEXICO" },
+        { "source": "MOODY'S LOCAL MÉXICO", "target": "DIARIO OFICIAL DE LA FEDERACIÓN" },
+        { "source": "MOODY'S LOCAL MÉXICO", "target": "MEXICO" },
+        { "source": "MOODY'S LOCAL MÉXICO", "target": "ACTIVO OBJETO DE INVERSIÓN" },
+        { "source": "VERUM", "target": "STANDARD & POOR'S" },
+        { "source": "VERUM", "target": "HR RATINGS DE MEXICO" },
+        { "source": "VERUM", "target": "DIARIO OFICIAL DE LA FEDERACIÓN" },
+        { "source": "VERUM", "target": "MEXICO" },
+        { "source": "VERUM", "target": "ACTIVO OBJETO DE INVERSIÓN" },
+        { "source": "STANDARD & POOR'S", "target": "HR RATINGS DE MEXICO" },
+        { "source": "STANDARD & POOR'S", "target": "DIARIO OFICIAL DE LA FEDERACIÓN" },
+        { "source": "STANDARD & POOR'S", "target": "MEXICO" },
+        { "source": "STANDARD & POOR'S", "target": "ACTIVO OBJETO DE INVERSIÓN" },
+        { "source": "HR RATINGS DE MEXICO", "target": "DIARIO OFICIAL DE LA FEDERACIÓN" },
+        { "source": "HR RATINGS DE MEXICO", "target": "MEXICO" },
+        { "source": "HR RATINGS DE MEXICO", "target": "ACTIVO OBJETO DE INVERSIÓN" },
+        { "source": "PAÍSES ELEGIBLES PARA INVERSIONES", "target": "ACTIVO OBJETO DE INVERSIÓN" },
+        { "source": "MOODY'S", "target": "FITCH IBCA" },
+        { "source": "MOODY'S", "target": "STANDARD & POOR'S" },
+        { "source": "MOODY'S", "target": "HR RATINGS DE MEXICO" },
+        { "source": "FITCH IBCA", "target": "STANDARD & POOR'S" },
+        { "source": "FITCH IBCA", "target": "HR RATINGS DE MEXICO" },
+        { "source": "MERCADO MEXICANO", "target": "PAÍSES ELEGIBLES PARA INVERSIONES" },
+        { "source": "MOODY'S", "target": "ADMINISTRADORAS" },
+        { "source": "FITCH IBCA", "target": "ADMINISTRADORAS" },
+        { "source": "STANDARD & POOR'S", "target": "ADMINISTRADORAS" },
+        { "source": "HR RATINGS DE MEXICO", "target": "ADMINISTRADORAS" },
+        { "source": "ADMINISTRADORAS", "target": "PAÍSES ELEGIBLES PARA INVERSIONES" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "PROVEEDOR DE PRECIOS" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "SOCIEDAD VALUADORA" },
+        { "source": "PROVEEDOR DE PRECIOS", "target": "COMISIÓN NACIONAL BANCARIA Y DE VALORES" },
+        { "source": "PROVEEDOR DE PRECIOS", "target": "SOCIEDAD DE INVERSIÓN" },
+        { "source": "PROVEEDOR DE PRECIOS", "target": "ADMINISTRADORA" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "ACTIVOS PERMITIDOS" },
+        { "source": "ADMINISTRADORA", "target": "SOCIEDAD VALUADORA" },
+        { "source": "DERIVADOS", "target": "ACTIVOS PERMITIDOS" },
+        { "source": "ACTIVOS PERMITIDOS", "target": "VALORES EXTRANJEROS" },
+        { "source": "ESCENARIOS", "target": "VAR" },
+        { "source": "PROVEEDOR DE PRECIOS", "target": "SOCIEDAD VALUADORA" },
+        { "source": "PROVEEDOR DE PRECIOS", "target": "SISTEMAS DE AHORRO PARA EL RETIRO" },
+        { "source": "PROVEEDOR DE PRECIOS", "target": "ACTIVO PERMITIDO" },
+        { "source": "ADMINISTRADORA", "target": "SOCIEDAD DE INVERSIÓN" },
+        { "source": "ADMINISTRADORA", "target": "CÁLCULO DEL VAR" },
+        { "source": "SOCIEDAD VALUADORA", "target": "SOCIEDAD DE INVERSIÓN" },
+        { "source": "SOCIEDAD VALUADORA", "target": "CÁLCULO DEL VAR" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "MANDATARIO" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS", "target": "PORTAFOLIO DE REFERENCIA (PR)" },
+        { "source": "SOCIEDADES DE INVERSIÓN BÁSICAS", "target": "VAR" },
+        { "source": "VAR", "target": "ESCENARIO" },
+        { "source": "HOLGURA", "target": "ESCENARIO" },
+        { "source": "COMISIÓN", "target": "PROVEEDORES DE PRECIOS" },
+        { "source": "COMISIÓN", "target": "SOCIEDADES VALUADORAS" },
+        { "source": "COMITÉ DE ANÁLISIS DE RIESGOS", "target": "BOLSA MEXICANA DE VALORES" },
+        { "source": "BOLSA MEXICANA DE VALORES", "target": "SOCIEDAD DE INVERSIÓN" },
+        { "source": "ADMINISTRADORAS", "target": "EXPERTO INDEPENDIENTE" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "DOF" },
+        { "source": "COMITÉ CONSULTIVO Y DE VIGILANCIA", "target": "EXPERTO INDEPENDIENTE" },
+        { "source": "JUNTA DE GOBIERNO DE LA COMISIÓN", "target": "EXPERTO INDEPENDIENTE" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "DOF" },
+        { "source": "NOTAS", "target": "COMPONENTES DE RENTA VARIABLE" },
+        { "source": "NOTAS", "target": "ESTRUCTURAS VINCULADAS A SUBYACENTES" },
+        { "source": "ESTRUCTURAS VINCULADAS A SUBYACENTES", "target": "COMPONENTES DE RENTA VARIABLE" },
+        { "source": "VEHÍCULOS", "target": "COMPONENTES DE RENTA VARIABLE" },
+        { "source": "NOTA J", "target": "ESTRUCTURA VINCULADA A SUBYACENTE J" },
+        { "source": "NOTA J", "target": "COMPONENTE DE RENTA VARIABLE J" },
+        { "source": "NOTA J", "target": "VEHÍCULOS" },
+        { "source": "NOTA J", "target": "DERIVADOS" },
+        { "source": "ESTRUCTURA VINCULADA A SUBYACENTE J", "target": "COMPONENTE DE RENTA VARIABLE J" },
+        { "source": "ESTRUCTURA VINCULADA A SUBYACENTE J", "target": "VEHÍCULOS" },
+        { "source": "ESTRUCTURA VINCULADA A SUBYACENTE J", "target": "DERIVADOS" },
+        { "source": "COMPONENTE DE RENTA VARIABLE J", "target": "VEHÍCULOS" },
+        { "source": "COMPONENTE DE RENTA VARIABLE J", "target": "DERIVADOS" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "MANDATARIO" },
+        { "source": "SOCIEDADES DE INVERSIÓN", "target": "RENTA VARIABLE" },
+        { "source": "MANDATARIO", "target": "RENTA VARIABLE" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "FIBRAS" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "VEHÍCULOS DE INVERSIÓN INMOBILIARIA" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "NOTAS" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "ESTRUCTURAS VINCULADAS A SUBYACENTES" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "MANDATARIOS" },
+        { "source": "FIBRA", "target": "VEHÍCULO DE INVERSIÓN INMOBILIARIA" },
+        { "source": "FIBRA", "target": "MÉXICO" },
+        { "source": "FIBRA", "target": "NOTA" },
+        { "source": "FIBRA", "target": "ESTRUCTURA VINCULADA A SUBYACENTE" },
+        { "source": "VEHÍCULO DE INVERSIÓN INMOBILIARIA", "target": "MÉXICO" },
+        { "source": "VEHÍCULO DE INVERSIÓN INMOBILIARIA", "target": "NOTA" },
+        { "source": "VEHÍCULO DE INVERSIÓN INMOBILIARIA", "target": "ESTRUCTURA VINCULADA A SUBYACENTE" },
+        { "source": "PESOS MEXICANOS", "target": "DIVISAS" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "COMITÉ DE VALUACIÓN" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "COMISIÓN" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "TRABAJADORES" },
+        { "source": "ADMINISTRADORA", "target": "MANDATARIO" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "ALEMANIA" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "HONG KONG" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "ARABIA SAUDITA" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "INDIA" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "AUSTRALIA" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "INGLATERRA" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "BÉLGICA" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "ITALIA" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "BRASIL" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "JAPÓN" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "CANADÁ" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "LUXEMBURGO" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "CHINA" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "MÉXICO" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "COREA DEL SUR" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "PAÍSES BAJOS" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "ESPAÑA" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "SINGAPUR" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "ESTADOS UNIDOS" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "SUECIA" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "FRANCIA" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "SUIZA" },
+        { "source": "ALIANZA DEL PACÍFICO", "target": "MÉXICO" },
+        { "source": "ALIANZA DEL PACÍFICO", "target": "CHILE" },
+        { "source": "ALIANZA DEL PACÍFICO", "target": "COLOMBIA" },
+        { "source": "ALIANZA DEL PACÍFICO", "target": "PERÚ" },
+        { "source": "MÉXICO", "target": "OCDE" },
+        { "source": "COLOMBIA", "target": "ALIANZA DEL PACÍFICO" },
+        { "source": "PERÚ", "target": "ALIANZA DEL PACÍFICO" },
+        { "source": "COMISIÓN", "target": "DOF" },
+        { "source": "COMISIÓN", "target": "BÁSICA" },
+        { "source": "FIBRAS", "target": "SOCIEDAD DE INVERSIÓN" },
+        { "source": "VEHÍCULOS DE INVERSIÓN INMOBILIARIA", "target": "SOCIEDAD DE INVERSIÓN" },
+        { "source": "DOF", "target": "ANEXO S BIS" },
+        { "source": "ANEXO S BIS", "target": "SOCIEDAD DE INVERSIÓN" },
+        { "source": "ANEXO S BIS", "target": "TRIMESTRE" },
+        { "source": "DOF", "target": "ANEXO T100" },
+        { "source": "DOF", "target": "ANEXO U" },
+        { "source": "DOF", "target": "MEXICO" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "ANEXO T100" },
+        { "source": "SOCIEDAD DE INVERSIÓN", "target": "ANEXO U" }
+      ]
+    };
+
+    // Fix empty types for coloring
+    graphData.nodes.forEach(n => {
+        if (!n.type || n.type === "") n.type = "UNKNOWN";
+    });
+
+    // --- 2. Configuration ---
+    const container = document.getElementById("graph-container");
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+
+    // Color Palette mapping
+    const colorMap = {
+        "ORGANIZATION": "#3b82f6", // Blue
+        "PERSON": "#22c55e",       // Green
+        "GEO": "#ef4444",          // Red
+        "EVENT": "#eab308",        // Yellow
+        "GOV_BODY": "#a855f7",     // Purple
+        "GOV_OFFICE": "#6366f1",   // Indigo
+        "FINANCIAL": "#f97316",    // Orange
+        "UNKNOWN": "#94a3b8"       // Grey
+    };
+
+    const getTypeColor = (type) => colorMap[type] || colorMap["UNKNOWN"];
+
+    // --- 3. D3 Setup ---
+    
+    // Zoom Behavior
+    const zoom = d3.zoom()
+        .scaleExtent([0.1, 8])
+        .on("zoom", (event) => {
+            g.attr("transform", event.transform);
+        });
+
+    const svg = d3.select("#graph-container")
+        .append("svg")
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .attr("viewBox", [0, 0, width, height])
+        .call(zoom)
+        .on("dblclick.zoom", null); 
+
+    // Group for the graph elements
+    const g = svg.append("g");
+
+    // Force Simulation
+    const simulation = d3.forceSimulation(graphData.nodes)
+        .force("link", d3.forceLink(graphData.edges).id(d => d.id).distance(120)) // Increased distance slightly
+        .force("charge", d3.forceManyBody().strength(-400))
+        .force("center", d3.forceCenter(width / 2, height / 2))
+        // Gentle gravity to keep components together but allow movement
+        .force("x", d3.forceX(width / 2).strength(0.04))
+        .force("y", d3.forceY(height / 2).strength(0.04))
+        .force("collide", d3.forceCollide().radius(d => (5 + (d.degree * 1.5)) + 5).iterations(2));
+
+    // Render Links
+    const link = g.append("g")
+        .attr("class", "links")
+        .selectAll("line")
+        .data(graphData.edges)
+        .join("line");
+
+    // Render Nodes (Circles)
+    const node = g.append("g")
+        .attr("class", "nodes")
+        .selectAll("circle")
+        .data(graphData.nodes)
+        .join("circle")
+        // Scaled radius: Base 5 + factor. Prevent huge nodes from taking over (e.g. degree 47)
+        .attr("r", d => 5 + (d.degree * 1.2)) 
+        .attr("fill", d => getTypeColor(d.type))
+        .call(drag(simulation));
+
+    // Render Labels
+    const label = g.append("g")
+        .attr("class", "labels")
+        .selectAll("text")
+        .data(graphData.nodes)
+        .join("text")
+        .attr("dy", d => - (8 + (d.degree * 1.2)))
+        .attr("text-anchor", "middle")
+        .style("font-size", d => Math.max(10, 8 + d.degree) + "px") // Cap min font size
+        .style("fill", "#334155")
+        // Only show full opacity labels for more connected nodes to reduce clutter
+        .style("opacity", d => d.degree > 3 ? 1 : 0.7)
+        .text(d => d.id.length > 20 ? d.id.substring(0, 18) + "..." : d.id);
+
+    // --- 4. Interactions ---
+
+    const tooltip = document.getElementById("tooltip");
+
+    node.on("mouseover", (event, d) => {
+        // Highlight Node
+        d3.select(event.currentTarget)
+            .attr("stroke", "#1e293b")
+            .attr("stroke-width", 3);
+
+        link.style("stroke", l => (l.source === d || l.target === d) ? "#64748b" : "#cbd5e1")
+            .style("stroke-opacity", l => (l.source === d || l.target === d) ? 1 : 0.1)
+            .style("stroke-width", l => (l.source === d || l.target === d) ? 2.5 : 1);
+
+        tooltip.style.opacity = 1;
+        tooltip.innerHTML = `
+            <div class="font-bold text-lg mb-1" style="color:${getTypeColor(d.type)}">${d.id}</div>
+            <div class="text-xs font-semibold text-gray-500 mb-2 border-b pb-1">${d.type} • Connections: ${d.degree}</div>
+            <div class="leading-relaxed text-sm">${d.description || "No description available."}</div>
+        `;
+        
+        const tooltipWidth = tooltip.offsetWidth;
+        const tooltipHeight = tooltip.offsetHeight;
+        let left = event.pageX + 15;
+        let top = event.pageY + 15;
+
+        if (left + tooltipWidth > window.innerWidth) left = event.pageX - tooltipWidth - 15;
+        if (top + tooltipHeight > window.innerHeight) top = event.pageY - tooltipHeight - 15;
+
+        tooltip.style.left = left + "px";
+        tooltip.style.top = top + "px";
+    })
+    .on("mouseout", (event, d) => {
+        d3.select(event.currentTarget)
+            .attr("stroke", "#fff")
+            .attr("stroke-width", 2);
+
+        link.style("stroke", "#cbd5e1")
+            .style("stroke-opacity", 0.6)
+            .style("stroke-width", 1);
+
+        tooltip.style.opacity = 0;
+    })
+    .on("dblclick", (event, d) => {
+        // Double click to release (unpin)
+        delete d.fx;
+        delete d.fy;
+        d3.select(event.currentTarget).classed("pinned", false);
+        simulation.alpha(0.3).restart();
+    });
+
+    // --- 5. Simulation Tick ---
+    simulation.on("tick", () => {
+        link
+            .attr("x1", d => d.source.x)
+            .attr("y1", d => d.source.y)
+            .attr("x2", d => d.target.x)
+            .attr("y2", d => d.target.y);
+
+        node
+            .attr("cx", d => d.x)
+            .attr("cy", d => d.y);
+
+        label
+            .attr("x", d => d.x)
+            .attr("y", d => d.y);
+    });
+
+    // --- 6. Helpers ---
+
+    function drag(simulation) {
+        function dragstarted(event) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            event.subject.fx = event.subject.x;
+            event.subject.fy = event.subject.y;
+            d3.select(this).classed("pinned", true);
+        }
+
+        function dragged(event) {
+            event.subject.fx = event.x;
+            event.subject.fy = event.y;
+        }
+
+        function dragended(event) {
+            if (!event.active) simulation.alphaTarget(0);
+            // Intentionally NOT setting fx/fy to null
+            // This leaves the node pinned where the user left it.
+        }
+
+        return d3.drag()
+            .on("start", dragstarted)
+            .on("drag", dragged)
+            .on("end", dragended);
+    }
+
+    // Populate Legend
+    const legendContent = document.getElementById("legend-content");
+    const uniqueTypes = [...new Set(graphData.nodes.map(d => d.type))].sort();
+    
+    uniqueTypes.forEach(type => {
+        const item = document.createElement("div");
+        item.className = "legend-item";
+        item.innerHTML = `
+            <div class="legend-color" style="background-color: ${getTypeColor(type)}"></div>
+            <span>${type === "" ? "UNKNOWN" : type}</span>
+        `;
+        legendContent.appendChild(item);
+    });
+
+    // Handle Window Resize
+    window.addEventListener("resize", () => {
+        const w = container.clientWidth;
+        const h = container.clientHeight;
+        svg.attr("viewBox", [0, 0, w, h]);
+        simulation.force("center", d3.forceCenter(w / 2, h / 2));
+        simulation.force("x", d3.forceX(w / 2).strength(0.04));
+        simulation.force("y", d3.forceY(h / 2).strength(0.04));
+        simulation.alpha(0.3).restart();
+    });
+
+</script>
+</body>
+</html>
