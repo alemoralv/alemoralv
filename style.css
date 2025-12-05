@@ -1,66 +1,249 @@
-/* VARIABLES & SETUP
-   Using variables ensures consistency and makes future updates easy.
-*/
+/* VARIABLES & SETUP */
 :root {
-    --primary-color: #0073e6;
-    --primary-dark: #005bb5; /* Slightly darker for hover states */
-    --text-dark: #333;
+    /* Slightly deeper, more "Academic" blue */
+    --primary-color: #0056b3; 
+    --primary-dark: #004494;
+    --text-dark: #2c3e50;    /* Dark slate grey instead of pure black for softer text */
     --text-light: #ffffff;
-    --bg-body: #f9f9f9;
+    --bg-body: #f4f7f6;      /* Very subtle grey-green tint for a modern background */
     --bg-white: #ffffff;
     --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-    --transition: all 0.3s ease;
+    --shadow-md: 0 8px 16px rgba(0,0,0,0.1); /* Deeper shadow for pop */
+    --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* GENERAL RESET & TYPOGRAPHY */
-* {
-    box-sizing: border-box; /* Crucial for layout calculation */
-}
+/* GENERAL RESET */
+* { box-sizing: border-box; }
 
 body {
-    /* Using system-ui creates a native, crisp feel on Mac/Windows/Android */
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     margin: 0;
     padding: 0;
-    line-height: 1.7; /* Increased for better readability */
+    line-height: 1.8; /* Increased line-height for better readability */
     color: var(--text-dark);
     background-color: var(--bg-body);
     display: flex;
     flex-direction: column;
-    min-height: 100vh; /* Ensures footer stays at bottom */
+    min-height: 100vh;
 }
 
-/* UTILITY: CONTAINER
-   Keeps content from stretching too wide on large screens. 
-   Add class="container" to your main content in HTML.
-*/
+/* CONTAINER UTILITY */
 .container {
-    max-width: 1100px;
+    max-width: 1000px; /* Slightly narrower for better reading comfort */
     margin: 0 auto;
     padding: 0 20px;
 }
 
-/* HEADER 
-   Added a subtle gradient to the blue to give it depth (less flat).
-*/
+/* HEADER - The "Hero" Section */
 header {
     background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
     color: var(--text-light);
-    padding: 3rem 1rem; /* More breathing room */
+    padding: 4rem 1rem;
     text-align: center;
-    box-shadow: var(--shadow-sm);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
+
+/* --- IMAGE FIX (STRICT ENFORCEMENT) --- */
+/* We target both the class AND the tag to ensure it works */
+.profile-pic, 
+header img {
+    width: 150px !important;    /* Force width */
+    height: 150px !important;   /* Force height */
+    object-fit: cover;          /* Prevents squishing */
+    border-radius: 50%;         /* Circle shape */
+    border: 4px solid rgba(255, 255, 255, 0.4); /* Professional border */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    margin-bottom: 1.5rem;
+    display: inline-block;
+    transition: var(--transition);
+}
+
+.profile-pic:hover,
+header img:hover {
+    transform: scale(1.05);
+    border-color: #fff;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+/* -------------------------------------- */
 
 header h1 {
     margin: 0;
     font-weight: 700;
-    letter-spacing: -0.5px; /* Tighter tracking looks more premium */
+    font-size: 2.2rem; /* Balanced size */
+    letter-spacing: -0.5px;
 }
 
-/* NAVIGATION
-   Modernized with hover effects and sticky positioning.
-*/
+.subtitle {
+    margin-top: 0.5rem;
+    font-size: 1.1rem;
+    opacity: 0.9;
+    font-weight: 300;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* NAVIGATION */
 nav {
-    background: var(--text-dark);
-    color: var(--text-light);
+    background: #ffffff; /* White nav looks cleaner/more professional than dark */
+    border-bottom: 1px solid #eaeaea;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+nav ul li a {
+    display: block;
+    padding: 1.2rem 1.5rem;
+    color: var(--text-dark); /* Dark text on white nav */
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: var(--transition);
+    border-bottom: 3px solid transparent;
+}
+
+nav ul li a:hover {
+    color: var(--primary-color);
+    background-color: #f8f9fa;
+    border-bottom-color: var(--primary-color);
+}
+
+/* MAIN CONTENT */
+main {
+    padding: 4rem 1rem;
+    flex: 1;
+    width: 100%;
+}
+
+/* CARD DESIGN - The Core of the "Professional" Look */
+.card {
+    background: var(--bg-white);
+    padding: 3rem;
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 3rem;
+    transition: var(--transition);
+    border: 1px solid rgba(0,0,0,0.03);
+    position: relative;
+    overflow: hidden;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-3px);
+}
+
+/* Card Headers */
+.card h2 {
+    color: var(--primary-color);
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 1rem;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.6rem;
+}
+
+/* LINKS & LISTS STYLING */
+ul.links-list, ul.resource-list, ul.project-list {
+    padding-left: 0;
+    list-style: none; /* Remove default bullets */
+}
+
+ul.links-list li, ul.resource-list li, ul.project-list li {
+    margin-bottom: 0.8rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+/* Custom bullet points */
+ul.links-list li::before, 
+ul.resource-list li::before, 
+ul.project-list li::before {
+    content: "•";
+    color: var(--primary-color);
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+a:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
+}
+
+/* BUTTONS */
+.button-container {
+    margin-top: 2rem;
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    background-color: var(--primary-color);
+    color: white !important;
+    padding: 0.8rem 2rem;
+    border-radius: 50px; /* Pill shape is very modern */
+    text-decoration: none !important;
+    font-weight: 600;
+    box-shadow: 0 4px 6px rgba(0,115,230,0.2);
+    transition: var(--transition);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,115,230,0.3);
+}
+
+/* MODULES GRID - Make it look like a dashboard */
+.modules-grid ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    padding: 0;
+    list-style: none;
+}
+
+.modules-grid li {
+    background: #ffffff;
+    padding: 1.2rem;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    border: 1px solid #eee;
+    border-left: 4px solid var(--primary-color);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    transition: transform 0.2s;
+}
+
+.modules-grid li:hover {
+    transform: translateX(5px);
+}
+
+/* FOOTER */
+footer {
+    text-align: center;
+    background: #ffffff;
+    color: #666;
+    padding: 3rem 0;
+    font-size: 0.9rem;
+    border-top: 1px solid #eaeaea;
+    margin-top: auto;
+}
