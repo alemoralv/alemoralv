@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Red Financiera: Sistema de Ahorro para el Retiro</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js" crossorigin="anonymous"></script>
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background-color: #f8fafc; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         #graph-container { width: 100%; height: 100vh; position: relative; }
@@ -32,7 +32,7 @@
         .legend-color { width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; }
         
         /* Node and Link Styles */
-        line { stroke: #94a3b8; stroke-opacity: 0.6; transition: stroke 0.2s, stroke-opacity 0.2s; stroke-linecap: round; }
+        line { stroke: #94a3b8; stroke-opacity: 0.6; stroke-width: 1.5px; transition: stroke 0.2s, stroke-opacity 0.2s, stroke-width 0.2s; stroke-linecap: round; }
         circle { stroke: #fff; stroke-width: 2px; transition: r 0.2s, stroke-width 0.2s, stroke 0.2s; cursor: grab; }
         circle:active { cursor: grabbing; }
         /* Style for pinned nodes */
@@ -51,7 +51,7 @@
     <div id="legend-content"></div>
     <div class="mt-4 text-xs text-slate-500 border-t pt-2">
         <p class="mb-1"><span class="font-bold">Tamaño Nodo:</span> Grado de conexión</p>
-        <p class="mb-1"><span class="font-bold">Grosor Línea:</span> Peso de la relación</p>
+        <p class="mb-1"><span class="font-bold">Longitud Arista:</span> Inverso al Peso (Más corto = Mayor peso)</p>
         <div class="my-2 border-t border-slate-100"></div>
         <p>🖱️ <strong>Arrastrar</strong> para mover/fijar</p>
         <p>👆 <strong>Doble Clic</strong> para soltar</p>
@@ -61,7 +61,7 @@
 </div>
 
 <script>
-    // --- 1. Data Injection (Full Data) ---
+    // Data definition moved inside event listener or function to prevent global pollution before load
     const rawData = {
   "nodes": [
     { "id": "COMISIÓN NACIONAL DEL SISTEMA DE AHORRO PARA EL RETIRO", "type": "ORGANIZATION", "degree": 24, "description": "CONSAR: Organismo regulador nacional en México responsable de supervisar el sistema de ahorro para el retiro." },
@@ -783,224 +783,230 @@
   ]
 };
 
-    // Deep clone to avoid any reference issues if re-used
-    const graphData = JSON.parse(JSON.stringify(rawData));
-
-    // Fix empty types for coloring
-    graphData.nodes.forEach(n => {
-        if (!n.type || n.type === "") n.type = "UNKNOWN";
-    });
-
-    // --- 2. Configuration ---
-    const container = document.getElementById("graph-container");
-    const width = container.clientWidth;
-    const height = container.clientHeight;
-
-    // Color Palette mapping
-    const colorMap = {
-        "ORGANIZATION": "#3b82f6", // Blue
-        "PERSON": "#22c55e",       // Green
-        "GEO": "#ef4444",          // Red
-        "EVENT": "#eab308",        // Yellow
-        "GOV_BODY": "#a855f7",     // Purple
-        "GOV_OFFICE": "#6366f1",   // Indigo
-        "FINANCIAL": "#f97316",    // Orange
-        "UNKNOWN": "#94a3b8"       // Grey
-    };
-
-    const getTypeColor = (type) => colorMap[type] || colorMap["UNKNOWN"];
-
-    // --- 3. D3 Setup ---
-    
-    // Zoom Behavior
-    const zoom = d3.zoom()
-        .scaleExtent([0.1, 8])
-        .on("zoom", (event) => {
-            g.attr("transform", event.transform);
-        });
-
-    const svg = d3.select("#graph-container")
-        .append("svg")
-        .attr("width", "100%")
-        .attr("height", "100%")
-        .attr("viewBox", [0, 0, width, height])
-        .call(zoom)
-        .on("dblclick.zoom", null); 
-
-    // Group for the graph elements
-    const g = svg.append("g");
-
-    // Force Simulation
-    const simulation = d3.forceSimulation(graphData.nodes)
-        .force("link", d3.forceLink(graphData.edges).id(d => d.id).distance(100))
-        .force("charge", d3.forceManyBody().strength(-400))
-        .force("center", d3.forceCenter(width / 2, height / 2))
-        .force("x", d3.forceX(width / 2).strength(0.05))
-        .force("y", d3.forceY(height / 2).strength(0.05))
-        .force("collide", d3.forceCollide().radius(d => (5 + (d.degree * 1.5)) + 5).iterations(2));
-
-    // Render Links
-    // Edge thickness logic implemented here using scaleSqrt
-    const weightScale = d3.scaleSqrt()
-        .domain([0, d3.max(graphData.edges, d => d.weight || 1)])
-        .range([1, 8]); // Range of thickness in pixels
-
-    const link = g.append("g")
-        .attr("class", "links")
-        .selectAll("line")
-        .data(graphData.edges)
-        .join("line")
-        .attr("stroke-width", d => weightScale(d.weight || 1));
-
-    // Render Nodes (Circles)
-    const node = g.append("g")
-        .attr("class", "nodes")
-        .selectAll("circle")
-        .data(graphData.nodes)
-        .join("circle")
-        // Scaled radius: Base 5 + factor based on degree
-        .attr("r", d => 5 + (d.degree * 1.2)) 
-        .attr("fill", d => getTypeColor(d.type))
-        .call(drag(simulation));
-
-    // Render Labels
-    const label = g.append("g")
-        .attr("class", "labels")
-        .selectAll("text")
-        .data(graphData.nodes)
-        .join("text")
-        .attr("dy", d => - (8 + (d.degree * 1.2)))
-        .attr("text-anchor", "middle")
-        .style("font-size", d => Math.max(10, 8 + (d.degree * 0.3)) + "px") // Cap min font size
-        .style("fill", "#334155")
-        // Only show full opacity labels for connected nodes to reduce clutter initially
-        .style("opacity", d => d.degree > 3 ? 1 : 0.7)
-        .text(d => d.id.length > 20 ? d.id.substring(0, 18) + "..." : d.id);
-
-    // --- 4. Interactions ---
-
-    const tooltip = document.getElementById("tooltip");
-
-    node.on("mouseover", (event, d) => {
-        // Highlight Node
-        d3.select(event.currentTarget)
-            .attr("stroke", "#1e293b")
-            .attr("stroke-width", 3);
-
-        // Highlight connected links
-        // We maintain the relative thickness but darken the color
-        link.style("stroke", l => (l.source === d || l.target === d) ? "#475569" : "#cbd5e1")
-            .style("stroke-opacity", l => (l.source === d || l.target === d) ? 1 : 0.1)
-            // Optional: slightly increase thickness of connected links for visibility
-            .attr("stroke-width", l => (l.source === d || l.target === d) ? weightScale(l.weight || 1) + 1 : weightScale(l.weight || 1));
-
-        tooltip.style.opacity = 1;
-        tooltip.innerHTML = `
-            <div class="font-bold text-lg mb-1" style="color:${getTypeColor(d.type)}">${d.id}</div>
-            <div class="text-xs font-semibold text-gray-500 mb-2 border-b pb-1">${d.type} • Connections: ${d.degree}</div>
-            <div class="leading-relaxed text-sm">${d.description || "No description available."}</div>
-        `;
-        
-        const tooltipWidth = tooltip.offsetWidth;
-        const tooltipHeight = tooltip.offsetHeight;
-        let left = event.pageX + 15;
-        let top = event.pageY + 15;
-
-        if (left + tooltipWidth > window.innerWidth) left = event.pageX - tooltipWidth - 15;
-        if (top + tooltipHeight > window.innerHeight) top = event.pageY - tooltipHeight - 15;
-
-        tooltip.style.left = left + "px";
-        tooltip.style.top = top + "px";
-    })
-    .on("mouseout", (event, d) => {
-        d3.select(event.currentTarget)
-            .attr("stroke", "#fff")
-            .attr("stroke-width", 2);
-
-        // Reset links
-        link.style("stroke", "#94a3b8")
-            .style("stroke-opacity", 0.6)
-            .attr("stroke-width", l => weightScale(l.weight || 1));
-
-        tooltip.style.opacity = 0;
-    })
-    .on("dblclick", (event, d) => {
-        // Double click to release (unpin)
-        delete d.fx;
-        delete d.fy;
-        d3.select(event.currentTarget).classed("pinned", false);
-        simulation.alpha(0.3).restart();
-    });
-
-    // --- 5. Simulation Tick ---
-    simulation.on("tick", () => {
-        link
-            .attr("x1", d => d.source.x)
-            .attr("y1", d => d.source.y)
-            .attr("x2", d => d.target.x)
-            .attr("y2", d => d.target.y);
-
-        node
-            .attr("cx", d => d.x)
-            .attr("cy", d => d.y);
-
-        label
-            .attr("x", d => d.x)
-            .attr("y", d => d.y);
-    });
-
-    // --- 6. Helpers ---
-
-    function drag(simulation) {
-        function dragstarted(event) {
-            if (!event.active) simulation.alphaTarget(0.3).restart();
-            event.subject.fx = event.subject.x;
-            event.subject.fy = event.subject.y;
-            d3.select(this).classed("pinned", true);
-        }
-
-        function dragged(event) {
-            event.subject.fx = event.x;
-            event.subject.fy = event.y;
-        }
-
-        function dragended(event) {
-            if (!event.active) simulation.alphaTarget(0);
-            // Intentionally NOT setting fx/fy to null
-            // This leaves the node pinned where the user left it.
-        }
-
-        return d3.drag()
-            .on("start", dragstarted)
-            .on("drag", dragged)
-            .on("end", dragended);
+window.addEventListener('load', () => {
+    // Basic D3 check
+    if (typeof d3 === 'undefined') {
+        console.error("D3 Library not loaded.");
+        document.getElementById("graph-container").innerHTML = "<div class='p-4 text-red-500'>Error: Could not load visualization library. Please check your connection.</div>";
+        return;
     }
 
-    // Populate Legend
-    const legendContent = document.getElementById("legend-content");
-    const uniqueTypes = [...new Set(graphData.nodes.map(d => d.type))].sort();
-    
-    uniqueTypes.forEach(type => {
-        const item = document.createElement("div");
-        item.className = "legend-item";
-        item.innerHTML = `
-            <div class="legend-color" style="background-color: ${getTypeColor(type)}"></div>
-            <span>${type === "UNKNOWN" || type === "" ? "Otro / Desconocido" : type}</span>
-        `;
-        legendContent.appendChild(item);
-    });
+    try {
+        const container = document.getElementById("graph-container");
+        const width = container.clientWidth;
+        const height = container.clientHeight;
 
-    // Handle Window Resize
-    window.addEventListener("resize", () => {
-        const w = container.clientWidth;
-        const h = container.clientHeight;
-        svg.attr("viewBox", [0, 0, w, h]);
-        simulation.force("center", d3.forceCenter(w / 2, h / 2));
-        simulation.force("x", d3.forceX(w / 2).strength(0.05));
-        simulation.force("y", d3.forceY(h / 2).strength(0.05));
-        simulation.alpha(0.3).restart();
-    });
+        // 1. Data Cleaning
+        // Fix empty types for coloring
+        const graphData = JSON.parse(JSON.stringify(rawData)); // Deep clone
+        graphData.nodes.forEach(n => {
+            if (!n.type || n.type === "") n.type = "UNKNOWN";
+        });
 
+        // Filter out orphaned edges (links to non-existent nodes)
+        const nodeIds = new Set(graphData.nodes.map(n => n.id));
+        graphData.edges = graphData.edges.filter(e => {
+            const sourceExists = nodeIds.has(e.source);
+            const targetExists = nodeIds.has(e.target);
+            if (!sourceExists || !targetExists) {
+                console.warn(`Removing invalid edge: ${e.source} -> ${e.target}`);
+                return false;
+            }
+            return true;
+        });
+
+        // 2. Configuration
+        const colorMap = {
+            "ORGANIZATION": "#3b82f6", // Blue
+            "PERSON": "#22c55e",       // Green
+            "GEO": "#ef4444",          // Red
+            "EVENT": "#eab308",        // Yellow
+            "GOV_BODY": "#a855f7",     // Purple
+            "GOV_OFFICE": "#6366f1",   // Indigo
+            "FINANCIAL": "#f97316",    // Orange
+            "UNKNOWN": "#94a3b8"       // Grey
+        };
+
+        const getTypeColor = (type) => colorMap[type] || colorMap["UNKNOWN"];
+
+        // 3. D3 Setup
+        const zoom = d3.zoom()
+            .scaleExtent([0.1, 8])
+            .on("zoom", (event) => {
+                g.attr("transform", event.transform);
+            });
+
+        const svg = d3.select("#graph-container")
+            .append("svg")
+            .attr("width", "100%")
+            .attr("height", "100%")
+            .attr("viewBox", [0, 0, width, height])
+            .call(zoom)
+            .on("dblclick.zoom", null); 
+
+        const g = svg.append("g");
+
+        // Scale for Link Distance (Inverse Weight)
+        // Ensure data exists before creating scale domain to prevent NaN
+        const maxWeight = d3.max(graphData.edges, d => d.weight) || 1;
+        const weightToDistance = d3.scaleLinear()
+            .domain([1, maxWeight])
+            .range([200, 50]); // Weak links -> Long, Strong links -> Short
+
+        // Scale for Node Size
+        const maxDegree = d3.max(graphData.nodes, d => d.degree) || 1;
+        
+        // Force Simulation
+        const simulation = d3.forceSimulation(graphData.nodes)
+            .force("link", d3.forceLink(graphData.edges)
+                .id(d => d.id)
+                .distance(d => weightToDistance(d.weight || 1))
+            )
+            .force("charge", d3.forceManyBody().strength(-300))
+            .force("center", d3.forceCenter(width / 2, height / 2))
+            .force("x", d3.forceX(width / 2).strength(0.05))
+            .force("y", d3.forceY(height / 2).strength(0.05))
+            .force("collide", d3.forceCollide().radius(d => (5 + (d.degree * 1.2)) + 5).iterations(2));
+
+        // Render Links
+        const link = g.append("g")
+            .attr("class", "links")
+            .selectAll("line")
+            .data(graphData.edges)
+            .join("line")
+            .attr("stroke-width", 1.5);
+
+        // Render Nodes
+        const node = g.append("g")
+            .attr("class", "nodes")
+            .selectAll("circle")
+            .data(graphData.nodes)
+            .join("circle")
+            .attr("r", d => 5 + (d.degree * 1.2)) 
+            .attr("fill", d => getTypeColor(d.type))
+            .call(drag(simulation));
+
+        // Render Labels
+        const label = g.append("g")
+            .attr("class", "labels")
+            .selectAll("text")
+            .data(graphData.nodes)
+            .join("text")
+            .attr("dy", d => - (8 + (d.degree * 1.2)))
+            .attr("text-anchor", "middle")
+            .style("font-size", d => Math.max(10, 8 + (d.degree * 0.3)) + "px")
+            .style("fill", "#334155")
+            .style("opacity", d => d.degree > 3 ? 1 : 0.7)
+            .text(d => d.id.length > 20 ? d.id.substring(0, 18) + "..." : d.id);
+
+        // Interactions
+        const tooltip = document.getElementById("tooltip");
+
+        node.on("mouseover", (event, d) => {
+            d3.select(event.currentTarget).attr("stroke", "#1e293b").attr("stroke-width", 3);
+            link.style("stroke", l => (l.source === d || l.target === d) ? "#475569" : "#cbd5e1")
+                .style("stroke-opacity", l => (l.source === d || l.target === d) ? 1 : 0.1)
+                .attr("stroke-width", l => (l.source === d || l.target === d) ? 3 : 1.5);
+
+            tooltip.style.opacity = 1;
+            tooltip.innerHTML = `
+                <div class="font-bold text-lg mb-1" style="color:${getTypeColor(d.type)}">${d.id}</div>
+                <div class="text-xs font-semibold text-gray-500 mb-2 border-b pb-1">${d.type} • Connections: ${d.degree}</div>
+                <div class="leading-relaxed text-sm">${d.description || "No description available."}</div>
+            `;
+            
+            const tooltipWidth = tooltip.offsetWidth;
+            const tooltipHeight = tooltip.offsetHeight;
+            let left = event.pageX + 15;
+            let top = event.pageY + 15;
+
+            if (left + tooltipWidth > window.innerWidth) left = event.pageX - tooltipWidth - 15;
+            if (top + tooltipHeight > window.innerHeight) top = event.pageY - tooltipHeight - 15;
+
+            tooltip.style.left = left + "px";
+            tooltip.style.top = top + "px";
+        })
+        .on("mouseout", (event, d) => {
+            d3.select(event.currentTarget).attr("stroke", "#fff").attr("stroke-width", 2);
+            link.style("stroke", "#94a3b8").style("stroke-opacity", 0.6).attr("stroke-width", 1.5);
+            tooltip.style.opacity = 0;
+        })
+        .on("dblclick", (event, d) => {
+            delete d.fx;
+            delete d.fy;
+            d3.select(event.currentTarget).classed("pinned", false);
+            simulation.alpha(0.3).restart();
+        });
+
+        // Simulation Tick
+        simulation.on("tick", () => {
+            link
+                .attr("x1", d => d.source.x)
+                .attr("y1", d => d.source.y)
+                .attr("x2", d => d.target.x)
+                .attr("y2", d => d.target.y);
+
+            node
+                .attr("cx", d => d.x)
+                .attr("cy", d => d.y);
+
+            label
+                .attr("x", d => d.x)
+                .attr("y", d => d.y);
+        });
+
+        // Legend
+        const legendContent = document.getElementById("legend-content");
+        const uniqueTypes = [...new Set(graphData.nodes.map(d => d.type))].sort();
+        
+        uniqueTypes.forEach(type => {
+            const item = document.createElement("div");
+            item.className = "legend-item";
+            item.innerHTML = `
+                <div class="legend-color" style="background-color: ${getTypeColor(type)}"></div>
+                <span>${type === "UNKNOWN" || type === "" ? "Otro / Desconocido" : type}</span>
+            `;
+            legendContent.appendChild(item);
+        });
+
+        // Resize
+        window.addEventListener("resize", () => {
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            svg.attr("viewBox", [0, 0, w, h]);
+            simulation.force("center", d3.forceCenter(w / 2, h / 2));
+            simulation.force("x", d3.forceX(w / 2).strength(0.05));
+            simulation.force("y", d3.forceY(h / 2).strength(0.05));
+            simulation.alpha(0.3).restart();
+        });
+
+    } catch (error) {
+        console.error("Error creating visualization:", error);
+    }
+});
+
+function drag(simulation) {
+    function dragstarted(event) {
+        if (!event.active) simulation.alphaTarget(0.3).restart();
+        event.subject.fx = event.subject.x;
+        event.subject.fy = event.subject.y;
+        d3.select(this).classed("pinned", true);
+    }
+
+    function dragged(event) {
+        event.subject.fx = event.x;
+        event.subject.fy = event.y;
+    }
+
+    function dragended(event) {
+        if (!event.active) simulation.alphaTarget(0);
+    }
+
+    return d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended);
+}
 </script>
 </body>
 </html>
