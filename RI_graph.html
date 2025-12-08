@@ -38,6 +38,12 @@
         /* Style for pinned nodes */
         circle.pinned { stroke: #1e293b; stroke-width: 3px; stroke-dasharray: 2 1; } 
         text { font-family: sans-serif; pointer-events: none; text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff; font-weight: 500; }
+
+        /* Metrics Panel Scrollbar */
+        #metrics-panel::-webkit-scrollbar { width: 6px; }
+        #metrics-panel::-webkit-scrollbar-track { background: #f1f1f1; }
+        #metrics-panel::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        #metrics-panel::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
 <body>
@@ -45,18 +51,17 @@
 <div id="graph-container"></div>
 <div id="tooltip" class="tooltip"></div>
 
-<!-- Legend / UI Overlay -->
+<!-- Legend (Top Left) -->
 <div class="absolute top-4 left-4 bg-white p-4 rounded-lg shadow-md border border-slate-200 pointer-events-auto max-h-[90vh] overflow-y-auto w-64">
     <h1 class="text-sm font-bold text-slate-800 mb-2">Leyenda de Entidades</h1>
     <div id="legend-content"></div>
-    <div class="mt-4 text-xs text-slate-500 border-t pt-2">
-        <p class="mb-1"><span class="font-bold">Tamaño Nodo:</span> Grado de conexión</p>
-        <p class="mb-1"><span class="font-bold">Longitud Arista:</span> Inverso al Peso (Más corto = Mayor peso)</p>
-        <div class="my-2 border-t border-slate-100"></div>
-        <p>🖱️ <strong>Arrastrar</strong> para mover/fijar</p>
-        <p>👆 <strong>Doble Clic</strong> para soltar</p>
-        <p>🔍 <strong>Scroll</strong> para zoom</p>
-        <p>✨ <strong>Hover</strong> para detalles</p>
+</div>
+
+<!-- Metrics Panel (Bottom Left) -->
+<div id="metrics-panel" class="absolute bottom-4 left-4 bg-white p-4 rounded-lg shadow-md border border-slate-200 pointer-events-auto max-h-[50vh] overflow-y-auto w-80 text-xs font-mono text-slate-700 leading-relaxed">
+    <h2 class="font-bold text-slate-800 mb-2 border-b pb-1 text-sm font-sans">Estructura del Grafo</h2>
+    <div id="metrics-content" class="space-y-1">
+        <div class="flex justify-center py-4 text-slate-400">Calculando métricas...</div>
     </div>
 </div>
 
@@ -797,23 +802,26 @@ window.addEventListener('load', () => {
         const height = container.clientHeight;
 
         // 1. Data Cleaning
-        // Fix empty types for coloring
         const graphData = JSON.parse(JSON.stringify(rawData)); // Deep clone
         graphData.nodes.forEach(n => {
             if (!n.type || n.type === "") n.type = "UNKNOWN";
         });
 
-        // Filter out orphaned edges (links to non-existent nodes)
+        // Ensure edges is initialized
+        if (!graphData.edges) {
+            console.warn("Edges array missing, initializing empty array.");
+            graphData.edges = [];
+        }
+
+        // Filter out orphaned edges
         const nodeIds = new Set(graphData.nodes.map(n => n.id));
         graphData.edges = graphData.edges.filter(e => {
-            const sourceExists = nodeIds.has(e.source);
-            const targetExists = nodeIds.has(e.target);
-            if (!sourceExists || !targetExists) {
-                console.warn(`Removing invalid edge: ${e.source} -> ${e.target}`);
-                return false;
-            }
-            return true;
+            return nodeIds.has(e.source) && nodeIds.has(e.target);
         });
+
+        // --- METRICS CALCULATION START ---
+        calculateAndDisplayMetrics(graphData.nodes, graphData.edges);
+        // --- METRICS CALCULATION END ---
 
         // 2. Configuration
         const colorMap = {
@@ -847,7 +855,6 @@ window.addEventListener('load', () => {
         const g = svg.append("g");
 
         // Scale for Link Distance (Inverse Weight)
-        // Ensure data exists before creating scale domain to prevent NaN
         const maxWeight = d3.max(graphData.edges, d => d.weight) || 1;
         const weightToDistance = d3.scaleLinear()
             .domain([1, maxWeight])
@@ -1006,6 +1013,240 @@ function drag(simulation) {
         .on("start", dragstarted)
         .on("drag", dragged)
         .on("end", dragended);
+}
+
+// --- Metrics Calculation Logic ---
+function calculateAndDisplayMetrics(nodes, edges) {
+    // 1. Basic Stats
+    const N = nodes.length;
+    const M = edges.length;
+    const density = (2 * M) / (N * (N - 1));
+    const avgDegree = (2 * M) / N;
+
+    // 2. Degree Distribution & Variance
+    // Re-calculate degrees from edges to be safe
+    const degreeMap = {};
+    nodes.forEach(n => degreeMap[n.id] = 0);
+    edges.forEach(e => {
+        degreeMap[e.source]++;
+        degreeMap[e.target]++;
+    });
+    const degrees = Object.values(degreeMap);
+    const degreeVariance = degrees.reduce((acc, val) => acc + Math.pow(val - avgDegree, 2), 0) / N;
+
+    // 3. Assortativity (Pearson correlation of degrees of connected nodes)
+    let s1 = 0, s2 = 0, s3 = 0;
+    edges.forEach(e => {
+        const d_u = degreeMap[e.source];
+        const d_v = degreeMap[e.target];
+        s1 += d_u * d_v;
+        s2 += d_u + d_v;
+        s3 += d_u * d_u + d_v * d_v;
+    });
+    // This is a simplified unweighted assortativity calculation
+    // Full formula r = (M^-1 \sum j_i k_i - [M^-1 \sum 0.5(j_i+k_i)]^2) / ([M^-1 \sum 0.5(j_i^2+k_i^2)] - [...])
+    // Using simple Pearson on the list of edges (u,v) and (v,u)
+    let x = [], y = [];
+    edges.forEach(e => {
+        x.push(degreeMap[e.source]); y.push(degreeMap[e.target]);
+        x.push(degreeMap[e.target]); y.push(degreeMap[e.source]); // undirected
+    });
+    // Pearson calc
+    const n_pairs = x.length;
+    const sum_x = x.reduce((a, b) => a + b, 0);
+    const sum_y = y.reduce((a, b) => a + b, 0);
+    const sum_xy = x.map((k, i) => k * y[i]).reduce((a, b) => a + b, 0);
+    const sum_x2 = x.map(k => k * k).reduce((a, b) => a + b, 0);
+    const sum_y2 = y.map(k => k * k).reduce((a, b) => a + b, 0);
+    const numerator = (n_pairs * sum_xy) - (sum_x * sum_y);
+    const denominator = Math.sqrt((n_pairs * sum_x2 - sum_x * sum_x) * (n_pairs * sum_y2 - sum_y * sum_y));
+    const assortativity = denominator === 0 ? 0 : numerator / denominator;
+
+    // 4. Connected Components
+    const adj = {};
+    nodes.forEach(n => adj[n.id] = []);
+    edges.forEach(e => {
+        adj[e.source].push(e.target);
+        adj[e.target].push(e.source);
+    });
+
+    const visited = new Set();
+    const components = [];
+    nodes.forEach(n => {
+        if (!visited.has(n.id)) {
+            const component = [];
+            const queue = [n.id];
+            visited.add(n.id);
+            while (queue.length > 0) {
+                const u = queue.shift();
+                component.push(u);
+                adj[u].forEach(v => {
+                    if (!visited.has(v)) {
+                        visited.add(v);
+                        queue.push(v);
+                    }
+                });
+            }
+            components.push(component);
+        }
+    });
+    
+    const numComponents = components.length;
+    const lcc = components.reduce((a, b) => a.length > b.length ? a : b, []);
+    const lccSize = lcc.length;
+    const lccRel = lccSize / N;
+
+    // 5. LCC Metrics (Diameter, Radius, Avg Path)
+    // BFS from each node in LCC
+    let maxEcc = 0;
+    let minEcc = Infinity;
+    let totalPathLen = 0;
+    let pathCount = 0;
+
+    lcc.forEach(startNode => {
+        const dists = {};
+        lcc.forEach(n => dists[n] = -1);
+        dists[startNode] = 0;
+        const q = [startNode];
+        let localMax = 0;
+        
+        while(q.length > 0) {
+            const u = q.shift();
+            if (dists[u] > localMax) localMax = dists[u];
+            
+            adj[u].forEach(v => {
+                // Ensure v is in LCC (it must be, by definition of component)
+                if (dists[v] === -1) {
+                    dists[v] = dists[u] + 1;
+                    q.push(v);
+                    totalPathLen += dists[v];
+                    pathCount++;
+                }
+            });
+        }
+        if (localMax > maxEcc) maxEcc = localMax;
+        if (localMax < minEcc) minEcc = localMax;
+    });
+    // pathCount is double counted in the loop logic above? No, BFS tree is unique per start.
+    // Actually, totalPathLen sums d(u,v) for all v. Since we run for all u, we get sum d(u,v) for all pairs.
+    // Avg Path = totalPathLen / (N_lcc * (N_lcc - 1))
+    const avgPathLCC = pathCount > 0 ? totalPathLen / (lccSize * (lccSize - 1)) : 0;
+
+    // 6. Clustering Coefficients
+    let totalLocalC = 0;
+    let triangles = 0;
+    let triplets = 0; // "open" triplets (2 edges sharing a vertex)
+
+    Object.keys(adj).forEach(u => {
+        const neighbors = adj[u];
+        const k = neighbors.length;
+        if (k < 2) return; // C_i = 0
+
+        let links = 0;
+        for (let i = 0; i < k; i++) {
+            for (let j = i + 1; j < k; j++) {
+                if (adj[neighbors[i]].includes(neighbors[j])) {
+                    links++;
+                    triangles++; // counted 3 times total (once per vertex)
+                }
+            }
+        }
+        // Local Clustering C_i = 2 * links / k(k-1)
+        const C_i = (2 * links) / (k * (k - 1));
+        totalLocalC += C_i;
+        
+        // Triplets centered at u = k*(k-1)/2. 
+        // Global Transitivity formula uses "number of connected triples".
+        // A connected triple is a node with 2 neighbors. Count = k choose 2 = k(k-1)/2
+        triplets += (k * (k - 1)) / 2;
+    });
+    const avgLocalClustering = totalLocalC / N;
+    // Transitivity T = 3 * number_of_triangles / number_of_connected_triples
+    // My triangles loop counts each triangle 3 times (once per vertex u).
+    // So 'triangles' variable holds (3 * actual_triangles).
+    // Global formula is usually T = (3 * NumTriangles) / NumTriplets.
+    // Since my `triangles` var IS (3 * NumTriangles), we just divide by triplets.
+    const globalClustering = triplets > 0 ? triangles / triplets : 0;
+
+    // 7. Betweenness Centrality (Brandes Algorithm - Simplified Unweighted)
+    // To get Maximum Betweenness
+    const CB = {};
+    nodes.forEach(n => CB[n.id] = 0);
+
+    nodes.forEach(s => {
+        const S = [];
+        const P = {};
+        const sigma = {};
+        const d = {};
+        nodes.forEach(n => {
+            P[n.id] = [];
+            sigma[n.id] = 0;
+            d[n.id] = -1;
+        });
+        sigma[s.id] = 1;
+        d[s.id] = 0;
+        const Q = [s.id];
+
+        while (Q.length > 0) {
+            const v = Q.shift();
+            S.push(v);
+            adj[v].forEach(w => {
+                if (d[w] < 0) {
+                    Q.push(w);
+                    d[w] = d[v] + 1;
+                }
+                if (d[w] === d[v] + 1) {
+                    sigma[w] += sigma[v];
+                    P[w].push(v);
+                }
+            });
+        }
+
+        const delta = {};
+        nodes.forEach(n => delta[n.id] = 0);
+        while (S.length > 0) {
+            const w = S.pop();
+            P[w].forEach(v => {
+                delta[v] += (sigma[v] / sigma[w]) * (1 + delta[w]);
+            });
+            if (w !== s.id) {
+                CB[w] += delta[w];
+            }
+        }
+    });
+    // Normalize Betweenness? Usually 2 / ((N-1)(N-2)) for undirected
+    const normFactor = 2 / ((N - 1) * (N - 2));
+    const maxBetweenness = Math.max(...Object.values(CB)) * normFactor;
+
+    // 8. Algebraic Connectivity (Fiedler)
+    // Hard to calculate in pure JS without matrix lib.
+    // Heuristic: If graph is disconnected (numComponents > 1), it is 0.
+    const algebraicConn = numComponents > 1 ? 0 : "N/A (Limitación cliente)";
+
+    // Assign calculated values to variables expected by HTML template
+    const diameter_lcc = lccSize > 0 ? maxEcc : 0;
+    const radius_lcc = lccSize > 0 && minEcc !== Infinity ? minEcc : 0;
+
+    // --- HTML Injection ---
+    const html = `
+        <div class="flex justify-between"><span>Nodos (N):</span> <span>${N}</span></div>
+        <div class="flex justify-between"><span>Aristas (M):</span> <span>${M}</span></div>
+        <div class="flex justify-between"><span>Densidad:</span> <span>${density.toFixed(4)}</span></div>
+        <div class="flex justify-between"><span>Grado Promedio:</span> <span>${avgDegree.toFixed(2)}</span></div>
+        <div class="flex justify-between"><span>Varianza Grado:</span> <span>${degreeVariance.toFixed(2)}</span></div>
+        <div class="flex justify-between"><span>Asortatividad:</span> <span>${assortativity.toFixed(4)}</span></div>
+        <div class="flex justify-between border-t pt-1 mt-1 border-slate-100"><span>Componentes:</span> <span>${numComponents}</span></div>
+        <div class="flex justify-between"><span>LCC (Relativo):</span> <span>${(lccRel * 100).toFixed(1)}%</span></div>
+        <div class="flex justify-between"><span>Diámetro LCC:</span> <span>${diameter_lcc}</span></div>
+        <div class="flex justify-between"><span>Radio LCC:</span> <span>${radius_lcc}</span></div>
+        <div class="flex justify-between"><span>Camino Prom. LCC:</span> <span>${avgPathLCC.toFixed(4)}</span></div>
+        <div class="flex justify-between border-t pt-1 mt-1 border-slate-100"><span>Clustering Global:</span> <span>${globalClustering.toFixed(4)}</span></div>
+        <div class="flex justify-between"><span>Clustering Local:</span> <span>${avgLocalClustering.toFixed(4)}</span></div>
+        <div class="flex justify-between"><span>Conect. Algebraica:</span> <span>${algebraicConn}</span></div>
+        <div class="flex justify-between"><span>Max Betweenness:</span> <span>${maxBetweenness.toFixed(4)}</span></div>
+    `;
+    
+    document.getElementById("metrics-content").innerHTML = html;
 }
 </script>
 </body>
