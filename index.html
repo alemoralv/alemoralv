@@ -5,17 +5,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alejandro Morera Alvarez</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Google Fonts for a more professional look -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        .academic-category {
+            margin-bottom: 2rem;
+        }
+        .academic-category h3 {
+            margin-bottom: 0.5rem;
+            color: #333; /* Adjust based on your theme, assuming dark text */
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        /* Creates the requested 3-4 column compact layout */
+        .academic-list-container {
+            column-count: 3;
+            column-gap: 2rem;
+        }
+        /* Responsive: 2 columns on tablets, 1 on mobile */
+        @media (max-width: 900px) {
+            .academic-list-container {
+                column-count: 2;
+            }
+        }
+        @media (max-width: 600px) {
+            .academic-list-container {
+                column-count: 1;
+            }
+        }
+        .academic-list-container ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .academic-list-container li {
+            margin-bottom: 0.3rem;
+            font-size: 0.9rem;
+            break-inside: avoid; /* Prevents splitting items across columns */
+            line-height: 1.4;
+        }
+        .academic-list-container li::before {
+            content: "•";
+            color: #666; /* Bullet color */
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        .university-tag {
+            font-size: 0.75rem;
+            color: #666;
+            margin-left: 5px;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
 
     <header>
         <div class="container">
             <div class="profile-container">
-                <!-- Ensure this image path is correct relative to this file -->
                 <img src="IMG_7879.JPG" alt="Alejandro Morera Alvarez" class="profile-pic" onerror="this.src='https://via.placeholder.com/150'">
             </div>
             <h1>Alejandro Morera Alvarez</h1>
@@ -29,13 +79,13 @@
             <li><a href="#visualizations">Visualizations</a></li>
             <li><a href="#notes">Notes</a></li>
             <li><a href="#projects">Projects</a></li>
+            <li><a href="#academic-background">Academic Background</a></li>
             <li><a href="#modules">Modules</a></li>
             <li><a href="#contact">Contact</a></li>
         </ul>
     </nav>
 
     <main>
-        <!-- About Me Section -->
         <section id="about" class="card">
             <h2>About Me</h2>
             <p>
@@ -50,27 +100,23 @@
             </ul>
         </section>
 
-        <!-- Visualizations Section -->
         <section id="visualizations" class="card">
             <h2>Visualizations</h2>
             <p>Interactive knowledge graph illustrating complex systems, regulations and their relations.</p>
             <div class="button-container">
-                <!-- CORRECTED LINK HERE -->
                 <a href="RI_graph.html" target="_blank" class="btn-primary">
-                     See Knowledge Graph of "Régimen en Inversiones"
+                      See Knowledge Graph of "Régimen en Inversiones"
                 </a>
             </div>
 
             <p>Canonical Graph Process (CGP).</p>
             <div class="button-container">
-                <!-- CORRECTED LINK HERE -->
                 <a href="CGP.html" target="_blank" class="btn-primary">
-                     See CGP in action.
+                      See CGP in action.
                 </a>
             </div>
         </section>
 
-        <!-- Notes Section -->
         <section id="notes" class="card">
             <h2>Notes</h2>
             <p>Below is a collection of summaries of some lectures I have taken (beware of mistakes):</p>
@@ -86,7 +132,6 @@
             </ul>
         </section>
 
-        <!-- Projects Section -->
         <section id="projects" class="card">
             <h2>Projects: Essays, Seminars, and Theses</h2>
             <ul class="project-list">
@@ -136,7 +181,109 @@
             </ul>
         </section>
 
-        <!-- Modules Section -->
+        <section id="academic-background" class="card">
+            <h2>Academic Background</h2>
+            <p>Below is a comprehensive record of modules completed during my Bachelor's and Master's studies at TUM and EPFL.</p>
+            
+            <div class="academic-category">
+                <h3>M.Sc. Mathematics Modules</h3>
+                <div class="academic-list-container">
+                    <ul>
+                        <li>Advanced Seminar: Functional Analysis & Operator Theory <span class="university-tag">(TUM)</span></li>
+                        <li>Complex Function Theory 2 <span class="university-tag">(TUM)</span></li>
+                        <li>Dynamical Systems <span class="university-tag">(TUM)</span></li>
+                        <li>Elements of the Theory of Distributions <span class="university-tag">(TUM)</span></li>
+                        <li>Experimental Cognitive Psychology I & II <span class="university-tag">(EPFL)</span></li>
+                        <li>Fractal Geometry <span class="university-tag">(TUM)</span></li>
+                        <li>Gaussian Processes <span class="university-tag">(EPFL)</span></li>
+                        <li>Introduction to Stochastic PDEs <span class="university-tag">(EPFL)</span></li>
+                        <li>Lattice Models <span class="university-tag">(EPFL)</span></li>
+                        <li>Martingales in Financial Mathematics <span class="university-tag">(EPFL)</span></li>
+                        <li>Mathematics Projects (Master) <span class="university-tag">(EPFL)</span></li>
+                        <li>Operator Theory <span class="university-tag">(TUM)</span></li>
+                        <li>Optimal Transport <span class="university-tag">(EPFL)</span></li>
+                        <li>Partial Differential Equations <span class="university-tag">(TUM)</span></li>
+                        <li>Probabilistic Models of Modern AI <span class="university-tag">(EPFL)</span></li>
+                        <li>Random Dynamical Systems <span class="university-tag">(TUM)</span></li>
+                        <li>Spectral Theory <span class="university-tag">(EPFL)</span></li>
+                        <li>Stochastic Analysis <span class="university-tag">(TUM)</span></li>
+                        <li>Topics in High-Dimensional Probability <span class="university-tag">(EPFL)</span></li>
+                        <li>Topics in Stochastic Analysis <span class="university-tag">(EPFL)</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="academic-category">
+                <h3>B.Sc. Mathematics Modules</h3>
+                <div class="academic-list-container">
+                    <ul>
+                        <li>Algebra</li>
+                        <li>Analysis 1, 2, 3</li>
+                        <li>Bachelor's Thesis: Borel Functional Calculus</li>
+                        <li>Basics of Mathematical Presentation</li>
+                        <li>Biomimetics</li>
+                        <li>Control Theory</li>
+                        <li>Complex Analysis (Funktionentheorie)</li>
+                        <li>Discrete Structures</li>
+                        <li>Elliptic Curves</li>
+                        <li>Fluid Mechanics for Engineering Science</li>
+                        <li>Functional Analysis</li>
+                        <li>Fundamentals of Mathematical Studies</li>
+                        <li>Infinite-dimensional Vector Spaces</li>
+                        <li>Introduction to Optimization</li>
+                        <li>Introduction to Probability and Statistics</li>
+                        <li>Introduction to Programming</li>
+                        <li>Linear Algebra 1, 2</li>
+                        <li>Markov Processes</li>
+                        <li>Material Science I</li>
+                        <li>Mathematical Basics</li>
+                        <li>Nonlinear Dynamics: Introduction</li>
+                        <li>Numerical Analysis (Numerik)</li>
+                        <li>Probability Theory</li>
+                        <li>Project with Colloquium</li>
+                        <li>Structural Mechanics Modeling</li>
+                        <li>Topology</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="academic-category">
+                <h3>B.Sc. Engineering Science Modules</h3>
+                <div class="academic-list-container">
+                    <ul>
+                        <li>Bachelor's Thesis: Engineering Science</li>
+                        <li>Basic Mathematics (MSE)</li>
+                        <li>Biotechnology for Engineers</li>
+                        <li>Chemistry</li>
+                        <li>Computer Aided Modeling (CAMPP)</li>
+                        <li>Condensed Matter Physics (Intro)</li>
+                        <li>Continuum Mechanics</li>
+                        <li>Design Methods for Integrated Circuits</li>
+                        <li>Digital Integrated Circuits</li>
+                        <li>Differential and Integral Calculus</li>
+                        <li>Engineering Informatics I, II</li>
+                        <li>Engineering Mechanics 1, 2</li>
+                        <li>Engineering Thermodynamics</li>
+                        <li>Entrepreneurial Idea Development</li>
+                        <li>Fluid and Structural Mechanics</li>
+                        <li>Heat Transfer</li>
+                        <li>Intercultural Competencies</li>
+                        <li>Introduction to Scientific Research</li>
+                        <li>Introduction to Wind Energy</li>
+                        <li>Material Science II</li>
+                        <li>Modeling and Simulation with ODEs</li>
+                        <li>Nanotechnologies</li>
+                        <li>Numerical Treatment of PDEs</li>
+                        <li>Physics (MSE)</li>
+                        <li>Scientific Writing for Engineers</li>
+                        <li>Signal Representation</li>
+                        <li>Structural Dynamics and Vibroacoustics</li>
+                        <li>Technology and Democracy</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
         <section id="modules" class="card">
             <h2>Modules</h2>
             <p>Below is a list of modules I have taken during my studies together with authors to look for in case of self-study.</p>
@@ -156,13 +303,12 @@
         <section id="contact" class="card">
             <h2>Contact</h2>
             <p>Feel free to reach out via email for collaboration or inquiries.</p>
-            <!-- Add actual contact info here -->
-        </section>
+            </section>
 
     </main>
 
     <footer>
-        <p>&copy; 2023 Alejandro Morera Alvarez. All Rights Reserved.</p>
+        <p>© 2023 Alejandro Morera Alvarez. All Rights Reserved.</p>
     </footer>
 
 </body>
