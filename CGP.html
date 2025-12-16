@@ -6,15 +6,12 @@
     <title>Canonical Graph Process</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; }
-        /* Prevent text selection while dragging */
+        body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background-color: #f8fafc; }
         .no-select { user-select: none; -webkit-user-select: none; }
     </style>
 </head>
@@ -23,10 +20,9 @@
     <div id="root" style="height: 100vh; width: 100vw;"></div>
 
     <script type="text/babel">
-        // Access React hooks from the global window.React object
         const { useState, useEffect, useRef, useCallback } = React;
 
-        // --- ICON COMPONENTS (Replaced external dependency with inline SVGs) ---
+        // --- ICONS ---
         const IconWrapper = ({ children, size = 24, className = "" }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>{children}</svg>
         );
@@ -39,9 +35,88 @@
         const Move = (props) => <IconWrapper {...props}><polyline points="5 9 2 12 5 15"></polyline><polyline points="9 5 12 2 15 5"></polyline><polyline points="15 19 12 22 9 19"></polyline><polyline points="19 15 22 12 19 9"></polyline><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line></IconWrapper>;
         const BarChart2 = (props) => <IconWrapper {...props}><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></IconWrapper>;
 
+        // --- HISTOGRAM COMPONENT (Extracted for stability) ---
+        const Histogram = ({ degreeCounts, maxDegree, minDegree, dimensions, nodesCount, p }) => {
+            const data = Array.from(degreeCounts.entries()).sort((a, b) => a[0] - b[0]);
+            if (data.length === 0) return null;
 
+            const maxCount = Math.max(...data.map(d => d[1]));
+            const width = dimensions.width;
+            const height = 150; 
+            const padding = { top: 20, bottom: 30, left: 40, right: 20 };
+            const chartW = width - padding.left - padding.right;
+            const chartH = height - padding.top - padding.bottom;
+            const barWidth = Math.max(2, Math.min(30, (chartW / data.length) - 2));
+            const minX = data[0][0];
+            const maxX = data[data.length - 1][0];
+            const rangeX = Math.max(1, maxX - minX);
+
+            // Gaussian Curve Calculation
+            const mu = (nodesCount - 1) * p;
+            const sigma = Math.sqrt((nodesCount - 1) * p * (1 - p));
+            
+            let pathD = "";
+            if (nodesCount > 10 && sigma > 0) { 
+                const curvePoints = [];
+                const step = rangeX / 100; 
+                const constant = 1 / (sigma * Math.sqrt(2 * Math.PI));
+                
+                for (let xVal = minX; xVal <= maxX; xVal += step) {
+                    const z = (xVal - mu) / sigma;
+                    const prob = constant * Math.exp(-0.5 * z * z);
+                    const theoreticalCount = prob * nodesCount; 
+                    const px = padding.left + ((xVal - minX) / rangeX) * (chartW - barWidth);
+                    const ph = (theoreticalCount / maxCount) * chartH; 
+                    const py = height - padding.bottom - ph;
+                    curvePoints.push([px, py]);
+                }
+                
+                if (curvePoints.length > 0) {
+                    pathD = `M ${curvePoints[0][0]} ${curvePoints[0][1]}`;
+                    for (let i = 1; i < curvePoints.length; i++) {
+                        pathD += ` L ${curvePoints[i][0]} ${curvePoints[i][1]}`;
+                    }
+                }
+            }
+
+            return (
+                <div className="w-full h-[150px] bg-white border-t border-slate-200 p-2 relative shrink-0">
+                    <h3 className="absolute top-2 left-4 text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1">
+                        <BarChart2 size={12}/> Degree Distribution
+                    </h3>
+                    <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`}>
+                        <line x1={padding.left} y1={height - padding.bottom} x2={width - padding.right} y2={height - padding.bottom} stroke="#cbd5e1" strokeWidth="1" />
+                        <line x1={padding.left} y1={padding.top} x2={padding.left} y2={height - padding.bottom} stroke="#cbd5e1" strokeWidth="1" />
+
+                        {data.map(([degree, count]) => {
+                            const x = padding.left + ((degree - minX) / rangeX) * (chartW - barWidth);
+                            const barH = (count / maxCount) * chartH;
+                            const y = height - padding.bottom - barH;
+                            
+                            let hue = 270;
+                            if (maxDegree !== minDegree) {
+                                const ratio = (degree - minDegree) / (maxDegree - minDegree);
+                                hue = 270 - (ratio * 270);
+                            }
+                            return (
+                                <g key={degree} className="group">
+                                    <rect x={x} y={y} width={barWidth} height={barH} fill={`hsl(${hue}, 75%, 55%)`} className="hover:opacity-80 transition-all" />
+                                    <title>{`Degree: ${degree}, Count: ${count}`}</title>
+                                </g>
+                            );
+                        })}
+                        {nodesCount > 10 && pathD && <path d={pathD} fill="none" stroke="#10b981" strokeWidth="2" strokeDasharray="4 2" className="pointer-events-none" />}
+                        <text x={padding.left} y={height - 10} fontSize="10" fill="#64748b" textAnchor="middle">{minX}</text>
+                        <text x={width - padding.right} y={height - 10} fontSize="10" fill="#64748b" textAnchor="middle">{maxX}</text>
+                        <text x={padding.left - 5} y={padding.top + 5} fontSize="10" fill="#64748b" textAnchor="end">{maxCount}</text>
+                        {nodesCount > 10 && <text x={width - padding.right} y={padding.top + 10} fontSize="10" fill="#10b981" textAnchor="end">--- Normal Approx. (p={p.toFixed(2)})</text>}
+                    </svg>
+                </div>
+            );
+        };
+
+        // --- MAIN APP COMPONENT ---
         const CanonicalGraphProcess = () => {
-          // --- State ---
           const [nodes, setNodes] = useState([{ id: 1, x: 0, y: 0, vx: 0, vy: 0 }]);
           const [links, setLinks] = useState([]);
           const [isPlaying, setIsPlaying] = useState(false);
@@ -50,22 +125,17 @@
           const [p, setP] = useState(0.5);
           const pRef = useRef(0.5);
 
-          // --- Derived Analysis State ---
           const [longestPathEdges, setLongestPathEdges] = useState(new Set());
           const [degreeMap, setDegreeMap] = useState(new Map([[1, 0]]));
           const [degreeCounts, setDegreeCounts] = useState(new Map([[0, 1]])); 
           const [maxDegree, setMaxDegree] = useState(0);
           const [minDegree, setMinDegree] = useState(0);
           
-          // --- Infinite Canvas State ---
           const [transform, setTransform] = useState({ x: 0, y: 0, k: 0.4 });
           const [isPanning, setIsPanning] = useState(false);
           const [lastMouse, setLastMouse] = useState({ x: 0, y: 0 });
 
-          // --- Draggable Node State ---
           const draggedNodeIdRef = useRef(null); 
-
-          // Physics refs
           const canvasRef = useRef(null);
           const requestRef = useRef();
           
@@ -74,7 +144,6 @@
           const simulationNodes = useRef([{ id: 1, x: 0, y: 0, vx: 0, vy: 0 }]);
           const linksRef = useRef([]);
 
-          // --- Robust Resizing ---
           useEffect(() => {
             if (!canvasRef.current) return;
             const updateSize = () => {
@@ -91,11 +160,9 @@
             return () => observer.disconnect();
           }, []);
 
-          // --- Graph Analysis Helper ---
           const updateGraphAnalysis = (currentNodes, currentLinks) => {
             if (!currentNodes || currentNodes.length === 0) return;
 
-            // 1. Update Degree Map & Histogram Data
             const degrees = new Map();
             const counts = new Map(); 
             
@@ -120,13 +187,11 @@
             setMinDegree(min);
             setDegreeCounts(counts);
 
-            // 2. Longest Path Calculation (Diameter)
             if (currentNodes.length < 2) {
                 setLongestPathEdges(new Set());
                 return;
             }
 
-            // Build Adjacency
             const adj = new Map();
             currentNodes.forEach(n => adj.set(n.id, []));
             currentLinks.forEach(l => {
@@ -136,15 +201,16 @@
                 }
             });
 
-            // Connectivity Check
+            // Check connectivity first (simple BFS)
+            const visited = new Set();
             const q = [currentNodes[0].id];
-            const visited = new Set([currentNodes[0].id]);
+            visited.add(currentNodes[0].id);
             let head = 0;
-            while(head < q.length){
+            while(head < q.length) {
                 const u = q[head++];
                 const neighbors = adj.get(u) || [];
-                for(const v of neighbors){
-                    if(!visited.has(v)){
+                for(let v of neighbors) {
+                    if(!visited.has(v)) {
                         visited.add(v);
                         q.push(v);
                     }
@@ -152,12 +218,14 @@
             }
             if (visited.size !== currentNodes.length) {
                 setLongestPathEdges(new Set());
-                return;
+                return; // Disconnected graph
             }
 
-            // BFS for Diameter
             let globalMaxDist = -1;
             let globalBestPath = new Set();
+            
+            // For smaller graphs, we can BFS from all nodes to find exact diameter
+            // For performance on large graphs, you might want to limit this, but here we do all.
             const startNodes = currentNodes; 
 
             for (const startNode of startNodes) {
@@ -206,7 +274,6 @@
             setLongestPathEdges(globalBestPath);
           };
 
-          // --- Process Logic ---
           const addNode = useCallback(() => {
             const currentSimNodes = simulationNodes.current;
             const newNodeId = currentSimNodes.length + 1;
@@ -262,7 +329,6 @@
             setTransform({ x: 0, y: 0, k: 0.4 }); 
           };
 
-          // --- Auto-Play ---
           useEffect(() => {
             let interval;
             if (isPlaying) {
@@ -272,7 +338,6 @@
           }, [isPlaying, addNode, speed]);
 
 
-          // --- Interaction ---
           const handleWheel = (e) => {
             e.preventDefault();
             const scaleFactor = 1.1;
@@ -318,7 +383,6 @@
             draggedNodeIdRef.current = null;
           };
 
-          // --- Physics Loop ---
           useEffect(() => {
             const tick = () => {
               const simNodes = simulationNodes.current;
@@ -333,7 +397,7 @@
               const fx = new Float32Array(simNodes.length).fill(0);
               const fy = new Float32Array(simNodes.length).fill(0);
 
-              // Repulsion
+              // Repulsion (O(N^2) - optimization possible but okay for small N)
               for (let i = 0; i < simNodes.length; i++) {
                 for (let j = i + 1; j < simNodes.length; j++) {
                   let dx = simNodes[j].x - simNodes[i].x;
@@ -393,97 +457,6 @@
             requestRef.current = requestAnimationFrame(tick);
             return () => cancelAnimationFrame(requestRef.current);
           }, []);
-
-          useEffect(() => {
-            if (canvasRef.current) {
-              setDimensions({
-                width: canvasRef.current.clientWidth,
-                height: canvasRef.current.clientHeight
-              });
-            }
-          }, []);
-
-          // --- Histogram Component ---
-          const Histogram = () => {
-              const data = Array.from(degreeCounts.entries()).sort((a, b) => a[0] - b[0]);
-              if (data.length === 0) return null;
-
-              const maxCount = Math.max(...data.map(d => d[1]));
-              const width = dimensions.width;
-              const height = 150; 
-              const padding = { top: 20, bottom: 30, left: 40, right: 20 };
-              const chartW = width - padding.left - padding.right;
-              const chartH = height - padding.top - padding.bottom;
-              const barWidth = Math.max(2, Math.min(30, (chartW / data.length) - 2));
-              const minX = data[0][0];
-              const maxX = data[data.length - 1][0];
-              const rangeX = Math.max(1, maxX - minX);
-
-              // Gaussian Curve
-              const n = nodes.length;
-              const currentP = p; 
-              const mu = (n - 1) * currentP;
-              const sigma = Math.sqrt((n - 1) * currentP * (1 - currentP));
-              
-              let pathD = "";
-              if (n > 10 && sigma > 0) { 
-                  const curvePoints = [];
-                  const step = rangeX / 100; 
-                  const constant = 1 / (sigma * Math.sqrt(2 * Math.PI));
-                  
-                  for (let xVal = minX; xVal <= maxX; xVal += step) {
-                      const z = (xVal - mu) / sigma;
-                      const prob = constant * Math.exp(-0.5 * z * z);
-                      const theoreticalCount = prob * n; 
-                      const px = padding.left + ((xVal - minX) / rangeX) * (chartW - barWidth);
-                      const ph = (theoreticalCount / maxCount) * chartH; 
-                      const py = height - padding.bottom - ph;
-                      curvePoints.push([px, py]);
-                  }
-                  
-                  if (curvePoints.length > 0) {
-                      pathD = `M ${curvePoints[0][0]} ${curvePoints[0][1]}`;
-                      for (let i = 1; i < curvePoints.length; i++) {
-                          pathD += ` L ${curvePoints[i][0]} ${curvePoints[i][1]}`;
-                      }
-                  }
-              }
-
-              return (
-                  <div className="w-full h-[150px] bg-white border-t border-slate-200 p-2 relative">
-                      <h3 className="absolute top-2 left-4 text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1">
-                          <BarChart2 size={12}/> Degree Distribution
-                      </h3>
-                      <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`}>
-                          <line x1={padding.left} y1={height - padding.bottom} x2={width - padding.right} y2={height - padding.bottom} stroke="#cbd5e1" strokeWidth="1" />
-                          <line x1={padding.left} y1={padding.top} x2={padding.left} y2={height - padding.bottom} stroke="#cbd5e1" strokeWidth="1" />
-
-                          {data.map(([degree, count]) => {
-                              const x = padding.left + ((degree - minX) / rangeX) * (chartW - barWidth);
-                              const barH = (count / maxCount) * chartH;
-                              const y = height - padding.bottom - barH;
-                              
-                              let hue = 270;
-                              if (maxDegree !== minDegree) {
-                                  const ratio = (degree - minDegree) / (maxDegree - minDegree);
-                                  hue = 270 - (ratio * 270);
-                              }
-                              return (
-                                  <g key={degree} className="group">
-                                      <rect x={x} y={y} width={barWidth} height={barH} fill={`hsl(${hue}, 75%, 55%)`} className="hover:opacity-80 transition-all" />
-                                      <title>{`Degree: ${degree}, Count: ${count}`}</title>
-                                  </g>
-                              );
-                          })}
-                          {n > 10 && pathD && <path d={pathD} fill="none" stroke="#10b981" strokeWidth="2" strokeDasharray="4 2" className="pointer-events-none" />}
-                          <text x={padding.left} y={height - 10} fontSize="10" fill="#64748b" textAnchor="middle">{minX}</text>
-                          <text x={width - padding.right} y={height - 10} fontSize="10" fill="#64748b" textAnchor="middle">{maxX}</text>
-                          <text x={padding.left - 5} y={padding.top + 5} fontSize="10" fill="#64748b" textAnchor="end">{maxCount}</text>
-                          {n > 10 && <text x={width - padding.right} y={padding.top + 10} fontSize="10" fill="#10b981" textAnchor="end">--- Normal Approx. (p={p})</text>}
-                      </svg>
-                  </div>
-              );
-          };
 
           return (
             <div className="flex flex-col h-full w-full bg-slate-50 text-slate-900 font-sans select-none min-h-[550px]">
@@ -595,7 +568,14 @@
               </div>
 
               {/* Histogram */}
-              <Histogram />
+              <Histogram 
+                 degreeCounts={degreeCounts} 
+                 maxDegree={maxDegree} 
+                 minDegree={minDegree} 
+                 dimensions={dimensions} 
+                 nodesCount={nodes.length}
+                 p={p}
+              />
 
               {/* Footer Controls */}
               <div className="p-4 bg-white border-t border-slate-200 flex flex-wrap justify-center items-center gap-6 shadow-lg z-20 shrink-0">
