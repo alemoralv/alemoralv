@@ -1,0 +1,757 @@
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Play, Pause, SkipForward, RotateCcw, ZoomIn, ZoomOut, Move, BarChart2 } from 'lucide-react';
+
+const CanonicalGraphProcess = () => {
+  // --- State ---
+  // Start with node 1 immediately
+  const [nodes, setNodes] = useState([{ id: 1, x: 0, y: 0, vx: 0, vy: 0 }]);
+  const [links, setLinks] = useState([]);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [speed, setSpeed] = useState(500); 
+  
+  // --- Derived Analysis State ---
+  const [longestPathEdges, setLongestPathEdges] = useState(new Set());
+  const [degreeMap, setDegreeMap] = useState(new Map([[1, 0]]));
+  const [degreeCounts, setDegreeCounts] = useState(new Map([[0, 1]])); // For histogram: degree -> count
+  const [maxDegree, setMaxDegree] = useState(0);
+  const [minDegree, setMinDegree] = useState(0);
+  
+  // --- Infinite Canvas State ---
+  // ADJUSTED DEFAULT ZOOM: Starts zoomed out (0.4) to fit larger graphs initially per request
+  const [transform, setTransform] = useState({ x: 0, y: 0, k: 0.4 });
+  const [isPanning, setIsPanning] = useState(false);
+  const [lastMouse, setLastMouse] = useState({ x: 0, y: 0 });
+
+  // --- Draggable Node State ---
+  const draggedNodeIdRef = useRef(null); 
+
+  // Physics refs
+  const canvasRef = useRef(null);
+  const requestRef = useRef();
+  
+  // Default to a reasonable size to prevent 0x0 invisibility
+  const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
+  
+  const simulationNodes = useRef([{ id: 1, x: 0, y: 0, vx: 0, vy: 0 }]);
+  const linksRef = useRef([]);
+
+  // --- Robust Resizing ---
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    
+    const updateSize = () => {
+        if (canvasRef.current) {
+            const { clientWidth, clientHeight } = canvasRef.current;
+            // Only update if we have valid dimensions
+            if (clientWidth > 0 && clientHeight > 0) {
+                setDimensions({ width: clientWidth, height: clientHeight });
+            }
+        }
+    };
+
+    // Initial sizing
+    updateSize();
+    
+    // Watch for changes
+    const observer = new ResizeObserver(updateSize);
+    observer.observe(canvasRef.current);
+    
+    return () => observer.disconnect();
+  }, []);
+
+  // --- Graph Analysis Helper ---
+  const updateGraphAnalysis = (currentNodes, currentLinks) => {
+    if (!currentNodes || currentNodes.length === 0) return;
+
+    // 1. Update Degree Map & Histogram Data
+    const degrees = new Map();
+    const counts = new Map(); // degree -> count of nodes
+    
+    currentNodes.forEach(n => degrees.set(n.id, 0));
+    currentLinks.forEach(l => {
+        degrees.set(l.source, (degrees.get(l.source) || 0) + 1);
+        degrees.set(l.target, (degrees.get(l.target) || 0) + 1);
+    });
+    setDegreeMap(degrees);
+
+    let max = 0;
+    let min = Infinity;
+    
+    for (let d of degrees.values()) {
+        if (d > max) max = d;
+        if (d < min) min = d;
+        counts.set(d, (counts.get(d) || 0) + 1);
+    }
+    
+    if (min === Infinity) min = 0;
+    setMaxDegree(max);
+    setMinDegree(min);
+    setDegreeCounts(counts);
+
+    // 2. Longest Path Calculation
+    if (currentNodes.length < 2) {
+        setLongestPathEdges(new Set());
+        return;
+    }
+
+    // Build Adjacency List
+    const adj = new Map();
+    currentNodes.forEach(n => adj.set(n.id, []));
+    currentLinks.forEach(l => {
+        if (adj.has(l.source) && adj.has(l.target)) {
+            adj.get(l.source).push(l.target);
+            adj.get(l.target).push(l.source);
+        }
+    });
+
+    // Connectivity Check
+    const q = [currentNodes[0].id];
+    const visited = new Set([currentNodes[0].id]);
+    let head = 0;
+    while(head < q.length){
+        const u = q[head++];
+        const neighbors = adj.get(u) || [];
+        for(const v of neighbors){
+            if(!visited.has(v)){
+                visited.add(v);
+                q.push(v);
+            }
+        }
+    }
+    
+    if (visited.size !== currentNodes.length) {
+        setLongestPathEdges(new Set());
+        return;
+    }
+
+    // Diameter Calculation
+    let globalMaxDist = -1;
+    let globalBestPath = new Set();
+    const startNodes = currentNodes; 
+
+    for (const startNode of startNodes) {
+        const dist = new Map();
+        const pred = new Map();
+        const queue = [startNode.id];
+        dist.set(startNode.id, 0);
+        
+        let localMaxDist = 0;
+        let localFarthestNode = startNode.id;
+
+        let bfsHead = 0;
+        while(bfsHead < queue.length) {
+            const u = queue[bfsHead++];
+            const d = dist.get(u);
+            
+            if (d > localMaxDist) {
+                localMaxDist = d;
+                localFarthestNode = u;
+            }
+
+            const neighbors = adj.get(u) || [];
+            for (const v of neighbors) {
+                if (!dist.has(v)) {
+                    dist.set(v, d + 1);
+                    pred.set(v, u);
+                    queue.push(v);
+                }
+            }
+        }
+
+        if (localMaxDist > globalMaxDist) {
+            globalMaxDist = localMaxDist;
+            const pathEdges = new Set();
+            let curr = localFarthestNode;
+            while (curr !== startNode.id) {
+                const prev = pred.get(curr);
+                if (prev === undefined) break; 
+                const edgeKey = `${Math.min(curr, prev)}-${Math.max(curr, prev)}`;
+                pathEdges.add(edgeKey);
+                curr = prev;
+            }
+            globalBestPath = pathEdges;
+        }
+    }
+    setLongestPathEdges(globalBestPath);
+  };
+
+  // --- Process Logic ---
+  const addNode = useCallback(() => {
+    const currentSimNodes = simulationNodes.current;
+    const newNodeId = currentSimNodes.length + 1;
+    
+    const spawnRadius = Math.max(100, Math.sqrt(currentSimNodes.length) * 40);
+    const angle = Math.random() * 2 * Math.PI;
+    
+    const newNode = {
+      id: newNodeId,
+      x: Math.cos(angle) * spawnRadius,
+      y: Math.sin(angle) * spawnRadius,
+      vx: 0,
+      vy: 0,
+    };
+
+    const newLinks = [];
+    currentSimNodes.forEach(targetNode => {
+      // P=0.5 for uniform sampling
+      if (Math.random() < 0.5) {
+        newLinks.push({ source: newNodeId, target: targetNode.id });
+      }
+    });
+
+    simulationNodes.current.push(newNode);
+    const nextLinks = [...linksRef.current, ...newLinks];
+    linksRef.current = nextLinks;
+
+    setNodes(prev => [...prev, { ...newNode }]);
+    setLinks(nextLinks);
+
+    updateGraphAnalysis(simulationNodes.current, nextLinks);
+  }, []);
+
+  const reset = () => {
+    const initialNode = { id: 1, x: 0, y: 0, vx: 0, vy: 0 };
+    simulationNodes.current = [initialNode];
+    setNodes([initialNode]);
+    
+    setLinks([]);
+    linksRef.current = [];
+    
+    setDegreeMap(new Map([[1,0]]));
+    setDegreeCounts(new Map([[0,1]]));
+    setMaxDegree(0);
+    setMinDegree(0);
+    setLongestPathEdges(new Set());
+    
+    setIsPlaying(false);
+    // Reset zoom to default preference
+    setTransform({ x: 0, y: 0, k: 0.4 }); 
+  };
+
+  // --- Auto-Play Loop ---
+  useEffect(() => {
+    let interval;
+    if (isPlaying) {
+      interval = setInterval(addNode, speed);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying, addNode, speed]);
+
+
+  // --- Interaction Handlers ---
+  const handleWheel = (e) => {
+    e.preventDefault();
+    const scaleFactor = 1.1;
+    const direction = e.deltaY > 0 ? -1 : 1;
+    let newScale = transform.k * (direction > 0 ? scaleFactor : 1 / scaleFactor);
+    newScale = Math.min(Math.max(0.1, newScale), 5);
+    setTransform(prev => ({ ...prev, k: newScale }));
+  };
+
+  const handleCanvasMouseDown = (e) => {
+    setIsPanning(true);
+    setLastMouse({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleNodeMouseDown = (e, nodeId) => {
+    e.stopPropagation();
+    draggedNodeIdRef.current = nodeId;
+    setLastMouse({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleMouseMove = (e) => {
+    const dx = e.clientX - lastMouse.x;
+    const dy = e.clientY - lastMouse.y;
+    setLastMouse({ x: e.clientX, y: e.clientY });
+
+    if (draggedNodeIdRef.current !== null) {
+        const simNode = simulationNodes.current.find(n => n.id === draggedNodeIdRef.current);
+        if (simNode) {
+            simNode.x += dx / transform.k;
+            simNode.y += dy / transform.k;
+            simNode.vx = 0;
+            simNode.vy = 0;
+        }
+        return;
+    }
+    if (isPanning) {
+        setTransform(prev => ({ ...prev, x: prev.x + dx, y: prev.y + dy }));
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsPanning(false);
+    draggedNodeIdRef.current = null;
+  };
+
+
+  // --- Physics Loop ---
+  useEffect(() => {
+    const tick = () => {
+      const simNodes = simulationNodes.current;
+      const currentLinks = linksRef.current;
+      
+      const k_repulse = 8000; 
+      const k_spring = 0.015; 
+      const spring_len = 200; 
+      const center_force = 0.003; 
+      const max_velocity = 8.0;
+
+      const fx = new Float32Array(simNodes.length).fill(0);
+      const fy = new Float32Array(simNodes.length).fill(0);
+
+      // Repulsion
+      for (let i = 0; i < simNodes.length; i++) {
+        for (let j = i + 1; j < simNodes.length; j++) {
+          let dx = simNodes[j].x - simNodes[i].x;
+          let dy = simNodes[j].y - simNodes[i].y;
+          let distSq = dx*dx + dy*dy;
+          if (distSq < 1) distSq = 1; 
+          let dist = Math.sqrt(distSq);
+          
+          let f = k_repulse / distSq;
+          let f_x = (dx / dist) * f;
+          let f_y = (dy / dist) * f;
+
+          fx[i] -= f_x;
+          fy[i] -= f_y;
+          fx[j] += f_x;
+          fy[j] += f_y;
+        }
+      }
+
+      // Spring
+      const idToIndex = new Map(simNodes.map((n, i) => [n.id, i]));
+      currentLinks.forEach(link => {
+        const sourceIdx = idToIndex.get(link.source);
+        const targetIdx = idToIndex.get(link.target);
+        
+        if (sourceIdx !== undefined && targetIdx !== undefined) {
+            const u = simNodes[sourceIdx];
+            const v = simNodes[targetIdx];
+            let dx = v.x - u.x;
+            let dy = v.y - u.y;
+            let dist = Math.sqrt(dx*dx + dy*dy);
+            if (dist === 0) dist = 0.01;
+
+            const displacement = dist - spring_len;
+            const force = displacement * k_spring;
+            
+            const f_x = (dx / dist) * force;
+            const f_y = (dy / dist) * force;
+
+            fx[sourceIdx] += f_x;
+            fy[sourceIdx] += f_y;
+            fx[targetIdx] -= f_x;
+            fy[targetIdx] -= f_y;
+        }
+      });
+
+      // Integration
+      for (let i = 0; i < simNodes.length; i++) {
+        const u = simNodes[i];
+        if (u.id === draggedNodeIdRef.current) continue;
+
+        fx[i] -= u.x * center_force;
+        fy[i] -= u.y * center_force;
+
+        u.vx = (u.vx + fx[i]) * 0.6; 
+        u.vy = (u.vy + fy[i]) * 0.6;
+
+        const vSq = u.vx*u.vx + u.vy*u.vy;
+        if (vSq > max_velocity * max_velocity) {
+            const scale = max_velocity / Math.sqrt(vSq);
+            u.vx *= scale;
+            u.vy *= scale;
+        }
+
+        u.x += u.vx;
+        u.y += u.vy;
+      }
+
+      setNodes([...simNodes]);
+      requestRef.current = requestAnimationFrame(tick);
+    };
+
+    requestRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(requestRef.current);
+  }, []);
+
+  useEffect(() => {
+    if (canvasRef.current) {
+      setDimensions({
+        width: canvasRef.current.clientWidth,
+        height: canvasRef.current.clientHeight
+      });
+    }
+  }, []);
+
+  // --- Histogram Helpers ---
+  const Histogram = () => {
+      // Process Data
+      const data = Array.from(degreeCounts.entries()).sort((a, b) => a[0] - b[0]);
+      if (data.length === 0) return null;
+
+      const maxCount = Math.max(...data.map(d => d[1]));
+      const width = dimensions.width;
+      const height = 150; // Fixed height for histogram panel
+      const padding = { top: 20, bottom: 30, left: 40, right: 20 };
+      
+      const chartW = width - padding.left - padding.right;
+      const chartH = height - padding.top - padding.bottom;
+      
+      // Calculate bar width dynamically
+      // If we have many degrees, bars get thinner.
+      // Max reasonable degrees might be around 100 for small N, so we clamp bar width
+      const barWidth = Math.max(2, Math.min(30, (chartW / data.length) - 2));
+      
+      // We need to scale the X position based on value range, not just index
+      const minX = data[0][0];
+      const maxX = data[data.length - 1][0];
+      const rangeX = Math.max(1, maxX - minX);
+
+      // --- Gaussian Curve Calculation ---
+      // We want to overlay N(mu, sigma^2) scaled to the histogram
+      // mu = (n-1)/2, sigma = sqrt(n-1)/2
+      const n = nodes.length;
+      const mu = (n - 1) / 2;
+      const sigma = Math.sqrt(n - 1) / 2;
+      
+      // Generate path points
+      let pathD = "";
+      if (n > 10) { // Only show curve if n is large enough for it to make sense
+          const curvePoints = [];
+          const step = rangeX / 100; // Resolution
+          // We calculate the theoretical count: TotalNodes * Prob(x)
+          // Normal PDF: (1 / (sigma * sqrt(2pi))) * exp(-0.5 * ((x-mu)/sigma)^2)
+          const constant = 1 / (sigma * Math.sqrt(2 * Math.PI));
+          
+          for (let xVal = minX; xVal <= maxX; xVal += step) {
+              const z = (xVal - mu) / sigma;
+              const prob = constant * Math.exp(-0.5 * z * z);
+              const theoreticalCount = prob * n; // Scale probability by total nodes to match frequency count
+              
+              // Map to chart coordinates
+              const px = padding.left + ((xVal - minX) / rangeX) * (chartW - barWidth);
+              const ph = (theoreticalCount / maxCount) * chartH; 
+              // Clamp height to chart area (in case theoretical peak is higher than current max bin)
+              const py = height - padding.bottom - ph;
+              
+              curvePoints.push([px, py]);
+          }
+          
+          // Construct SVG Path
+          if (curvePoints.length > 0) {
+              pathD = `M ${curvePoints[0][0]} ${curvePoints[0][1]}`;
+              for (let i = 1; i < curvePoints.length; i++) {
+                  pathD += ` L ${curvePoints[i][0]} ${curvePoints[i][1]}`;
+              }
+          }
+      }
+
+      return (
+          <div className="w-full h-[150px] bg-white border-t border-slate-200 p-2 relative">
+              <h3 className="absolute top-2 left-4 text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1">
+                  <BarChart2 size={12}/> Degree Distribution
+              </h3>
+              <svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`}>
+                  {/* Axes Lines */}
+                  <line 
+                    x1={padding.left} y1={height - padding.bottom} 
+                    x2={width - padding.right} y2={height - padding.bottom} 
+                    stroke="#cbd5e1" strokeWidth="1" 
+                  />
+                  <line 
+                    x1={padding.left} y1={padding.top} 
+                    x2={padding.left} y2={height - padding.bottom} 
+                    stroke="#cbd5e1" strokeWidth="1" 
+                  />
+
+                  {/* Bars */}
+                  {data.map(([degree, count], i) => {
+                      // X position: map degree to width
+                      const x = padding.left + ((degree - minX) / rangeX) * (chartW - barWidth);
+                      const barH = (count / maxCount) * chartH;
+                      const y = height - padding.bottom - barH;
+                      
+                      // Color mapping matches the graph nodes (Purple -> Red)
+                      let hue = 270;
+                      if (maxDegree !== minDegree) {
+                          const ratio = (degree - minDegree) / (maxDegree - minDegree);
+                          hue = 270 - (ratio * 270);
+                      }
+
+                      return (
+                          <g key={degree} className="group">
+                              <rect 
+                                  x={x} 
+                                  y={y} 
+                                  width={barWidth} 
+                                  height={barH} 
+                                  fill={`hsl(${hue}, 75%, 55%)`}
+                                  className="hover:opacity-80 transition-all"
+                              />
+                              <title>{`Degree: ${degree}, Count: ${count}`}</title>
+                          </g>
+                      );
+                  })}
+                  
+                  {/* Theoretical Normal Distribution Curve */}
+                  {n > 10 && pathD && (
+                      <path 
+                        d={pathD} 
+                        fill="none" 
+                        stroke="#10b981" // Green to match diameter highlight or just distinct
+                        strokeWidth="2"
+                        strokeDasharray="4 2"
+                        className="pointer-events-none"
+                      />
+                  )}
+                  
+                  {/* Labels (Min/Max) */}
+                  <text x={padding.left} y={height - 10} fontSize="10" fill="#64748b" textAnchor="middle">{minX}</text>
+                  <text x={width - padding.right} y={height - 10} fontSize="10" fill="#64748b" textAnchor="middle">{maxX}</text>
+                  
+                  {/* Y-Axis Max Label */}
+                  <text x={padding.left - 5} y={padding.top + 5} fontSize="10" fill="#64748b" textAnchor="end">{maxCount}</text>
+                  
+                  {/* Legend for Curve */}
+                  {n > 10 && (
+                      <text x={width - padding.right} y={padding.top + 10} fontSize="10" fill="#10b981" textAnchor="end">
+                          --- Normal Approx.
+                      </text>
+                  )}
+              </svg>
+          </div>
+      );
+  };
+
+
+  return (
+    <div className="flex flex-col h-full w-full bg-slate-50 text-slate-900 font-sans select-none min-h-[550px]">
+      
+      {/* Header */}
+      <div className="px-4 py-3 border-b border-slate-200 flex justify-between items-center bg-white shadow-sm z-10 shrink-0">
+        <div>
+          <h1 className="text-lg font-bold text-slate-800">Canonical Graph Process</h1>
+          <p className="text-xs text-slate-500 font-medium max-w-md leading-tight">
+            $X_n$ is a simple graph with $n$ nodes which has $X_{n-1}$ as a sub-graph chosen uniformly at random.
+          </p>
+        </div>
+        <div className="flex items-center gap-6">
+           <div className="flex flex-col items-end">
+              <span className="text-[10px] uppercase text-slate-400 font-bold tracking-wider">Nodes</span>
+              <span className="text-xl font-mono font-bold text-indigo-600">{nodes.length}</span>
+           </div>
+           <div className="flex flex-col items-end">
+              <span className="text-[10px] uppercase text-slate-400 font-bold tracking-wider">Edges</span>
+              <span className="text-xl font-mono font-bold text-slate-600">{links.length}</span>
+           </div>
+           <div className="flex flex-col items-end">
+              <span className="text-[10px] uppercase text-slate-400 font-bold tracking-wider">Diameter</span>
+              <span className="text-xl font-mono font-bold text-emerald-500">{longestPathEdges.size}</span>
+           </div>
+        </div>
+      </div>
+
+      {/* Main Canvas Area (Flexible Height) */}
+      <div 
+        className={`flex-1 relative overflow-hidden bg-slate-100 ${isPanning ? 'cursor-grabbing' : 'cursor-default'}`}
+        ref={canvasRef}
+        onWheel={handleWheel}
+        onMouseDown={handleCanvasMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+      >
+        
+        {nodes.length < 3 && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
+                <div className="text-center">
+                    <Move className="mx-auto mb-2 text-slate-400" size={32} />
+                    <p className="text-slate-500 font-medium">Drag Canvas to Pan • Scroll to Zoom <br/> Drag Nodes to Move</p>
+                </div>
+            </div>
+        )}
+
+        <svg 
+          width="100%" 
+          height="100%" 
+          viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
+        >
+          <g transform={`translate(${transform.x + dimensions.width/2}, ${transform.y + dimensions.height/2}) scale(${transform.k})`}>
+            
+            <defs>
+              <pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
+                <path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(0,0,0,0.03)" strokeWidth="1"/>
+              </pattern>
+            </defs>
+            <rect x="-5000" y="-5000" width="10000" height="10000" fill="url(#grid)" />
+
+            {/* Edges */}
+            <g className="stroke-slate-400">
+              {links.map((link, i) => {
+                const sourceNode = nodes.find(n => n.id === link.source);
+                const targetNode = nodes.find(n => n.id === link.target);
+                if (!sourceNode || !targetNode) return null;
+
+                const edgeKey = `${Math.min(link.source, link.target)}-${Math.max(link.source, link.target)}`;
+                const isDiameterEdge = longestPathEdges.has(edgeKey);
+                
+                return (
+                  <line
+                    key={i}
+                    x1={sourceNode.x}
+                    y1={sourceNode.y}
+                    x2={targetNode.x}
+                    y2={targetNode.y}
+                    stroke={isDiameterEdge ? "#10B981" : "currentColor"} 
+                    strokeWidth={isDiameterEdge ? 4 / transform.k : 1.5 / transform.k} 
+                    strokeOpacity={isDiameterEdge ? 1 : 0.4}
+                  />
+                );
+              })}
+            </g>
+
+            {/* Nodes */}
+            {nodes.map((node) => {
+               const isNewest = node.id === nodes.length;
+               
+               let fill = "#000000"; 
+               let stroke = "none";
+               let strokeWidth = 0;
+               
+               if (isNewest && nodes.length > 1) {
+                   fill = "#000000"; 
+                   stroke = "rgba(255,255,255,0.5)";
+                   strokeWidth = 3 / transform.k;
+               } else {
+                   const degree = degreeMap.get(node.id) || 0;
+                   let ratio = 0;
+                   if (maxDegree !== minDegree) {
+                       ratio = (degree - minDegree) / (maxDegree - minDegree);
+                   }
+                   ratio = Math.max(0, Math.min(1, ratio));
+                   
+                   // Purple (270) to Red (0)
+                   const hue = 270 - (ratio * 270);
+                   fill = `hsl(${hue}, 75%, 55%)`;
+                   stroke = `hsl(${hue}, 75%, 40%)`;
+                   strokeWidth = 1 / transform.k;
+               }
+
+               let radius = 10;
+               if (node.id === 1) radius = 12;
+
+               return (
+                 <g 
+                    key={node.id} 
+                    transform={`translate(${node.x},${node.y})`}
+                    onMouseDown={(e) => handleNodeMouseDown(e, node.id)}
+                    className="cursor-grab active:cursor-grabbing"
+                 >
+                   <circle 
+                     r={radius} 
+                     fill={fill}
+                     stroke={stroke}
+                     strokeWidth={strokeWidth}
+                     className="transition-colors duration-300"
+                   />
+                   {(transform.k > 0.8 || nodes.length < 20) && (
+                     <text 
+                        y={radius/3} 
+                        textAnchor="middle" 
+                        fontSize={radius}
+                        fill="white"
+                        className="font-bold pointer-events-none select-none"
+                        style={{ textShadow: '0px 1px 2px rgba(0,0,0,0.5)' }}
+                     >
+                       {node.id}
+                     </text>
+                   )}
+                 </g>
+               );
+            })}
+          </g>
+        </svg>
+
+        {/* Zoom Controls Overlay */}
+        <div className="absolute bottom-6 right-6 flex flex-col gap-2">
+            <button 
+                className="bg-white p-2 rounded shadow text-slate-600 hover:text-indigo-600"
+                onClick={() => setTransform(t => ({...t, k: Math.min(5, t.k * 1.2)}))}
+            >
+                <ZoomIn size={20} />
+            </button>
+            <button 
+                className="bg-white p-2 rounded shadow text-slate-600 hover:text-indigo-600"
+                onClick={() => setTransform(t => ({...t, k: Math.max(0.1, t.k / 1.2)}))}
+            >
+                <ZoomOut size={20} />
+            </button>
+        </div>
+
+      </div>
+
+      {/* Histogram Section (New) */}
+      <Histogram />
+
+      {/* Footer Controls */}
+      <div className="p-4 bg-white border-t border-slate-200 flex flex-wrap justify-center items-center gap-6 shadow-lg z-20 shrink-0">
+        
+        <div className="flex flex-col w-32">
+            <div className="flex justify-between items-center mb-1">
+                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Speed</label>
+            </div>
+            <input 
+              type="range" 
+              min="50" 
+              max="1000" 
+              step="50"
+              value={1050 - speed} 
+              onChange={(e) => setSpeed(1050 - Number(e.target.value))}
+              className="h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+            />
+            <div className="flex justify-between text-[8px] text-slate-400 mt-1 font-medium">
+                <span>Slow</span>
+                <span>Fast</span>
+            </div>
+        </div>
+
+        <div className="h-8 w-px bg-slate-200"></div>
+
+        <button 
+          onClick={() => setIsPlaying(!isPlaying)}
+          className={`flex items-center gap-2 px-6 py-2 rounded-full font-bold transition-all shadow-md active:scale-95 ${
+            isPlaying 
+              ? 'bg-amber-100 text-amber-700 hover:bg-amber-200' 
+              : 'bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-indigo-200'
+          }`}
+        >
+          {isPlaying ? <Pause size={18} /> : <Play size={18} />}
+          {isPlaying ? 'Pause' : 'Auto Play'}
+        </button>
+
+        <button 
+          onClick={addNode}
+          disabled={isPlaying}
+          className="flex items-center gap-2 px-4 py-2 rounded-full bg-slate-100 text-slate-700 font-medium hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          <SkipForward size={18} />
+          Step
+        </button>
+
+        <button 
+          onClick={reset}
+          className="p-2 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-full transition-colors"
+          title="Reset Graph"
+        >
+          <RotateCcw size={20} />
+        </button>
+
+      </div>
+    </div>
+  );
+};
+
+export default CanonicalGraphProcess;
