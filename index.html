@@ -7,125 +7,421 @@
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500;1,600&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <nav class="top-nav">
-        <div class="nav-container">
-            <div class="brand">Alejandro Morera Alvarez</div>
-            <ul>
-                <li><a href="#about">About Me</a></li>
-                <li><a href="#interests">Interests</a></li>
-                <li><a href="pdfs/CV_Alejandro_Morera.pdf" target="_blank">CV</a></li>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#academic-background">Academic Background</a></li>
-                <li><a href="#notes">Notes</a></li>
-                <li><a href="#recommended-literature">Recommended Literature</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </div>
-    </nav>
-
-    <header class="hero">
-        <div class="hero-content">
-            <div class="hero-text">
-                <h1>Alejandro Morera Alvarez</h1>
-                <p class="hero-title">Double Degree Master Student: Mathematics</p>
-                <p class="hero-institution">Technical University of Munich & EPFL</p>
-                
-                <div class="hero-specialization">
-                    <p>Specializing in Stochastic Analysis, Operator Theory, and Mathematical Physics.</p>
-                </div>
-            </div>
-            <div class="hero-image">
-                <img src="IMG_7879.JPG" alt="Alejandro Morera Alvarez" onerror="this.src='https://via.placeholder.com/600x800'">
-            </div>
-        </div>
+    <!-- Top Bar -->
+    <header class="top-bar">
+        <div class="top-bar-name">Alejandro Morera Alvarez</div>
+        <nav class="top-nav">
+            <a href="#about">about me</a>
+            <a href="#interests">interests</a>
+            <a href="#cv">cv</a>
+            <a href="#projects">projects</a>
+            <a href="#academic-background">academic background</a>
+            <a href="#notes">notes</a>
+            <a href="#modules">recommended literature</a>
+            <a href="#contact">contact</a>
+        </nav>
+        <button class="mobile-menu-btn" aria-label="Toggle menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
     </header>
 
-    <main class="container">
-        
-        <section id="about" class="section-content">
-            <h2>About Me</h2>
-            <p>
-                I am a double Master's degree student in pure and applied mathematics at TUM and EPFL, respectively. 
-                I hold two Bachelor degrees: one in Engineering Science, and another one in Mathematics, both from TUM.
-                My hobbies include jogging, biking, swimming, reading, playing the piano, and others.
-            </p>
-            <ul class="links-list">
-                <li><strong>LinkedIn:</strong> <a href="https://www.linkedin.com/in/alemoralv-a59827194" target="_blank">View Profile</a></li>
-                <li><strong>Spotify Artist:</strong> <a href="https://open.spotify.com/artist/42vgX1N8atkhRbO7dpKWmV?si=42Bd5axSShuQA-RDKxilEg" target="_blank">Listen on Spotify</a></li>
-            </ul>
-        </section>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-image-container">
+            <img src="IMG_7879.JPG" alt="Alejandro Morera Alvarez" class="hero-image" onerror="this.src='https://via.placeholder.com/800x600/9a9a9a/ffffff?text=AMA'">
+        </div>
+        <div class="hero-content">
+            <h1 class="hero-name">Alejandro Morera Alvarez</h1>
+            <p class="hero-title">Double Degree Master Student: Mathematics</p>
+            <p class="hero-institution">TUM & EPFL</p>
+            <p class="hero-specialization">Specializing in Stochastic Analysis, Random Dynamics,<br>Functional Analysis, and Mathematical Physics</p>
+        </div>
+    </section>
 
-        <section id="interests" class="section-content">
-            <h2>Interests & Research</h2>
-            <div class="interests-grid">
-                <div>
-                    <h3>Theoretical Interests</h3>
-                    <p>Stochastic Analysis, Random Dynamics, Functional Analysis, Schrödinger Bridges.</p>
-                </div>
-                <div>
-                    <h3>Current Research</h3>
-                    <ul>
-                        <li>Minimum Gap Theory on Compact Metric Spaces</li>
-                        <li>Apollonian Packing Spaces</li>
-                        <li>Random Perturbations of Graph-Valued Stochastic Processes</li>
-                        <li>Neural Stochastic Differential Equations and Deep Hedging in Arbitrage-Free Markets</li>
-                    </ul>
-                </div>
-                <div>
-                    <h3>Applied Interests</h3>
-                    <p>Artificial Intelligence, Diffusion Models, Data and Uncertainty Modelling.</p>
+    <!-- Main Content -->
+    <main>
+        <!-- About Section -->
+        <section id="about" class="section">
+            <div class="section-container">
+                <h2 class="section-title">About Me</h2>
+                <div class="section-content">
+                    <p>
+                        I am a double Master's degree student in pure and applied mathematics at TUM and EPFL, respectively. My research interests are stochastic analysis, operator theory, and mathematical physics.
+                    </p>
+                    <p>
+                        I hold two Bachelor degrees: one in Engineering Science, and another one in Mathematics, both from TUM.
+                    </p>
+                    <p>
+                        My hobbies include jogging, biking, swimming, reading, playing the piano, and others. Some of my songs can be found below (Spotify).
+                    </p>
+                    <div class="links-section">
+                        <a href="https://www.linkedin.com/in/alemoralv-a59827194" target="_blank" class="inline-link">LinkedIn</a>
+                        <span class="link-separator">•</span>
+                        <a href="https://open.spotify.com/artist/42vgX1N8atkhRbO7dpKWmV?si=42Bd5axSShuQA-RDKxilEg" target="_blank" class="inline-link">Spotify</a>
+                        <span class="link-separator">•</span>
+                        <a href="https://utttalemoralv.tiiny.site/" target="_blank" class="inline-link">Fun</a>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section id="projects" class="section-content">
-            <h2>Projects: Essays, Seminars, and Theses</h2>
-            <ul class="project-list">
-                <li><strong>Borel Functional Calculus and the Spectral Theorem</strong> <a href="pdfs/bfc_thesis.pdf" target="_blank">[Bachelor Thesis]</a></li>
-                <li><strong>Spectral Resolution of Symmetric Operators</strong> <a href="pdfs/specres_handout.pdf" target="_blank">[Handout]</a> <a href="pdfs/specres_slides.pdf" target="_blank">[Slides]</a></li>
-                <li><strong>Fyodorov-Bouchaud Formula and BPZ Equations</strong> <a href="pdfs/pdm_moralv_full.pdf" target="_blank">[Semester Project]</a></li>
-                <li><strong>AI Manual</strong> <a href="pdfs/AI_Manual.pdf" target="_blank">[Manual]</a></li>
-                </ul>
-        </section>
-
-        <section id="notes" class="section-content">
-            <h2>Lecture Notes</h2>
-            <div class="notes-grid">
-                <a href="pdfs/Ana3.pdf" target="_blank">Analysis 3</a>
-                <a href="pdfs/BRW.pdf" target="_blank">Branching Random Walks</a>
-                <a href="pdfs/DT.pdf" target="_blank">Distribution Theory</a>
-                <a href="pdfs/FG.pdf" target="_blank">Fractal Geometry</a>
-                <a href="pdfs/LD.pdf" target="_blank">Large Deviations</a>
-                <a href="pdfs/OT.pdf" target="_blank">Operator Theory</a>
+        <!-- Interests Section -->
+        <section id="interests" class="section section-alt">
+            <div class="section-container">
+                <h2 class="section-title">Interests</h2>
+                <div class="section-content">
+                    <div class="interests-block">
+                        <h3>Theoretical Interests</h3>
+                        <p>Stochastic Analysis, Random Dynamics, Functional Analysis, Schrödinger Bridges.</p>
+                    </div>
+                    <div class="interests-block">
+                        <h3>Current Research</h3>
+                        <ol class="research-list">
+                            <li>Minimum Gap Theory on Compact Metric Spaces</li>
+                            <li>Apollonian Packing Spaces</li>
+                            <li>Random Perturbations of Graph-Valued Stochastic Processes</li>
+                            <li>Neural Stochastic Differential Equations and Deep Hedging in Arbitrage-Free Markets</li>
+                        </ol>
+                    </div>
+                    <div class="interests-block">
+                        <h3>Applied Interests</h3>
+                        <p>Artificial Intelligence, Diffusion Models, Data and Uncertainty Modelling.</p>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <section id="recommended-literature" class="section-content">
-            <h2>Recommended Literature</h2>
-            <p>Authored works for self-study in mathematics:</p>
-            <div class="modules-grid">
-                <ul>
-                    <li>Abstract Algebra (M. Artin, G. Kemper)</li>
-                    <li>Analysis 1, 2, 3 (M. Brokate, J. Zimmer, O. Forster)</li>
-                    <li>Complex Analysis 1, 2 (F. Bornemann)</li>
-                    <li>Functional Analysis (R. Megginson)</li>
-                </ul>
+        <!-- CV Section -->
+        <section id="cv" class="section">
+            <div class="section-container">
+                <h2 class="section-title">CV</h2>
+                <div class="section-content">
+                    <p>Download my curriculum vitae for a comprehensive overview of my academic and professional background.</p>
+                    <a href="pdfs/CV.pdf" target="_blank" class="btn-download">Download CV</a>
+                </div>
             </div>
         </section>
 
-        <section id="contact" class="section-content">
-            <h2>Reach Out</h2>
-            <p>Email: <a href="mailto:alexmorera.a@gmail.com">alexmorera.a@gmail.com</a></p>
+        <!-- Projects Section -->
+        <section id="projects" class="section section-alt">
+            <div class="section-container">
+                <h2 class="section-title">Projects</h2>
+                <p class="section-subtitle">Essays, Seminars, and Theses</p>
+                <div class="section-content">
+                    <div class="projects-grid">
+                        <div class="project-item">
+                            <h4>Infinite-Dimensional Vector Spaces</h4>
+                            <div class="project-links">
+                                <a href="pdfs/lpspaces_handout.pdf" target="_blank">Handout</a>
+                                <a href="pdfs/lpspaces_slides.pdf" target="_blank">Slides</a>
+                            </div>
+                        </div>
+                        <div class="project-item">
+                            <h4>Elliptic Curves</h4>
+                            <div class="project-links">
+                                <a href="pdfs/lpspaces_handout.pdf" target="_blank">Handout</a>
+                                <a href="pdfs/lpspaces_slides.pdf" target="_blank">Slides</a>
+                            </div>
+                        </div>
+                        <div class="project-item">
+                            <h4>Spectral Resolution of Symmetric Operators</h4>
+                            <div class="project-links">
+                                <a href="pdfs/specres_handout.pdf" target="_blank">Handout</a>
+                                <a href="pdfs/specres_slides.pdf" target="_blank">Slides</a>
+                            </div>
+                        </div>
+                        <div class="project-item">
+                            <h4>Convergence to Equilibrium</h4>
+                            <div class="project-links">
+                                <a href="pdfs/convtoeq_project.pdf" target="_blank">Project</a>
+                                <a href="pdfs/convtoeq_slides.pdf" target="_blank">Slides</a>
+                            </div>
+                        </div>
+                        <div class="project-item">
+                            <h4>Laplace's Method</h4>
+                            <div class="project-links">
+                                <a href="pdfs/lapme_handout.pdf" target="_blank">Handout</a>
+                                <a href="pdfs/lapme_slides.pdf" target="_blank">Slides</a>
+                            </div>
+                        </div>
+                        <div class="project-item">
+                            <h4>Poincare Inequalities</h4>
+                            <div class="project-links">
+                                <a href="pdfs/poincare_handout.pdf" target="_blank">Handout</a>
+                                <a href="pdfs/poincare_slides.pdf" target="_blank">Slides</a>
+                            </div>
+                        </div>
+                        <div class="project-item">
+                            <h4>Borel Functional Calculus and the Spectral Theorem</h4>
+                            <div class="project-links">
+                                <a href="pdfs/bfc_thesis.pdf" target="_blank">Bachelor Thesis</a>
+                            </div>
+                        </div>
+                        <div class="project-item">
+                            <h4>Fyodorov-Bouchaud Formula and BPZ Equations</h4>
+                            <div class="project-links">
+                                <a href="pdfs/pdm_moralv_full.pdf" target="_blank">Semester Project (Full)</a>
+                                <a href="pdfs/pdm_moralv_mini.pdf" target="_blank">Semester Project (Mini)</a>
+                            </div>
+                        </div>
+                        <div class="project-item">
+                            <h4>AI Manual</h4>
+                            <div class="project-links">
+                                <a href="pdfs/AI_Manual.pdf" target="_blank">Manual</a>
+                            </div>
+                        </div>
+                        <div class="project-item">
+                            <h4>WIP: On Graph-Valued Stochastic Processes, Perturbations and Applications</h4>
+                            <div class="project-links">
+                                <a href="pdfs/GVP.pdf" target="_blank">Document</a>
+                            </div>
+                        </div>
+                        <div class="project-item">
+                            <h4>WIP: Random Node Search on Weighted Graphs</h4>
+                            <div class="project-links">
+                                <a href="pdfs/RNSRG.pdf" target="_blank">Document</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visualizations subsection -->
+                    <div class="visualizations-subsection">
+                        <h3>Visualizations</h3>
+                        <div class="viz-item">
+                            <p>Interactive knowledge graph illustrating complex systems, regulations and their relations.</p>
+                            <a href="RI_graph.html" target="_blank" class="btn-viz">See Knowledge Graph of "Régimen en Inversiones"</a>
+                        </div>
+                        <div class="viz-item">
+                            <p>Canonical Graph Process (CGP).</p>
+                            <a href="CGP.html" target="_blank" class="btn-viz">See CGP in action</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Academic Background Section -->
+        <section id="academic-background" class="section">
+            <div class="section-container">
+                <h2 class="section-title">Academic Background</h2>
+                <p class="section-subtitle">Modules completed during Bachelor's and Master's studies at TUM and EPFL</p>
+                <div class="section-content">
+                    
+                    <div class="academic-category">
+                        <h3>M.Sc. Mathematics Modules</h3>
+                        <div class="academic-list-container">
+                            <ul>
+                                <li>Advanced Seminar: Functional Analysis & Operator Theory <span class="university-tag">(TUM)</span></li>
+                                <li>Complex Function Theory 2 <span class="university-tag">(TUM)</span></li>
+                                <li>Dynamical Systems <span class="university-tag">(TUM)</span></li>
+                                <li>Elements of the Theory of Distributions <span class="university-tag">(TUM)</span></li>
+                                <li>Experimental Cognitive Psychology I & II <span class="university-tag">(EPFL)</span></li>
+                                <li>Fractal Geometry <span class="university-tag">(TUM)</span></li>
+                                <li>Gaussian Processes <span class="university-tag">(EPFL)</span></li>
+                                <li>Introduction to Stochastic PDEs <span class="university-tag">(EPFL)</span></li>
+                                <li>Lattice Models <span class="university-tag">(EPFL)</span></li>
+                                <li>Martingales in Financial Mathematics <span class="university-tag">(EPFL)</span></li>
+                                <li>Mathematics Projects (Master) <span class="university-tag">(EPFL)</span></li>
+                                <li>Operator Theory <span class="university-tag">(TUM)</span></li>
+                                <li>Optimal Transport <span class="university-tag">(EPFL)</span></li>
+                                <li>Partial Differential Equations <span class="university-tag">(TUM)</span></li>
+                                <li>Probabilistic Models of Modern AI <span class="university-tag">(EPFL)</span></li>
+                                <li>Random Dynamical Systems <span class="university-tag">(TUM)</span></li>
+                                <li>Spectral Theory <span class="university-tag">(EPFL)</span></li>
+                                <li>Stochastic Analysis <span class="university-tag">(TUM)</span></li>
+                                <li>Topics in High-Dimensional Probability <span class="university-tag">(EPFL)</span></li>
+                                <li>Topics in Stochastic Analysis <span class="university-tag">(EPFL)</span></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="academic-category">
+                        <h3>B.Sc. Mathematics Modules</h3>
+                        <div class="academic-list-container">
+                            <ul>
+                                <li>Algebra</li>
+                                <li>Analysis 1, 2, 3</li>
+                                <li>Bachelor's Thesis: Borel Functional Calculus</li>
+                                <li>Basics of Mathematical Presentation</li>
+                                <li>Biomimetics</li>
+                                <li>Control Theory</li>
+                                <li>Complex Analysis (Funktionentheorie)</li>
+                                <li>Discrete Structures</li>
+                                <li>Elliptic Curves</li>
+                                <li>Fluid Mechanics for Engineering Science</li>
+                                <li>Functional Analysis</li>
+                                <li>Fundamentals of Mathematical Studies</li>
+                                <li>Infinite-dimensional Vector Spaces</li>
+                                <li>Introduction to Optimization</li>
+                                <li>Introduction to Probability and Statistics</li>
+                                <li>Introduction to Programming</li>
+                                <li>Linear Algebra 1, 2</li>
+                                <li>Markov Processes</li>
+                                <li>Material Science I</li>
+                                <li>Mathematical Basics</li>
+                                <li>Nonlinear Dynamics: Introduction</li>
+                                <li>Numerical Analysis (Numerik)</li>
+                                <li>Probability Theory</li>
+                                <li>Project with Colloquium</li>
+                                <li>Structural Mechanics Modeling</li>
+                                <li>Topology</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="academic-category">
+                        <h3>B.Sc. Engineering Science Modules</h3>
+                        <div class="academic-list-container">
+                            <ul>
+                                <li>Bachelor's Thesis: Engineering Science</li>
+                                <li>Basic Mathematics (MSE)</li>
+                                <li>Biotechnology for Engineers</li>
+                                <li>Chemistry</li>
+                                <li>Computer Aided Modeling (CAMPP)</li>
+                                <li>Condensed Matter Physics (Intro)</li>
+                                <li>Continuum Mechanics</li>
+                                <li>Design Methods for Integrated Circuits</li>
+                                <li>Digital Integrated Circuits</li>
+                                <li>Differential and Integral Calculus</li>
+                                <li>Engineering Informatics I, II</li>
+                                <li>Engineering Mechanics 1, 2</li>
+                                <li>Engineering Thermodynamics</li>
+                                <li>Entrepreneurial Idea Development</li>
+                                <li>Fluid and Structural Mechanics</li>
+                                <li>Heat Transfer</li>
+                                <li>Intercultural Competencies</li>
+                                <li>Introduction to Scientific Research</li>
+                                <li>Introduction to Wind Energy</li>
+                                <li>Material Science II</li>
+                                <li>Modeling and Simulation with ODEs</li>
+                                <li>Nanotechnologies</li>
+                                <li>Numerical Treatment of PDEs</li>
+                                <li>Physics (MSE)</li>
+                                <li>Scientific Writing for Engineers</li>
+                                <li>Signal Representation</li>
+                                <li>Structural Dynamics and Vibroacoustics</li>
+                                <li>Technology and Democracy</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Notes Section -->
+        <section id="notes" class="section section-alt">
+            <div class="section-container">
+                <h2 class="section-title">Notes</h2>
+                <p class="section-subtitle">Summaries of lectures (beware of mistakes)</p>
+                <div class="section-content">
+                    <div class="notes-grid">
+                        <a href="pdfs/Ana3.pdf" target="_blank" class="note-item">Analysis 3</a>
+                        <a href="pdfs/BRW.pdf" target="_blank" class="note-item">Branching Random Walks</a>
+                        <a href="pdfs/DT.pdf" target="_blank" class="note-item">Distribution Theory</a>
+                        <a href="pdfs/FG.pdf" target="_blank" class="note-item">Fractal Geometry</a>
+                        <a href="pdfs/LD.pdf" target="_blank" class="note-item">Large Deviations</a>
+                        <a href="pdfs/OT.pdf" target="_blank" class="note-item">Operator Theory</a>
+                        <a href="pdfs/PT.pdf" target="_blank" class="note-item">Probability Theory</a>
+                        <a href="pdfs/RDS.pdf" target="_blank" class="note-item">Random Dynamical Systems</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recommended Literature Section (formerly Modules) -->
+        <section id="modules" class="section">
+            <div class="section-container">
+                <h2 class="section-title">Recommended Literature</h2>
+                <p class="section-subtitle">Authors to explore for self-study</p>
+                <div class="section-content">
+                    <div class="literature-grid">
+                        <div class="literature-item">
+                            <span class="lit-subject">Abstract Algebra</span>
+                            <span class="lit-authors">M. Artin, G. Kemper</span>
+                        </div>
+                        <div class="literature-item">
+                            <span class="lit-subject">Analysis 1, 2, 3</span>
+                            <span class="lit-authors">M. Brokate, J. Zimmer, O. Forster</span>
+                        </div>
+                        <div class="literature-item">
+                            <span class="lit-subject">Complex Analysis 1, 2</span>
+                            <span class="lit-authors">F. Bornemann</span>
+                        </div>
+                        <div class="literature-item">
+                            <span class="lit-subject">Distribution Theory</span>
+                            <span class="lit-authors">L. Hoermander</span>
+                        </div>
+                        <div class="literature-item">
+                            <span class="lit-subject">Dynamical Systems</span>
+                            <span class="lit-authors">J. Guckenheimer, P. Holmes</span>
+                        </div>
+                        <div class="literature-item">
+                            <span class="lit-subject">Fractal Geometry</span>
+                            <span class="lit-authors">P. Massopust, M. F. Barnsley</span>
+                        </div>
+                        <div class="literature-item">
+                            <span class="lit-subject">Functional Analysis</span>
+                            <span class="lit-authors">R. Megginson</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="section section-alt">
+            <div class="section-container">
+                <h2 class="section-title">Contact</h2>
+                <div class="section-content contact-content">
+                    <p class="reach-out">Reach Out:</p>
+                    <a href="mailto:alexmorera.a@gmail.com" class="email-link">alexmorera.a@gmail.com</a>
+                </div>
+            </div>
         </section>
     </main>
 
     <footer>
-        <p>© 2026 Alejandro Morera Alvarez.</p>
+        <p>© 2025 Alejandro Morera Alvarez. All Rights Reserved.</p>
     </footer>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const topNav = document.querySelector('.top-nav');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            topNav.classList.toggle('active');
+            mobileMenuBtn.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking a link
+        document.querySelectorAll('.top-nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                topNav.classList.remove('active');
+                mobileMenuBtn.classList.remove('active');
+            });
+        });
+
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>
