@@ -428,50 +428,90 @@ a:hover {
 
 
 
-/* MODULES GRID - Make it look like a dashboard */
-
-.modules-grid ul {
-
+/* MODULES GRID - Expandable buttons */
+.modules-grid {
     display: grid;
-
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-
-    gap: 1.5rem;
-
+    gap: 1rem;
     padding: 0;
-
-    list-style: none;
-
 }
 
-
-
-.modules-grid li {
-
+.module-item {
     background: #ffffff;
-
-    padding: 1.2rem;
-
     border-radius: 8px;
-
-    font-size: 0.95rem;
-
     border: 1px solid #eee;
-
     border-left: 4px solid var(--primary-color);
-
     box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-
-    transition: transform 0.2s;
-
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
 }
 
+.module-item:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
 
+.module-item.expanded {
+    border-left-color: var(--primary-color);
+}
 
-.modules-grid li:hover {
+.module-btn {
+    width: 100%;
+    padding: 1.2rem;
+    background: transparent;
+    border: none;
+    text-align: left;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
 
-    transform: translateX(5px);
+.module-btn:hover {
+    background-color: #f8f9fa;
+}
 
+.toggle-icon {
+    font-size: 1.2rem;
+    font-weight: 300;
+    color: var(--primary-color);
+    transition: transform 0.3s ease;
+}
+
+.module-item.expanded .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.module-references {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    background-color: #f8f9fa;
+}
+
+.module-references ul {
+    list-style: none;
+    padding: 0 1.2rem 1.2rem 1.2rem;
+    margin: 0;
+}
+
+.module-references li {
+    padding: 0.6rem 0;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: #555;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.module-references li:last-child {
+    border-bottom: none;
+}
+
+.module-references li em {
+    color: #333;
 }
 
 
