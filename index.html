@@ -588,34 +588,191 @@
 
 
         <section id="modules" class="card">
-
-            <h2>Modules</h2>
-
-            <p>Below is a list of modules I have taken during my studies together with authors to look for in case of self-study.</p>
-
-            <div class="modules-grid">
-
+    <h2>Modules</h2>
+    <p>Below is a list of modules I have taken during my studies. Click on a module to see recommended references for self-study.</p>
+    <div class="modules-grid">
+        <!-- Abstract Algebra -->
+        <div class="module-item">
+            <button class="module-btn" onclick="toggleModule(this)">
+                Abstract Algebra
+                <span class="toggle-icon">+</span>
+            </button>
+            <div class="module-references">
                 <ul>
-
-                    <li>Abstract Algebra (M. Artin, G. Kemper)</li>
-
-                    <li>Analysis 1, 2, 3 (M. Brokate, J. Zimmer, O. Forster)</li>
-
-                    <li>Complex Analysis 1, 2 (F. Bornemann)</li>
-
-                    <li>Distribution Theory (L. Hoermander)</li>
-
-                    <li>Dynamical Systems (J. Guckenheimer, P. Holmes)</li>
-
-                    <li>Fractal Geometry (P. Massopust, M. F. Barnsley)</li>
-
-                    <li>Functional Analysis (R. Megginson)</li>
-
+                    <li>Artin, M. (2011). <em>Algebra</em> (2nd ed.). Pearson.</li>
                 </ul>
-
             </div>
+        </div>
 
-        </section>
+        <!-- Dynamical Systems -->
+        <div class="module-item">
+            <button class="module-btn" onclick="toggleModule(this)">
+                Dynamical Systems
+                <span class="toggle-icon">+</span>
+            </button>
+            <div class="module-references">
+                <ul>
+                    <li>Guckenheimer, J., &amp; Holmes, P. (1983). <em>Nonlinear oscillations, dynamical systems, and bifurcations of vector fields</em>. Springer-Verlag.</li>
+                    <li>Katok, A., &amp; Hasselblatt, B. (1995). <em>Introduction to the modern theory of dynamical systems</em>. Cambridge University Press.</li>
+                    <li>Perko, L. (2001). <em>Differential equations and dynamical systems</em> (3rd ed.). Springer.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Functional Analysis -->
+        <div class="module-item">
+            <button class="module-btn" onclick="toggleModule(this)">
+                Functional Analysis
+                <span class="toggle-icon">+</span>
+            </button>
+            <div class="module-references">
+                <ul>
+                    <li>Werner, D. (2018). <em>Funktionalanalysis</em> (8th ed.). Springer Spektrum.</li>
+                    <li>Megginson, R. E. (1998). <em>An introduction to Banach space theory</em>. Springer.</li>
+                    <li>Brezis, H. (2010). <em>Functional analysis, Sobolev spaces and partial differential equations</em>. Springer.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Introduction to Probability and Statistics -->
+        <div class="module-item">
+            <button class="module-btn" onclick="toggleModule(this)">
+                Introduction to Probability and Statistics
+                <span class="toggle-icon">+</span>
+            </button>
+            <div class="module-references">
+                <ul>
+                    <li>Georgii, H.-O. (2013). <em>Stochastics: Introduction to probability and statistics</em> (2nd ed.). De Gruyter.</li>
+                    <li>Grimmett, G., &amp; Stirzaker, D. (2001). <em>Probability and random processes</em> (3rd ed.). Oxford University Press.</li>
+                    <li>Ross, S. M. (2009). <em>Introduction to probability and statistics for engineers and scientists</em> (4th ed.). Academic Press.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Markov Processes -->
+        <div class="module-item">
+            <button class="module-btn" onclick="toggleModule(this)">
+                Markov Processes
+                <span class="toggle-icon">+</span>
+            </button>
+            <div class="module-references">
+                <ul>
+                    <li>Liggett, T. M. (2010). <em>Continuous time Markov processes: An introduction</em>. American Mathematical Society.</li>
+                    <li>Ethier, S. N., &amp; Kurtz, T. G. (1986). <em>Markov processes: Characterization and convergence</em>. Wiley.</li>
+                    <li>Revuz, D., &amp; Yor, M. (1999). <em>Continuous martingales and Brownian motion</em> (3rd ed.). Springer.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Numerical Analysis -->
+        <div class="module-item">
+            <button class="module-btn" onclick="toggleModule(this)">
+                Numerical Analysis
+                <span class="toggle-icon">+</span>
+            </button>
+            <div class="module-references">
+                <ul>
+                    <li>Deuflhard, P., &amp; Hohmann, A. (2003). <em>Numerical analysis in modern scientific computing: An introduction</em> (2nd ed.). Springer.</li>
+                    <li>Deuflhard, P., &amp; Bornemann, F. (2002). <em>Scientific computing with ordinary differential equations</em>. Springer.</li>
+                    <li>Stoer, J., &amp; Bulirsch, R. (2002). <em>Introduction to numerical analysis</em> (3rd ed.). Springer.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Operator Theory -->
+        <div class="module-item">
+            <button class="module-btn" onclick="toggleModule(this)">
+                Operator Theory
+                <span class="toggle-icon">+</span>
+            </button>
+            <div class="module-references">
+                <ul>
+                    <li>Simon, B. (2015). <em>Operator theory: A comprehensive course in analysis, Part 4</em>. American Mathematical Society.</li>
+                    <li>Conway, J. B. (2000). <em>A course in operator theory</em>. American Mathematical Society.</li>
+                    <li>Reed, M., &amp; Simon, B. (1980). <em>Methods of modern mathematical physics I: Functional analysis</em> (Rev. and enl. ed.). Academic Press.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Optimal Transport -->
+        <div class="module-item">
+            <button class="module-btn" onclick="toggleModule(this)">
+                Optimal Transport
+                <span class="toggle-icon">+</span>
+            </button>
+            <div class="module-references">
+                <ul>
+                    <li>Villani, C. (2009). <em>Optimal transport: Old and new</em>. Springer.</li>
+                    <li>Ambrosio, L., Gigli, N., &amp; Savaré, G. (2008). <em>Gradient flows in metric spaces and in the space of probability measures</em> (2nd ed.). Birkhäuser.</li>
+                    <li>Santambrogio, F. (2015). <em>Optimal transport for applied mathematicians: Calculus of variations, PDEs, and modeling</em>. Birkhäuser.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Probability Theory -->
+        <div class="module-item">
+            <button class="module-btn" onclick="toggleModule(this)">
+                Probability Theory
+                <span class="toggle-icon">+</span>
+            </button>
+            <div class="module-references">
+                <ul>
+                    <li>Durrett, R. (2019). <em>Probability: Theory and examples</em> (5th ed.). Cambridge University Press.</li>
+                    <li>Klenke, A. (2013). <em>Probability theory: A comprehensive course</em> (2nd ed.). Springer.</li>
+                    <li>Billingsley, P. (1995). <em>Probability and measure</em> (3rd ed.). Wiley.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Random Dynamical Systems -->
+        <div class="module-item">
+            <button class="module-btn" onclick="toggleModule(this)">
+                Random Dynamical Systems
+                <span class="toggle-icon">+</span>
+            </button>
+            <div class="module-references">
+                <ul>
+                    <li>Arnold, L. (1998). <em>Random dynamical systems</em>. Springer.</li>
+                    <li>Kunita, H. (1990). <em>Stochastic flows and stochastic differential equations</em>. Cambridge University Press.</li>
+                    <li>Caraballo, T., &amp; Han, X. (2016). <em>Applied nonautonomous and random dynamical systems</em>. Springer.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Topology -->
+        <div class="module-item">
+            <button class="module-btn" onclick="toggleModule(this)">
+                Topology
+                <span class="toggle-icon">+</span>
+            </button>
+            <div class="module-references">
+                <ul>
+                    <li>Munkres, J. R. (2000). <em>Topology</em> (2nd ed.). Prentice Hall.</li>
+                    <li>Hatcher, A. (2002). <em>Algebraic topology</em>. Cambridge University Press.</li>
+                    <li>Jänich, K. (1984). <em>Topology</em>. Springer.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+function toggleModule(btn) {
+    const moduleItem = btn.parentElement;
+    const references = moduleItem.querySelector('.module-references');
+    const icon = btn.querySelector('.toggle-icon');
+    
+    moduleItem.classList.toggle('expanded');
+    
+    if (moduleItem.classList.contains('expanded')) {
+        references.style.maxHeight = references.scrollHeight + 'px';
+        icon.textContent = '−';
+    } else {
+        references.style.maxHeight = '0';
+        icon.textContent = '+';
+    }
+}
+</script>
 
         
 
