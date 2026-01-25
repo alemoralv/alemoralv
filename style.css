@@ -431,7 +431,7 @@ a:hover {
 /* MODULES GRID - Expandable buttons */
 .modules-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 1rem;
     padding: 0;
 }
@@ -443,7 +443,7 @@ a:hover {
     border-left: 4px solid var(--primary-color);
     box-shadow: 0 2px 4px rgba(0,0,0,0.02);
     overflow: hidden;
-    transition: box-shadow 0.3s ease;
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .module-item:hover {
@@ -451,12 +451,13 @@ a:hover {
 }
 
 .module-item.expanded {
-    border-left-color: var(--primary-color);
+    border-left-width: 4px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
 }
 
 .module-btn {
     width: 100%;
-    padding: 1.2rem;
+    padding: 1rem 1.2rem;
     background: transparent;
     border: none;
     text-align: left;
@@ -467,18 +468,29 @@ a:hover {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 0.5rem;
     transition: background-color 0.2s ease;
+    font-family: inherit;
+    line-height: 1.4;
 }
 
 .module-btn:hover {
     background-color: #f8f9fa;
 }
 
+.module-btn:focus {
+    outline: 2px solid var(--primary-color);
+    outline-offset: -2px;
+}
+
 .toggle-icon {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     font-weight: 300;
     color: var(--primary-color);
     transition: transform 0.3s ease;
+    flex-shrink: 0;
+    width: 1.5rem;
+    text-align: center;
 }
 
 .module-item.expanded .toggle-icon {
@@ -488,30 +500,74 @@ a:hover {
 .module-references {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease-out;
+    transition: max-height 0.35s ease-out;
     background-color: #f8f9fa;
+    border-top: 1px solid transparent;
+}
+
+.module-item.expanded .module-references {
+    border-top-color: #e9ecef;
 }
 
 .module-references ul {
     list-style: none;
-    padding: 0 1.2rem 1.2rem 1.2rem;
+    padding: 0.8rem 1.2rem 1.2rem 1.2rem;
     margin: 0;
 }
 
 .module-references li {
-    padding: 0.6rem 0;
+    padding: 0.65rem 0;
     font-size: 0.85rem;
-    line-height: 1.5;
+    line-height: 1.6;
     color: #555;
     border-bottom: 1px solid #e9ecef;
 }
 
 .module-references li:last-child {
     border-bottom: none;
+    padding-bottom: 0;
+}
+
+.module-references li:first-child {
+    padding-top: 0;
 }
 
 .module-references li em {
     color: #333;
+    font-style: italic;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .modules-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .module-btn {
+        font-size: 0.9rem;
+        padding: 1rem;
+    }
+    
+    .module-references li {
+        font-size: 0.8rem;
+    }
+}
+
+/* Optional: Add smooth scroll behavior when many modules are expanded */
+@media (prefers-reduced-motion: no-preference) {
+    .module-references {
+        transition: max-height 0.35s ease-out;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .module-references {
+        transition: none;
+    }
+    
+    .toggle-icon {
+        transition: none;
+    }
 }
 
 
