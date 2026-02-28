@@ -10,7 +10,10 @@
     TIME_SPEED: 0.00008,
     BASE_ALPHA: 0.045,
     MAX_ALPHA: 0.32,
-    MOUSE_RADIUS: 350,
+    MOUSE_RADIUS: 380,
+    MOUSE_ATTRACTION_STRENGTH: 1.3,
+    MOUSE_FALLOFF_POWER: 0.75,
+    MOUSE_LERP_BOOST: 0.22,
     LERP_SPEED: 0.12,
     COLOR: '0, 0, 0',
     MOBILE_BREAKPOINT: 768,
@@ -107,8 +110,18 @@
     this.mouseActive = false;
     this.animId = null;
     this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+    this.layoutMap = {
+      startYAbsolute: 0,
+      endYAbsolute: Number.POSITIVE_INFINITY,
+      blockedRects: []
+    };
+    this._layoutTimer = null;
+    this._resizeTimer = null;
+    this._layoutObserver = null;
+    this._onLayoutChange = this._scheduleLayoutRebuild.bind(this);
 
     this._onResize = this._handleResize.bind(this);
+    this._onScroll = this._handleScroll.bind(this);
     this._onMouse = this._handleMouse.bind(this);
     this._onMouseLeave = this._handleMouseLeave.bind(this);
     this._onTouch = this._handleTouch.bind(this);
@@ -121,7 +134,9 @@
   VectorField.prototype._setup = function () {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     this._resize();
+    this._rebuildLayoutMap();
     window.addEventListener('resize', this._onResize);
+    window.addEventListener('scroll', this._onScroll, { passive: true });
     window.addEventListener('mousemove', this._onMouse);
     window.addEventListener('mouseleave', this._onMouseLeave);
     window.addEventListener('touchmove', this._onTouch, { passive: true });
@@ -131,7 +146,19 @@
 
   VectorField.prototype._handleResize = function () {
     clearTimeout(this._resizeTimer);
-    this._resizeTimer = setTimeout(this._resize.bind(this), 200);
+    this._resizeTimer = setTimeout(function () {
+      this._resize();
+      this._scheduleLayoutRebuild();
+    }.bind(this), 200);
+  };
+
+  VectorField.prototype._handleScroll = function () {
+    this._scheduleLayoutRebuild();
+  };
+
+  VectorField.prototype._scheduleLayoutRebuild = function () {
+    clearTimeout(this._layoutTimer);
+    this._layoutTimer = setTimeout(this._rebuildLayoutMap.bind(this), 90);
   };
 
   VectorField.prototype._resize = function () {
@@ -159,6 +186,87 @@
         this.needles.push(new Needle(nx, ny));
       }
     }
+  };
+
+  VectorField.prototype._rebuildLayoutMap = function () {
+    var scrollY = window.scrollY || window.pageYOffset || 0;
+    var hero = document.getElementById('home');
+    var cards = document.querySelectorAll('.card');
+    var main = document.querySelector('main');
+    var footer = document.querySelector('footer');
+
+    var startYAbsolute = 0;
+    if (hero) {
+      var heroRect = hero.getBoundingClientRect();
+      startYAbsolute = heroRect.bottom + scrollY;
+    }
+
+    var endYAbsolute = Number.POSITIVE_INFINITY;
+    if (footer) {
+      var footerRect = footer.getBoundingClientRect();
+      endYAbsolute = footerRect.bottom + scrollY;
+    } else if (main) {
+      var mainRect = main.getBoundingClientRect();
+      endYAbsolute = mainRect.bottom + scrollY;
+    }
+
+    var blockedRects = [];
+    for (var i = 0; i < cards.length; i++) {
+      var rect = cards[i].getBoundingClientRect();
+      blockedRects.push({
+        left: rect.left,
+        right: rect.right,
+        top: rect.top + scrollY,
+        bottom: rect.bottom + scrollY
+      });
+    }
+
+    this.layoutMap = {
+      startYAbsolute: startYAbsolute,
+      endYAbsolute: endYAbsolute,
+      blockedRects: blockedRects
+    };
+
+    this._refreshLayoutObserverTargets();
+  };
+
+  VectorField.prototype._refreshLayoutObserverTargets = function () {
+    if (typeof ResizeObserver === 'undefined') return;
+    if (!this._layoutObserver) {
+      this._layoutObserver = new ResizeObserver(this._onLayoutChange);
+    }
+    this._layoutObserver.disconnect();
+
+    var targets = [];
+    var hero = document.getElementById('home');
+    var main = document.querySelector('main');
+    var footer = document.querySelector('footer');
+    var cards = document.querySelectorAll('.card');
+
+    if (hero) targets.push(hero);
+    if (main) targets.push(main);
+    if (footer) targets.push(footer);
+    for (var i = 0; i < cards.length; i++) targets.push(cards[i]);
+
+    for (var j = 0; j < targets.length; j++) {
+      this._layoutObserver.observe(targets[j]);
+    }
+  };
+
+  VectorField.prototype._isInRenderZone = function (x, yViewport) {
+    var map = this.layoutMap;
+    var absY = yViewport + (window.scrollY || window.pageYOffset || 0);
+
+    if (absY < map.startYAbsolute || absY > map.endYAbsolute) return false;
+
+    var rects = map.blockedRects;
+    for (var i = 0; i < rects.length; i++) {
+      var r = rects[i];
+      if (x >= r.left && x <= r.right && absY >= r.top && absY <= r.bottom) {
+        return false;
+      }
+    }
+    return true;
   };
 
   VectorField.prototype._handleMouse = function (e) {
@@ -201,6 +309,9 @@
     var halfLen = CONFIG.LINE_LENGTH * 0.5;
     var color = CONFIG.COLOR;
     var lerpSpd = CONFIG.LERP_SPEED;
+    var mouseAttrStrength = CONFIG.MOUSE_ATTRACTION_STRENGTH;
+    var mouseFalloffPower = CONFIG.MOUSE_FALLOFF_POWER;
+    var mouseLerpBoost = CONFIG.MOUSE_LERP_BOOST;
     var noiseScale = CONFIG.NOISE_SCALE;
     var zOff = timestamp * CONFIG.TIME_SPEED;
 
@@ -209,11 +320,13 @@
 
     for (var i = 0; i < len; i++) {
       var n = needles[i];
+      if (!this._isInRenderZone(n.x, n.y)) continue;
 
       var noiseAngle = noise3D(n.x * noiseScale, n.y * noiseScale, zOff) * Math.PI * 2;
 
       var drawAlpha = baseAlpha;
       var targetAngle = noiseAngle;
+      var localLerpSpd = lerpSpd;
 
       if (active) {
         var dx = mx - n.x;
@@ -223,13 +336,16 @@
         if (dist2 < mouseR2) {
           var dist = Math.sqrt(dist2);
           var t = easeOutCubic(1 - dist / mouseR);
+          t = Math.pow(t, mouseFalloffPower);
+          var influence = Math.min(1, t * mouseAttrStrength);
           var mouseAngle = Math.atan2(dy, dx);
-          targetAngle = lerpAngle(noiseAngle, mouseAngle, t);
-          drawAlpha = baseAlpha + (maxAlpha - baseAlpha) * t;
+          targetAngle = lerpAngle(noiseAngle, mouseAngle, influence);
+          drawAlpha = baseAlpha + (maxAlpha - baseAlpha) * influence;
+          localLerpSpd = Math.min(1, lerpSpd + mouseLerpBoost * influence);
         }
       }
 
-      n.angle = lerpAngle(n.angle, targetAngle, lerpSpd);
+      n.angle = lerpAngle(n.angle, targetAngle, localLerpSpd);
 
       var cdx = Math.cos(n.angle) * halfLen;
       var cdy = Math.sin(n.angle) * halfLen;
@@ -244,7 +360,11 @@
 
   VectorField.prototype.destroy = function () {
     if (this.animId) cancelAnimationFrame(this.animId);
+    clearTimeout(this._resizeTimer);
+    clearTimeout(this._layoutTimer);
+    if (this._layoutObserver) this._layoutObserver.disconnect();
     window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('scroll', this._onScroll);
     window.removeEventListener('mousemove', this._onMouse);
     window.removeEventListener('mouseleave', this._onMouseLeave);
     window.removeEventListener('touchmove', this._onTouch);
