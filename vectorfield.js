@@ -19,6 +19,8 @@
     MOBILE_BREAKPOINT: 768,
   };
 
+  var REVEAL_SECTION_SELECTORS = ['#about', '#notes', '#projects', '#academic-background', '#modules'];
+
   // ---- Simplex Noise 3D ----
 
   var F3 = 1 / 3, G3 = 1 / 6;
@@ -374,8 +376,56 @@
   // ---- Init ----
 
   var instance = null;
+  var revealObserver = null;
+
+  function setupAlternatingScrollReveal() {
+    var sections = [];
+    for (var i = 0; i < REVEAL_SECTION_SELECTORS.length; i++) {
+      var section = document.querySelector(REVEAL_SECTION_SELECTORS[i]);
+      if (section) sections.push(section);
+    }
+
+    if (!sections.length) return;
+
+    var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    for (var j = 0; j < sections.length; j++) {
+      var card = sections[j];
+      card.classList.add('scroll-reveal');
+      card.classList.remove('from-left', 'from-right', 'is-visible');
+      card.classList.add(j % 2 === 0 ? 'from-right' : 'from-left');
+    }
+
+    if (prefersReducedMotion || typeof IntersectionObserver === 'undefined') {
+      for (var k = 0; k < sections.length; k++) {
+        sections[k].classList.add('is-visible');
+      }
+      return;
+    }
+
+    if (revealObserver) revealObserver.disconnect();
+
+    revealObserver = new IntersectionObserver(function (entries) {
+      for (var n = 0; n < entries.length; n++) {
+        var entry = entries[n];
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+        } else {
+          entry.target.classList.remove('is-visible');
+        }
+      }
+    }, {
+      threshold: 0.2,
+      rootMargin: '0px 0px -8% 0px'
+    });
+
+    for (var m = 0; m < sections.length; m++) {
+      revealObserver.observe(sections[m]);
+    }
+  }
 
   function init() {
+    setupAlternatingScrollReveal();
     instance = new VectorField();
   }
 
@@ -386,6 +436,7 @@
   }
 
   window.addEventListener('beforeunload', function () {
+    if (revealObserver) revealObserver.disconnect();
     if (instance) instance.destroy();
   });
 })();

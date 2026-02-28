@@ -405,6 +405,33 @@ main {
     transform: translateY(-3px);
 }
 
+.scroll-reveal {
+    opacity: 0;
+    filter: blur(2px);
+    will-change: opacity, transform, filter;
+    transition: opacity 0.68s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.68s cubic-bezier(0.22, 1, 0.36, 1),
+                filter 0.68s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.scroll-reveal.from-right {
+    transform: translate3d(56px, 0, 0);
+}
+
+.scroll-reveal.from-left {
+    transform: translate3d(-56px, 0, 0);
+}
+
+.scroll-reveal.is-visible {
+    opacity: 1;
+    filter: blur(0);
+    transform: translate3d(0, 0, 0);
+}
+
+.card.scroll-reveal.is-visible:hover {
+    transform: translateY(-3px);
+}
+
 .card h2 {
     color: var(--text-dark);
     font-size: 1.8rem;
@@ -753,6 +780,14 @@ footer {
         padding: 1.75rem;
     }
 
+    .scroll-reveal.from-right {
+        transform: translate3d(30px, 0, 0);
+    }
+
+    .scroll-reveal.from-left {
+        transform: translate3d(-30px, 0, 0);
+    }
+
     main {
         padding: 2rem 1rem;
     }
@@ -805,5 +840,14 @@ footer {
 
     html {
         scroll-behavior: auto;
+    }
+
+    .scroll-reveal,
+    .scroll-reveal.from-left,
+    .scroll-reveal.from-right,
+    .scroll-reveal.is-visible {
+        opacity: 1 !important;
+        filter: none !important;
+        transform: none !important;
     }
 }
