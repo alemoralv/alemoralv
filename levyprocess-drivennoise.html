@@ -1,0 +1,1064 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Theorem 5 - Mean-Field Levy Visualization</title>
+  <style>
+    :root {
+      --bg: #f1f5f9;
+      --panel: #ffffff;
+      --ink: #0f172a;
+      --muted: #475569;
+      --accent: #2563eb;
+      --accent-soft: #dbeafe;
+      --ok: #16a34a;
+      --warn: #ca8a04;
+      --danger: #dc2626;
+      --canvas-dark: #0f172a;
+      --border: #dbe2ea;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: Inter, Segoe UI, Roboto, Arial, sans-serif; }
+    .page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      gap: 14px;
+      padding: 14px;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+    }
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .sidebar .content {
+      overflow: auto;
+      padding: 16px;
+    }
+    h1 {
+      margin: 0 0 6px 0;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+    h2 {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.2;
+    }
+    h3 {
+      margin: 0 0 8px 0;
+      font-size: 14px;
+      color: #1e293b;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 14px;
+    }
+    .group {
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .row { margin-bottom: 10px; }
+    .row:last-child { margin-bottom: 0; }
+    .label-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 4px;
+      color: #334155;
+    }
+    input[type="range"] { width: 100%; accent-color: #2563eb; }
+    input[type="number"], select {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 7px 8px;
+      font-size: 13px;
+      background: #fff;
+      color: #0f172a;
+    }
+    .mini-note {
+      margin-top: 3px;
+      font-size: 11px;
+      color: #64748b;
+    }
+    .button-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 9px 10px;
+      font-weight: 600;
+      cursor: pointer;
+      color: white;
+      background: var(--accent);
+    }
+    button.secondary {
+      color: #1e293b;
+      background: #e2e8f0;
+    }
+    button.preset {
+      font-size: 12px;
+      background: #0ea5e9;
+    }
+    .main {
+      display: grid;
+      grid-template-rows: minmax(250px, 1fr) 315px;
+      gap: 14px;
+      min-width: 0;
+    }
+    .canvas-wrap {
+      position: relative;
+      overflow: hidden;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+    .canvas-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .canvas-subtitle {
+      font-size: 12px;
+      color: #64748b;
+      margin-bottom: 8px;
+    }
+    #trajCanvas {
+      width: 100%;
+      height: calc(100% - 44px);
+      background: var(--canvas-dark);
+      border-radius: 10px;
+      border: 1px solid #0b1324;
+    }
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: minmax(260px, 1fr) minmax(260px, 1fr) minmax(260px, 1fr);
+      gap: 14px;
+      min-width: 0;
+    }
+    .fixed-canvas {
+      width: 100%;
+      height: 190px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: #fff;
+    }
+    .matrix-box {
+      width: 190px;
+      height: 190px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      margin-top: 2px;
+      border-radius: 8px;
+      overflow: hidden;
+      align-self: center;
+    }
+    #graphCanvas {
+      width: 100%;
+      height: 100%;
+      image-rendering: pixelated;
+    }
+    .metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+      font-size: 12px;
+    }
+    .metric {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #f8fafc;
+      padding: 7px;
+    }
+    .metric .k { color: #64748b; font-size: 11px; }
+    .metric .v { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 13px; margin-top: 2px; }
+    .equation {
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #f8fafc;
+      padding: 7px;
+      margin-bottom: 8px;
+      line-height: 1.45;
+    }
+    .legend {
+      font-size: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+      color: #334155;
+    }
+    .compare-grid {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .compare-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px;
+      background: #f8fafc;
+    }
+    .compare-label {
+      font-size: 11px;
+      color: #64748b;
+      margin-bottom: 5px;
+    }
+    .compare-canvas {
+      width: 100%;
+      height: 72px;
+      border: 1px solid #d7dee7;
+      border-radius: 6px;
+      background: #ffffff;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 999px;
+      display: inline-block;
+    }
+    .footer-note {
+      margin-top: 10px;
+      font-size: 11px;
+      color: #64748b;
+      line-height: 1.4;
+      border-top: 1px dashed #cbd5e1;
+      padding-top: 8px;
+    }
+    @media (max-width: 1200px) {
+      .page { grid-template-columns: 1fr; }
+      .bottom-grid { grid-template-columns: 1fr; }
+      .main { grid-template-rows: minmax(260px, 50vh) auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <aside class="panel sidebar">
+      <div class="content">
+        <h1>Levy-Noise Mean-Field Convergence Theorem</h1>
+        <div class="subtitle">Mean-field limit with Digraph Measures and Levy noise (Eq. 5 weak form)</div>
+
+        <div class="group">
+          <h3>Graph / DGM</h3>
+          <div class="row">
+            <label class="label-line"><span>Graph Type</span></label>
+            <select id="graphType">
+              <option value="all">All-to-All</option>
+              <option value="er">Erdos-Renyi</option>
+              <option value="ring">Ring Sparse</option>
+            </select>
+          </div>
+          <div class="row" id="pEdgeRow">
+            <div class="label-line"><span>Edge Probability p</span><span id="pEdgeOut"></span></div>
+            <input id="pEdge" type="range" min="0.01" max="1" step="0.01" />
+          </div>
+          <div class="row" id="kRingRow">
+            <div class="label-line"><span>Ring Neighbors k</span><span id="kRingOut"></span></div>
+            <input id="kRing" type="range" min="1" max="40" step="1" />
+          </div>
+          <div class="row">
+            <div class="label-line"><span>Particles N</span><span id="nOut"></span></div>
+            <input id="nParticles" type="range" min="100" max="1800" step="100" />
+          </div>
+          <div class="mini-note">Adjacency matrix approximates the digraph measure eta^N.</div>
+        </div>
+
+        <div class="group">
+          <h3>Dynamics</h3>
+          <div class="row">
+            <div class="label-line"><span>Interaction K</span><span id="kOut"></span></div>
+            <input id="K" type="range" min="0" max="10" step="0.25" />
+          </div>
+          <div class="row">
+            <div class="label-line"><span>Mean Reversion alpha</span><span id="alphaOut"></span></div>
+            <input id="alpha" type="range" min="0" max="2.5" step="0.05" />
+          </div>
+          <div class="row">
+            <div class="label-line"><span>Integrator dt</span><span id="dtOut"></span></div>
+            <input id="dt" type="range" min="0.004" max="0.03" step="0.001" />
+          </div>
+          <div class="row">
+            <div class="label-line"><span>Target FPS cap</span><span id="fpsOut"></span></div>
+            <input id="fpsCap" type="range" min="20" max="120" step="1" />
+          </div>
+        </div>
+
+        <div class="group">
+          <h3>Levy Noise Decomposition</h3>
+          <div class="row">
+            <div class="label-line"><span>Brownian coefficient sigma0</span><span id="sigma0Out"></span></div>
+            <input id="sigma0" type="range" min="0" max="1" step="0.01" />
+          </div>
+          <div class="row">
+            <div class="label-line"><span>Jump variance proxy</span><span id="jumpVarOut"></span></div>
+            <input id="jumpVar" type="range" min="0" max="1.5" step="0.01" />
+          </div>
+          <div class="row">
+            <div class="label-line"><span>Jump intensity lambda</span><span id="lambdaOut"></span></div>
+            <input id="lambda" type="range" min="0" max="20" step="0.5" />
+          </div>
+          <div class="mini-note">Normalization uses sigma0^2 + jumpVarProxy to preserve a stable second-moment scale.</div>
+        </div>
+
+        <div class="group">
+          <h3>Presets and Reproducibility</h3>
+          <div class="button-row">
+            <button class="preset" id="presetBrownian">Brownian Recovery</button>
+            <button class="preset" id="presetLevy">Levy Jump Regime</button>
+          </div>
+          <div class="button-row">
+            <button class="preset" id="presetBalanced">Balanced Mixed</button>
+            <button class="secondary" id="captureOverlay">Capture Topology Overlay</button>
+          </div>
+          <div class="row" style="margin-top:8px">
+            <label class="label-line"><span>Deterministic seed</span></label>
+            <input id="seedInput" type="number" min="1" max="4294967295" step="1" />
+          </div>
+          <div class="button-row">
+            <button id="applySeed">Apply Seed + Reset</button>
+            <button class="secondary" id="clearOverlay">Clear Overlays</button>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button id="toggleRun">Pause</button>
+          <button class="secondary" id="resetBtn">Reset</button>
+        </div>
+
+        <div class="footer-note">
+          Usage note: top panel shows particle paths Xi(t); bottom-left tracks empirical measure mu_t^N; bottom-middle visualizes eta^N via adjacency pixels; bottom-right decomposes Eq. (5) terms into live magnitudes.
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section class="panel canvas-wrap">
+        <div class="canvas-title">Particle Trajectories Xi(t)</div>
+        <div class="canvas-subtitle">Bulk paths (faint) + 3 tracked particles. Adaptive y-scale handles jump tails.</div>
+        <canvas id="trajCanvas"></canvas>
+      </section>
+
+      <section class="bottom-grid">
+        <article class="panel canvas-wrap">
+          <div class="canvas-title">Empirical Measure mu_t^N</div>
+          <div class="canvas-subtitle">Histogram convergence view with optional saved topology overlays.</div>
+          <canvas id="histCanvas" class="fixed-canvas"></canvas>
+          <div class="legend">
+            <span class="chip"><span class="dot" style="background:#2563eb"></span>Current</span>
+            <span class="chip"><span class="dot" style="background:#ef4444"></span>Tracked i=1</span>
+            <span class="chip"><span class="dot" style="background:#22c55e"></span>Tracked i=2</span>
+            <span class="chip"><span class="dot" style="background:#eab308"></span>Tracked i=3</span>
+          </div>
+        </article>
+
+        <article class="panel canvas-wrap">
+          <div class="canvas-title">Digraph Measure eta^N</div>
+          <div class="canvas-subtitle">Adjacency matrix sample. Dark pixels represent active edges.</div>
+          <div class="matrix-box"><canvas id="graphCanvas"></canvas></div>
+          <div class="metrics">
+            <div class="metric"><div class="k">Graph edges</div><div class="v" id="edgeCount">0</div></div>
+            <div class="metric"><div class="k">Density</div><div class="v" id="edgeDensity">0</div></div>
+            <div class="metric"><div class="k">Avg degree</div><div class="v" id="avgDegree">0</div></div>
+            <div class="metric"><div class="k">Topology</div><div class="v" id="topologyOut">all</div></div>
+          </div>
+        </article>
+
+        <article class="panel canvas-wrap">
+          <div class="canvas-title">Levy Noise Convergence Term Monitor</div>
+          <div class="canvas-subtitle">Weak-form decomposition: drift + interaction + Levy operator contribution.</div>
+          <div class="equation">
+            d/dt &lt;mu_t, phi&gt; = &lt;mu_t, phi' f&gt; + Interaction(eta) + &lt;mu_t, A_nu[phi; H]&gt;
+          </div>
+          <div class="metrics">
+            <div class="metric"><div class="k">Drift term |f dt| avg</div><div class="v" id="mDrift">0</div></div>
+            <div class="metric"><div class="k">Interaction |g dt| avg</div><div class="v" id="mInteraction">0</div></div>
+            <div class="metric"><div class="k">Diffusive increment |dW| avg</div><div class="v" id="mDiffusion">0</div></div>
+            <div class="metric"><div class="k">Nonlocal jump |DeltaJ| avg</div><div class="v" id="mJump">0</div></div>
+            <div class="metric"><div class="k">Jump count / frame</div><div class="v" id="mJumpCount">0</div></div>
+            <div class="metric"><div class="k">Second moment E[X^2]</div><div class="v" id="mSecond">0</div></div>
+            <div class="metric"><div class="k">Stability resets</div><div class="v" id="mResets">0</div></div>
+            <div class="metric"><div class="k">Normalized variance split</div><div class="v" id="mVarianceSplit">0</div></div>
+          </div>
+          <div class="compare-grid">
+            <div class="compare-card">
+              <div class="compare-label">Low-intensity jump comparator</div>
+              <canvas id="compareLowCanvas" class="compare-canvas"></canvas>
+            </div>
+            <div class="compare-card">
+              <div class="compare-label">High-intensity jump comparator</div>
+              <canvas id="compareHighCanvas" class="compare-canvas"></canvas>
+            </div>
+          </div>
+          <div class="footer-note">
+            Brownian recovery preset sets jump variance near zero, making paths visually continuous.
+            Levy preset increases jump contribution, exposing nonlocal effects and thicker tails.
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const params = {
+      N: 900,
+      graphType: "er",
+      pEdge: 0.08,
+      kRing: 10,
+      K: 2.0,
+      alpha: 0.5,
+      dt: 0.012,
+      fpsCap: 60,
+      sigma0: 0.72,
+      jumpVar: 0.48,
+      lambda: 6.0,
+      seed: 123456789
+    };
+
+    const dom = {
+      trajCanvas: document.getElementById("trajCanvas"),
+      histCanvas: document.getElementById("histCanvas"),
+      graphCanvas: document.getElementById("graphCanvas"),
+      compareLowCanvas: document.getElementById("compareLowCanvas"),
+      compareHighCanvas: document.getElementById("compareHighCanvas"),
+      graphType: document.getElementById("graphType"),
+      pEdge: document.getElementById("pEdge"),
+      kRing: document.getElementById("kRing"),
+      nParticles: document.getElementById("nParticles"),
+      K: document.getElementById("K"),
+      alpha: document.getElementById("alpha"),
+      dt: document.getElementById("dt"),
+      fpsCap: document.getElementById("fpsCap"),
+      sigma0: document.getElementById("sigma0"),
+      jumpVar: document.getElementById("jumpVar"),
+      lambda: document.getElementById("lambda"),
+      seedInput: document.getElementById("seedInput"),
+      pEdgeOut: document.getElementById("pEdgeOut"),
+      kRingOut: document.getElementById("kRingOut"),
+      nOut: document.getElementById("nOut"),
+      kOut: document.getElementById("kOut"),
+      alphaOut: document.getElementById("alphaOut"),
+      dtOut: document.getElementById("dtOut"),
+      fpsOut: document.getElementById("fpsOut"),
+      sigma0Out: document.getElementById("sigma0Out"),
+      jumpVarOut: document.getElementById("jumpVarOut"),
+      lambdaOut: document.getElementById("lambdaOut"),
+      edgeCount: document.getElementById("edgeCount"),
+      edgeDensity: document.getElementById("edgeDensity"),
+      avgDegree: document.getElementById("avgDegree"),
+      topologyOut: document.getElementById("topologyOut"),
+      mDrift: document.getElementById("mDrift"),
+      mInteraction: document.getElementById("mInteraction"),
+      mDiffusion: document.getElementById("mDiffusion"),
+      mJump: document.getElementById("mJump"),
+      mJumpCount: document.getElementById("mJumpCount"),
+      mSecond: document.getElementById("mSecond"),
+      mResets: document.getElementById("mResets"),
+      mVarianceSplit: document.getElementById("mVarianceSplit"),
+      toggleRun: document.getElementById("toggleRun"),
+      resetBtn: document.getElementById("resetBtn"),
+      presetBrownian: document.getElementById("presetBrownian"),
+      presetLevy: document.getElementById("presetLevy"),
+      presetBalanced: document.getElementById("presetBalanced"),
+      applySeed: document.getElementById("applySeed"),
+      captureOverlay: document.getElementById("captureOverlay"),
+      clearOverlay: document.getElementById("clearOverlay"),
+      pEdgeRow: document.getElementById("pEdgeRow"),
+      kRingRow: document.getElementById("kRingRow")
+    };
+
+    function makeRng(seed) {
+      let t = seed >>> 0;
+      return function rand() {
+        t += 0x6D2B79F5;
+        let x = Math.imul(t ^ (t >>> 15), 1 | t);
+        x ^= x + Math.imul(x ^ (x >>> 7), 61 | x);
+        return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+    let rand = makeRng(params.seed);
+
+    function randn() {
+      let u = 0;
+      let v = 0;
+      while (u === 0) u = rand();
+      while (v === 0) v = rand();
+      return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+    }
+
+    function poisson(lambda) {
+      if (lambda <= 0) return 0;
+      const L = Math.exp(-lambda);
+      let k = 0;
+      let p = 1;
+      do {
+        k++;
+        p *= rand();
+      } while (p > L);
+      return k - 1;
+    }
+
+    const sim = {
+      running: true,
+      frameReq: 0,
+      lastFrameTime: 0,
+      timePos: 0,
+      adj: [],
+      edgeCount: 0,
+      X: new Float32Array(params.N),
+      prevX: new Float32Array(params.N),
+      yAbsMax: 4.5,
+      histSmooth: [],
+      overlayHists: [],
+      resets: 0,
+      metrics: {
+        drift: 0,
+        interaction: 0,
+        diffusion: 0,
+        jump: 0,
+        jumpCount: 0,
+        secondMoment: 0,
+        varSplit: "0 / 0"
+      },
+      compare: {
+        lowX: 0,
+        highX: 0,
+        timePos: 0
+      }
+    };
+
+    const topologyColors = {
+      all: "rgba(59, 130, 246, 0.85)",
+      er: "rgba(16, 185, 129, 0.85)",
+      ring: "rgba(234, 179, 8, 0.85)"
+    };
+
+    function bindControls() {
+      const map = [
+        ["graphType", "graphType", "string"],
+        ["pEdge", "pEdge", "number"],
+        ["kRing", "kRing", "number"],
+        ["nParticles", "N", "number"],
+        ["K", "K", "number"],
+        ["alpha", "alpha", "number"],
+        ["dt", "dt", "number"],
+        ["fpsCap", "fpsCap", "number"],
+        ["sigma0", "sigma0", "number"],
+        ["jumpVar", "jumpVar", "number"],
+        ["lambda", "lambda", "number"]
+      ];
+      for (const [id, key, kind] of map) {
+        const el = dom[id];
+        if (!el) continue;
+        el.value = params[key];
+        el.addEventListener("input", () => {
+          params[key] = kind === "number" ? Number(el.value) : el.value;
+          if (key === "N") resetSimulation(true);
+          if (key === "graphType" || key === "pEdge" || key === "kRing") {
+            buildGraph();
+          }
+          updateControlViews();
+        });
+      }
+
+      dom.toggleRun.addEventListener("click", () => {
+        sim.running = !sim.running;
+        dom.toggleRun.textContent = sim.running ? "Pause" : "Resume";
+      });
+      dom.resetBtn.addEventListener("click", () => resetSimulation(true));
+      dom.applySeed.addEventListener("click", () => {
+        const v = Math.max(1, Math.floor(Number(dom.seedInput.value) || 1));
+        params.seed = v >>> 0;
+        resetRng();
+        resetSimulation(true);
+      });
+      dom.captureOverlay.addEventListener("click", captureOverlay);
+      dom.clearOverlay.addEventListener("click", () => { sim.overlayHists = []; });
+
+      dom.presetBrownian.addEventListener("click", () => {
+        params.sigma0 = 1.0;
+        params.jumpVar = 0.01;
+        params.lambda = 0.5;
+        syncControlsFromParams();
+        resetSimulation(false);
+      });
+      dom.presetLevy.addEventListener("click", () => {
+        params.sigma0 = 0.18;
+        params.jumpVar = 1.2;
+        params.lambda = 10.0;
+        syncControlsFromParams();
+        resetSimulation(false);
+      });
+      dom.presetBalanced.addEventListener("click", () => {
+        params.sigma0 = 0.72;
+        params.jumpVar = 0.48;
+        params.lambda = 6.0;
+        syncControlsFromParams();
+        resetSimulation(false);
+      });
+    }
+
+    function syncControlsFromParams() {
+      dom.graphType.value = params.graphType;
+      dom.pEdge.value = params.pEdge;
+      dom.kRing.value = params.kRing;
+      dom.nParticles.value = params.N;
+      dom.K.value = params.K;
+      dom.alpha.value = params.alpha;
+      dom.dt.value = params.dt;
+      dom.fpsCap.value = params.fpsCap;
+      dom.sigma0.value = params.sigma0;
+      dom.jumpVar.value = params.jumpVar;
+      dom.lambda.value = params.lambda;
+      dom.seedInput.value = params.seed;
+      updateControlViews();
+    }
+
+    function updateControlViews() {
+      dom.pEdgeOut.textContent = Number(params.pEdge).toFixed(2);
+      dom.kRingOut.textContent = String(Math.floor(params.kRing));
+      dom.nOut.textContent = String(Math.floor(params.N));
+      dom.kOut.textContent = Number(params.K).toFixed(2);
+      dom.alphaOut.textContent = Number(params.alpha).toFixed(2);
+      dom.dtOut.textContent = Number(params.dt).toFixed(3);
+      dom.fpsOut.textContent = String(Math.floor(params.fpsCap));
+      dom.sigma0Out.textContent = Number(params.sigma0).toFixed(2);
+      dom.jumpVarOut.textContent = Number(params.jumpVar).toFixed(2);
+      dom.lambdaOut.textContent = Number(params.lambda).toFixed(1);
+      dom.pEdgeRow.style.display = params.graphType === "er" ? "block" : "none";
+      dom.kRingRow.style.display = params.graphType === "ring" ? "block" : "none";
+      dom.topologyOut.textContent = params.graphType;
+    }
+
+    function resetRng() {
+      rand = makeRng(params.seed >>> 0);
+    }
+
+    function captureOverlay() {
+      if (!sim.histSmooth || sim.histSmooth.length === 0) return;
+      sim.overlayHists.push({
+        type: params.graphType,
+        values: sim.histSmooth.slice(),
+        color: topologyColors[params.graphType] || "rgba(99, 102, 241, 0.85)"
+      });
+      if (sim.overlayHists.length > 6) sim.overlayHists.shift();
+    }
+
+    function buildGraph() {
+      const N = Math.floor(params.N);
+      const type = params.graphType;
+      const adj = Array.from({ length: N }, () => []);
+      let edges = 0;
+
+      if (type === "er") {
+        for (let i = 0; i < N; i++) {
+          for (let j = 0; j < N; j++) {
+            if (rand() < params.pEdge) {
+              adj[i].push(j);
+              edges++;
+            }
+          }
+        }
+      } else if (type === "ring") {
+        const k = Math.max(1, Math.floor(params.kRing));
+        for (let i = 0; i < N; i++) {
+          for (let s = 1; s <= k; s++) {
+            adj[i].push((i + s) % N);
+            adj[i].push((i - s + N) % N);
+            edges += 2;
+          }
+        }
+      } else {
+        edges = N * N;
+      }
+
+      sim.adj = adj;
+      sim.edgeCount = edges;
+      drawGraphMatrix();
+      updateGraphStats();
+    }
+
+    function updateGraphStats() {
+      const N = Math.max(1, params.N);
+      const density = sim.edgeCount / (N * N);
+      const avgDeg = sim.edgeCount / N;
+      dom.edgeCount.textContent = sim.edgeCount.toLocaleString();
+      dom.edgeDensity.textContent = density.toFixed(4);
+      dom.avgDegree.textContent = avgDeg.toFixed(2);
+    }
+
+    function drawGraphMatrix() {
+      const canvas = dom.graphCanvas;
+      const ctx = canvas.getContext("2d");
+      const N = Math.floor(params.N);
+      const maxPx = 220;
+      const M = Math.min(N, maxPx);
+      canvas.width = M;
+      canvas.height = M;
+      const img = ctx.createImageData(M, M);
+      const d = img.data;
+
+      for (let i = 0; i < d.length; i += 4) {
+        d[i] = 248; d[i + 1] = 250; d[i + 2] = 252; d[i + 3] = 255;
+      }
+
+      const edgeColor = [37, 99, 235];
+      const type = params.graphType;
+      if (type === "all") {
+        for (let i = 0; i < d.length; i += 4) {
+          d[i] = edgeColor[0];
+          d[i + 1] = edgeColor[1];
+          d[i + 2] = edgeColor[2];
+        }
+      } else {
+        const step = N / M;
+        for (let ii = 0; ii < M; ii++) {
+          const i = Math.min(N - 1, Math.floor(ii * step));
+          const neighbors = sim.adj[i] || [];
+          for (let k = 0; k < neighbors.length; k++) {
+            const j = neighbors[k];
+            const jj = Math.min(M - 1, Math.floor(j / step));
+            const idx = (ii * M + jj) * 4;
+            d[idx] = edgeColor[0];
+            d[idx + 1] = edgeColor[1];
+            d[idx + 2] = edgeColor[2];
+          }
+        }
+      }
+      ctx.putImageData(img, 0, 0);
+    }
+
+    function resizeCanvases() {
+      const tr = dom.trajCanvas.getBoundingClientRect();
+      const hi = dom.histCanvas.getBoundingClientRect();
+      const cl = dom.compareLowCanvas.getBoundingClientRect();
+      const ch = dom.compareHighCanvas.getBoundingClientRect();
+      dom.trajCanvas.width = Math.max(400, Math.floor(tr.width));
+      dom.trajCanvas.height = Math.max(180, Math.floor(tr.height));
+      dom.histCanvas.width = Math.max(260, Math.floor(hi.width));
+      dom.histCanvas.height = Math.max(120, Math.floor(hi.height));
+      dom.compareLowCanvas.width = Math.max(120, Math.floor(cl.width));
+      dom.compareLowCanvas.height = Math.max(50, Math.floor(cl.height));
+      dom.compareHighCanvas.width = Math.max(120, Math.floor(ch.width));
+      dom.compareHighCanvas.height = Math.max(50, Math.floor(ch.height));
+    }
+
+    function resetSimulation(clearOverlays) {
+      if (clearOverlays) sim.overlayHists = [];
+      const N = Math.floor(params.N);
+      sim.X = new Float32Array(N);
+      sim.prevX = new Float32Array(N);
+      sim.histSmooth = [];
+      sim.timePos = 0;
+      sim.yAbsMax = 4.5;
+      sim.resets = 0;
+      for (let i = 0; i < N; i++) sim.X[i] = randn() * 0.55;
+      sim.compare.lowX = sim.X[0] || 0;
+      sim.compare.highX = sim.X[0] || 0;
+      sim.compare.timePos = 0;
+      const tCtx = dom.trajCanvas.getContext("2d");
+      tCtx.fillStyle = "#0f172a";
+      tCtx.fillRect(0, 0, dom.trajCanvas.width, dom.trajCanvas.height);
+      const cLow = dom.compareLowCanvas.getContext("2d");
+      const cHigh = dom.compareHighCanvas.getContext("2d");
+      cLow.fillStyle = "#ffffff";
+      cLow.fillRect(0, 0, dom.compareLowCanvas.width, dom.compareLowCanvas.height);
+      cHigh.fillStyle = "#ffffff";
+      cHigh.fillRect(0, 0, dom.compareHighCanvas.width, dom.compareHighCanvas.height);
+      buildGraph();
+      updateMetricsUI();
+    }
+
+    function drawCompareStep(drift0, dt, jumpVar, brownScale) {
+      const lowCanvas = dom.compareLowCanvas;
+      const highCanvas = dom.compareHighCanvas;
+      const lowCtx = lowCanvas.getContext("2d");
+      const highCtx = highCanvas.getContext("2d");
+      const w = lowCanvas.width;
+      const h = lowCanvas.height;
+      const yAbs = 6;
+      const mapY = (v) => h * (1 - (v + yAbs) / (2 * yAbs));
+
+      const nextPos = (sim.compare.timePos + 1) % w;
+      if (nextPos === 0) {
+        lowCtx.fillStyle = "#ffffff";
+        lowCtx.fillRect(0, 0, w, h);
+        highCtx.fillStyle = "#ffffff";
+        highCtx.fillRect(0, 0, w, h);
+      } else {
+        lowCtx.fillStyle = "#ffffff";
+        lowCtx.fillRect(nextPos, 0, 3, h);
+        highCtx.fillStyle = "#ffffff";
+        highCtx.fillRect(nextPos, 0, 3, h);
+      }
+
+      const lowLambda = Math.max(0.5, params.lambda * 0.25);
+      const highLambda = Math.max(2, params.lambda * 2.0);
+      const lowStd = Math.sqrt(Math.max(0, jumpVar) / lowLambda);
+      const highStd = Math.sqrt(Math.max(0, jumpVar) / highLambda);
+
+      let lowJump = 0;
+      const lowN = poisson(lowLambda * dt);
+      for (let j = 0; j < lowN; j++) lowJump += randn() * lowStd;
+
+      let highJump = 0;
+      const highN = poisson(highLambda * dt);
+      for (let j = 0; j < highN; j++) highJump += randn() * highStd;
+
+      const lowPrev = sim.compare.lowX;
+      const highPrev = sim.compare.highX;
+      sim.compare.lowX = Math.max(-20, Math.min(20, lowPrev + drift0 + brownScale * Math.sqrt(dt) * randn() + lowJump));
+      sim.compare.highX = Math.max(-20, Math.min(20, highPrev + drift0 + brownScale * Math.sqrt(dt) * randn() + highJump));
+
+      lowCtx.beginPath();
+      lowCtx.strokeStyle = "#0ea5e9";
+      lowCtx.lineWidth = 1.4;
+      lowCtx.moveTo(sim.compare.timePos, mapY(lowPrev));
+      lowCtx.lineTo(nextPos, mapY(sim.compare.lowX));
+      lowCtx.stroke();
+
+      highCtx.beginPath();
+      highCtx.strokeStyle = "#f97316";
+      highCtx.lineWidth = 1.4;
+      highCtx.moveTo(sim.compare.timePos, mapY(highPrev));
+      highCtx.lineTo(nextPos, mapY(sim.compare.highX));
+      highCtx.stroke();
+
+      sim.compare.timePos = nextPos;
+    }
+
+    function updateMetricsUI() {
+      dom.mDrift.textContent = sim.metrics.drift.toFixed(5);
+      dom.mInteraction.textContent = sim.metrics.interaction.toFixed(5);
+      dom.mDiffusion.textContent = sim.metrics.diffusion.toFixed(5);
+      dom.mJump.textContent = sim.metrics.jump.toFixed(5);
+      dom.mJumpCount.textContent = sim.metrics.jumpCount.toString();
+      dom.mSecond.textContent = sim.metrics.secondMoment.toFixed(4);
+      dom.mResets.textContent = sim.resets.toString();
+      dom.mVarianceSplit.textContent = sim.metrics.varSplit;
+    }
+
+    function tick() {
+      const N = sim.X.length;
+      const dt = Math.max(0.002, Math.min(0.05, params.dt));
+      const tCanvas = dom.trajCanvas;
+      const hCanvas = dom.histCanvas;
+      const tCtx = tCanvas.getContext("2d", { alpha: false });
+      const hCtx = hCanvas.getContext("2d");
+      const w = tCanvas.width;
+      const h = tCanvas.height;
+
+      let maxAbs = 0;
+      const x = sim.X;
+      const prev = sim.prevX;
+      const sinX = new Float32Array(N);
+      const cosX = new Float32Array(N);
+      let sumSin = 0;
+      let sumCos = 0;
+      for (let i = 0; i < N; i++) {
+        prev[i] = x[i];
+        const sx = Math.sin(x[i]);
+        const cx = Math.cos(x[i]);
+        sinX[i] = sx;
+        cosX[i] = cx;
+        if (params.graphType === "all") {
+          sumSin += sx;
+          sumCos += cx;
+        }
+      }
+
+      const den = Math.max(1e-9, params.sigma0 * params.sigma0 + params.jumpVar);
+      const brownVar = (params.sigma0 * params.sigma0) / den;
+      const jumpVar = params.jumpVar / den;
+      const brownScale = Math.sqrt(Math.max(0, brownVar));
+      const expectedJumps = Math.max(0, params.lambda * dt);
+      const jumpStd = params.lambda > 0 ? Math.sqrt(Math.max(0, jumpVar) / params.lambda) : 0;
+
+      let driftAcc = 0;
+      let interAcc = 0;
+      let dWAcc = 0;
+      let jumpAcc = 0;
+      let jumpCount = 0;
+      let x2 = 0;
+      let drift0 = 0;
+
+      const adj = sim.adj;
+      const invN = 1 / N;
+      for (let i = 0; i < N; i++) {
+        const xi = x[i];
+        let interaction = 0;
+        if (params.graphType === "all") {
+          interaction = params.K * invN * (sumSin * cosX[i] - sumCos * sinX[i]);
+        } else {
+          const neigh = adj[i];
+          let lsin = 0;
+          let lcos = 0;
+          for (let k = 0; k < neigh.length; k++) {
+            const j = neigh[k];
+            lsin += sinX[j];
+            lcos += cosX[j];
+          }
+          interaction = params.K * invN * (lsin * cosX[i] - lcos * sinX[i]);
+        }
+
+        const drift = -params.alpha * xi + interaction;
+        if (i === 0) drift0 = drift * dt;
+        const dW = brownScale * Math.sqrt(dt) * randn();
+        let jump = 0;
+        if (jumpVar > 0 && params.lambda > 0) {
+          const nJ = poisson(expectedJumps);
+          jumpCount += nJ;
+          for (let j = 0; j < nJ; j++) jump += randn() * jumpStd;
+        }
+
+        let next = xi + drift * dt + dW + jump;
+        if (!Number.isFinite(next)) {
+          sim.resets++;
+          next = randn() * 0.2;
+        }
+        if (next > 25) next = 25;
+        if (next < -25) next = -25;
+        x[i] = next;
+
+        const ax = Math.abs(next);
+        if (ax > maxAbs) maxAbs = ax;
+        x2 += next * next;
+        driftAcc += Math.abs((-params.alpha * xi) * dt);
+        interAcc += Math.abs(interaction * dt);
+        dWAcc += Math.abs(dW);
+        jumpAcc += Math.abs(jump);
+      }
+
+      sim.yAbsMax = 0.9 * sim.yAbsMax + 0.1 * Math.min(18, Math.max(4, maxAbs * 1.3));
+      const yAbs = sim.yAbsMax;
+      const mapY = (v) => h * (1 - (v + yAbs) / (2 * yAbs));
+
+      const newPos = (sim.timePos + 1) % w;
+      if (newPos === 0) {
+        tCtx.fillStyle = "#0f172a";
+        tCtx.fillRect(0, 0, w, h);
+      } else {
+        tCtx.fillStyle = "#0f172a";
+        tCtx.fillRect(newPos, 0, 4, h);
+      }
+
+      tCtx.beginPath();
+      tCtx.strokeStyle = "rgba(59,130,246,0.12)";
+      tCtx.lineWidth = 1;
+      for (let i = 3; i < N; i++) {
+        tCtx.moveTo(sim.timePos, mapY(prev[i]));
+        tCtx.lineTo(newPos, mapY(x[i]));
+      }
+      tCtx.stroke();
+
+      const tracked = ["#ef4444", "#22c55e", "#eab308"];
+      for (let i = 0; i < Math.min(3, N); i++) {
+        tCtx.beginPath();
+        tCtx.strokeStyle = tracked[i];
+        tCtx.lineWidth = 2.3;
+        tCtx.moveTo(sim.timePos, mapY(prev[i]));
+        tCtx.lineTo(newPos, mapY(x[i]));
+        tCtx.stroke();
+      }
+      sim.timePos = newPos;
+
+      const bins = 70;
+      const hist = new Array(bins).fill(0);
+      for (let i = 0; i < N; i++) {
+        const b = Math.floor(((x[i] + yAbs) / (2 * yAbs)) * bins);
+        if (b >= 0 && b < bins) hist[b]++;
+      }
+
+      if (sim.histSmooth.length !== bins) sim.histSmooth = hist.slice();
+      for (let i = 0; i < bins; i++) sim.histSmooth[i] = 0.76 * sim.histSmooth[i] + 0.24 * hist[i];
+
+      hCtx.clearRect(0, 0, hCanvas.width, hCanvas.height);
+      const maxBin = Math.max(1, ...sim.histSmooth);
+      const bw = hCanvas.width / bins;
+      hCtx.fillStyle = "#2563eb";
+      for (let i = 0; i < bins; i++) {
+        const bh = (sim.histSmooth[i] / maxBin) * (hCanvas.height - 12);
+        hCtx.fillRect(i * bw, hCanvas.height - bh, Math.max(1, bw - 1), bh);
+      }
+
+      if (sim.overlayHists.length > 0) {
+        for (let s = 0; s < sim.overlayHists.length; s++) {
+          const overlay = sim.overlayHists[s];
+          const vals = overlay.values;
+          const m = Math.max(1, ...vals);
+          hCtx.beginPath();
+          hCtx.strokeStyle = overlay.color;
+          hCtx.lineWidth = 1.3;
+          for (let i = 0; i < Math.min(vals.length, bins); i++) {
+            const yy = hCanvas.height - (vals[i] / m) * (hCanvas.height - 12);
+            const xx = i * bw + bw * 0.5;
+            if (i === 0) hCtx.moveTo(xx, yy); else hCtx.lineTo(xx, yy);
+          }
+          hCtx.stroke();
+        }
+      }
+
+      sim.metrics.drift = driftAcc / N;
+      sim.metrics.interaction = interAcc / N;
+      sim.metrics.diffusion = dWAcc / N;
+      sim.metrics.jump = jumpAcc / N;
+      sim.metrics.jumpCount = jumpCount;
+      sim.metrics.secondMoment = x2 / N;
+      sim.metrics.varSplit = brownVar.toFixed(2) + " / " + jumpVar.toFixed(2);
+      updateMetricsUI();
+      drawCompareStep(drift0, dt, jumpVar, brownScale);
+    }
+
+    function animate(ts) {
+      const interval = 1000 / Math.max(20, params.fpsCap);
+      if (sim.running && ts - sim.lastFrameTime >= interval) {
+        tick();
+        sim.lastFrameTime = ts;
+      }
+      sim.frameReq = requestAnimationFrame(animate);
+    }
+
+    function boot() {
+      bindControls();
+      syncControlsFromParams();
+      resetRng();
+      resizeCanvases();
+      resetSimulation(true);
+      window.addEventListener("resize", () => {
+        resizeCanvases();
+        const tCtx = dom.trajCanvas.getContext("2d");
+        tCtx.fillStyle = "#0f172a";
+        tCtx.fillRect(0, 0, dom.trajCanvas.width, dom.trajCanvas.height);
+      });
+      sim.frameReq = requestAnimationFrame(animate);
+    }
+
+    boot();
+  </script>
+</body>
+</html>
