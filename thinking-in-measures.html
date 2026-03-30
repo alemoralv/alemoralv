@@ -626,6 +626,420 @@
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <main class="thinking-main">
+        <section class="card blog-card">
+            <header class="blog-header">
+                <button class="blog-toggle-btn" type="button" onclick="toggleBlog(this)" aria-expanded="false">
+                    <span>From Borel Functional Calculus to the Bounded Spectral Theorem</span>
+                    <span class="blog-toggle-icon" aria-hidden="true">+</span>
+                </button>
+            </header>
+            <div class="blog-content">
+                <p class="blog-meta">15-minute read - Functional analysis, topology, operator theory</p>
+                <p><a href="pdfs/BT_Morera">BF-Calculus and Spectral Theorem</a></p>
+    
+                <p>
+                    This bachelor thesis studies how one can pass from the familiar finite-dimensional spectral theorem
+                    to a fully infinite-dimensional representation theorem for bounded self-adjoint operators on separable
+                    Hilbert spaces. The central problem is not merely to diagonalize an operator in an abstract sense, but
+                    to construct a precise rule that assigns an operator <em>f(M)</em> to every bounded Borel-measurable
+                    function <em>f</em> on the spectrum of <em>M</em>.
+                </p>
+    
+                <p>
+                    The final target is a spectral representation in which the operator becomes multiplication by the scalar
+                    function itself. In this sense, the whole thesis may be read as a carefully organized passage from algebraic
+                    expressions in powers of <em>M</em> to measurable functional expressions over its spectrum. The main point is that
+                    self-adjoint operators are not only objects that admit eigenvalue-like decompositions in finite dimensions,
+                    but also operators that can be understood through measure-theoretic and topological machinery in the infinite-dimensional setting.
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    f(M)=\int_{\sigma(M)} f\,dP=\mathcal{U}\mathcal{M}_f\mathcal{U}^*
+                    \]
+                </div>
+    
+                <p>
+                    Here, \(\mathcal{M}_f\) denotes multiplication by \(f\) on a suitable Hilbert space of sections,
+                    \(P\) is the spectral measure associated with \(M\), and \(\mathcal{U}\) is an isometric isomorphism
+                    transporting multiplication on the spectral side back to the original Hilbert space.
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \begin{array}{ccc}
+                    L^2(\sigma(M);\chi) & \xrightarrow{\ \mathcal{M}_f\ } & L^2(\sigma(M);\chi) \\
+                    \mathcal{U}\downarrow & & \downarrow\mathcal{U} \\
+                    H & \xrightarrow{\ f(M)\ } & H
+                    \end{array}
+                    \]
+                </div>
+    
+                <p><strong>Chapter 1 — Finite-Dimensional Spectral Theorem.</strong></p>
+    
+                <p>
+                    The thesis begins in the finite-dimensional setting, where the spectral theorem is already known from linear algebra.
+                    If \(M=M^*\in\mathcal L(H)\) and \(H\cong \ell^2(\{1,\dots,n\})\), then there exists a unitary operator \(U\)
+                    and a diagonal operator \(\Lambda=\mathrm{diag}(\lambda_1,\dots,\lambda_n)\) such that
+                    \[
+                    M=U\Lambda U^*.
+                    \]
+                    This is the point where the geometric structure first becomes visible: the operator is decomposed into spectral blocks,
+                    and each eigenvalue \(\lambda\) comes with an orthogonal projection onto its eigenspace.
+                </p>
+    
+                <p>
+                    Instead of viewing this merely as diagonalization, the thesis rewrites the operator as a sum over spectral projections:
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    M=\sum_{\lambda\in\sigma(M)} \lambda P_\lambda.
+                    \]
+                </div>
+    
+                <p>
+                    This already suggests a functional calculus. Indeed, if one can define \(f(M)\) by acting on each spectral block with
+                    the scalar \(f(\lambda)\), then one is naturally led to
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    f(M)=\sum_{\lambda\in\sigma(M)} f(\lambda)P_\lambda.
+                    \]
+                </div>
+    
+                <p>
+                    The crucial insight is that the spectral theorem is not only a statement about one operator \(M\), but also about
+                    an entire algebra of operators generated from \(M\) by functions. This finite-dimensional model serves as the conceptual
+                    prototype for the rest of the thesis: later, sums will become integrals, eigenspaces will become measurable fibers,
+                    and diagonal multiplication will survive as the correct final form.
+                </p>
+    
+                <p><strong>Chapter 2 — Overture.</strong></p>
+    
+                <p>
+                    The second chapter prepares the technical framework. At first sight, it may seem far removed from spectral theory:
+                    it introduces initial topologies, weak and weak* topologies, nets, dense extension principles, and measurable Hilbert bundles.
+                    Yet this chapter is essential because the later extension procedures are not purely algebraic; they depend on choosing the right
+                    topologies and the right notion of continuity.
+                </p>
+    
+                <p>
+                    One of the conceptual pillars is the characterization of convergence in an initial topology. If \(\mathcal F\subseteq Y^X\)
+                    is a family of functions and \(X\) is endowed with the weakest topology making all \(f\in\mathcal F\) continuous, then a net
+                    \((x_a)\) converges to \(x\) precisely when all observable coordinates converge:
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    x_a\to x
+                    \quad\Longleftrightarrow\quad
+                    \forall f\in\mathcal F:\ f(x_a)\to f(x).
+                    \]
+                </div>
+    
+                <p>
+                    This perspective becomes decisive later, when Borel functions and operators are equipped with topologies weaker than the norm topology.
+                    Another major ingredient is the construction of measurable Hilbert bundles \(\chi\), together with the associated spaces
+                    \(L^2(\Omega;\chi)\). These are the natural infinite-dimensional replacements for the direct sum of eigenspaces from Chapter 1.
+                    In finite dimensions one decomposes the Hilbert space into spectral pieces; here one allows the fiber over each point of the spectrum
+                    to be a Hilbert space, and one studies square-integrable sections over the whole spectral set.
+                </p>
+    
+                <p>
+                    Thus, Chapter 2 does not yet prove the spectral theorem, but it builds the language in which the final theorem can even be formulated.
+                </p>
+    
+                <p><strong>Chapter 3 — Continuous Functional Calculus.</strong></p>
+    
+                <p>
+                    The third chapter carries out the first substantial extension step. It starts from polynomials. Given
+                    \(p(x)=\sum_{n=0}^N a_nx^n\), one defines
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    p(M):=\sum_{n=0}^N a_n M^n.
+                    \]
+                </div>
+    
+                <p>
+                    This is the most natural possible definition, but the important point is not its formal appearance; it is the structural statement that
+                    follows. The polynomial map \(p\mapsto p(M)\) is shown to be a unital, isometric algebra \(*\)-homomorphism. In particular,
+                    multiplication, adjoints, and norms are preserved in exactly the way one hopes for. This means the operator calculus respects the
+                    algebraic and analytic structure of the function space.
+                </p>
+    
+                <p>
+                    The chapter then proves the spectrum-mapping principle in the polynomial case and extends the entire construction to continuous functions
+                    on the compact spectrum \(\sigma(M)\). The key mechanism is Stone–Weierstrass approximation: continuous functions can be approximated
+                    uniformly by polynomials, and the operator-side construction is rigid enough to pass to the limit.
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \sigma\bigl(f(M)\bigr)=f\bigl(\sigma(M)\bigr),
+                    \qquad f\in \mathcal C(\sigma(M)).
+                    \]
+                </div>
+    
+                <p>
+                    This chapter is where the thesis first makes clear that the operator \(M\) is being converted into a genuine functional object:
+                    one is no longer restricted to algebraic expressions in \(M\), but may apply arbitrary continuous functions to it.
+                </p>
+    
+                <p><strong>Chapter 4 — Advanced Tools from Topology and Functional Analysis.</strong></p>
+    
+                <p>
+                    The fourth chapter supplies the heavy functional-analytic machinery needed for the next extension step. The transition from continuous
+                    functions to bounded Borel-measurable functions is subtler than the transition from polynomials to continuous functions. Uniform
+                    approximation is no longer sufficient, and one needs duality, weak* compactness, and operator topologies.
+                </p>
+    
+                <p>
+                    For this reason, the thesis develops Goldstine's theorem, studies weaker notions of convergence, and proves that
+                    \(\mathcal L(H)\) is a dual space via trace class operators. Conceptually, the point is that bounded operators must be placed in a setting
+                    where weak* arguments become available. Once \(\mathcal L(H)\) is recognized as a dual object, one can exploit bidual extensions without
+                    losing control of the algebraic structure established earlier.
+                </p>
+    
+                <p>
+                    This chapter therefore acts as the analytical bridge between the continuous world and the measurable world. It is not ornamental scaffolding:
+                    without it, the Borel extension diagram of the next chapter would have no foundation.
+                </p>
+    
+                <p><strong>Chapter 5 — Borel Functional Calculus.</strong></p>
+    
+                <p>
+                    This is the conceptual center of the thesis. The task is now to extend the continuous functional calculus to all bounded
+                    Borel-measurable functions on the spectrum. The guiding idea is that one should not define the extension ad hoc, but rather construct it
+                    through a commutative diagram involving biduals and canonical embeddings.
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \begin{array}{ccccc}
+                    \mathbb K[x]\!\mid_{\sigma(M)} & \subset & \mathcal C(\sigma(M)) & \subset & \mathcal B(\sigma(M)) \\
+                    & & \downarrow \Gamma & & \downarrow \widehat{\Gamma} \\
+                    & & \mathcal L(H) & \subset & \mathcal L(H)''
+                    \end{array}
+                    \]
+                </div>
+    
+                <p>
+                    The philosophy is simple but powerful: first understand the continuous calculus as an operator between Banach spaces, then pass to the
+                    bidual, and finally return to \(\mathcal L(H)\) through the canonical projection. In this way, one obtains an extension
+                    \(f\mapsto f(M)\) for every bounded Borel-measurable \(f\), while preserving the decisive properties of the earlier stages.
+                </p>
+    
+                <p>
+                    The chapter then turns to indicator functions. These are crucial because they generate measurable structure. Once one sets
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    P(S):=\mathbbm 1_S(M),
+                    \]
+                </div>
+    
+                <p>
+                    the operator calculus immediately begins to behave like a measure. Indeed, the family \(P\) becomes a spectral measure, and this is the
+                    moment when the thesis shifts from function calculus to operator-valued integration. In finite dimensions, projections onto eigenspaces
+                    were the atoms of the theory. Here, indicator functions produce the measurable analogue of those atoms.
+                </p>
+    
+                <p><strong>Chapter 6 — Integration with Spectral Measures.</strong></p>
+    
+                <p>
+                    Once the spectral measure is available, the next natural step is to integrate with respect to it. The sixth chapter constructs the spectral
+                    integral by following the same hierarchy that underlies the ordinary Lebesgue integral: first indicator functions, then simple functions,
+                    and finally bounded Borel-measurable functions.
+                </p>
+    
+                <p>
+                    The starting prescription is
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \int_\Omega \mathbbm 1_S\,dP := \mathbbm 1_S(M).
+                    \]
+                </div>
+    
+                <p>
+                    From there, linearity extends the definition to simple functions, and a uniform approximation argument extends it further to bounded
+                    measurable functions. What matters is that the resulting map remains a unital algebra \(*\)-homomorphism and agrees with the Borel
+                    functional calculus already constructed in Chapter 5.
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \int_\Omega f\,dP
+                    \quad\text{is defined so that}\quad
+                    f(M)=\int_{\sigma(M)} f\,dP.
+                    \]
+                </div>
+    
+                <p>
+                    This identity is more than a notational convenience. It says that the abstract extension procedure of Chapter 5 and the concrete
+                    integration procedure of Chapter 6 produce the same operator. Thus the two viewpoints—functional calculus and spectral integration—are
+                    proven to be one and the same theory.
+                </p>
+    
+                <p><strong>Chapter 7 — Bounded Spectral Theorem.</strong></p>
+    
+                <p>
+                    The final chapter gathers every thread of the thesis into a single representation theorem. Starting from a bounded self-adjoint operator
+                    \(M\), one first has a Borel functional calculus, then a spectral measure, then a spectral integral. The last step is to show that the
+                    whole theory can be represented on a Hilbert space of sections where \(M\) becomes multiplication by the identity function and \(f(M)\)
+                    becomes multiplication by \(f\).
+                </p>
+    
+                <p>
+                    The final theorem produces three objects: a probability measure \(\mu\) on the spectrum, a measurable Hilbert bundle \(\chi\) over
+                    \(\sigma(M)\), and an isometric isomorphism
+                    \[
+                    \mathcal U:L^2(\sigma(M);\chi)\to H.
+                    \]
+                    With these in hand, one obtains the commuting picture announced at the start:
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \begin{array}{ccc}
+                    L^2(\sigma(M);\chi) & \xrightarrow{\ \mathcal M_f\ } & L^2(\sigma(M);\chi) \\
+                    \mathcal U\downarrow & & \downarrow\mathcal U \\
+                    H & \xrightarrow{\ f(M)\ } & H
+                    \end{array}
+                    \]
+                </div>
+    
+                <p>
+                    In particular, taking \(f=\mathrm{id}\) yields the spectral resolution of the operator itself:
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    M=\mathcal U\mathcal M_{\mathrm{id}}\mathcal U^*.
+                    \]
+                </div>
+    
+                <p>
+                    At this stage the analogy with finite-dimensional diagonalization is complete, but the thesis makes clear that the infinite-dimensional
+                    result is not obtained by analogy alone. It is built through a chain of carefully justified extensions: polynomial, continuous, Borel,
+                    measure-valued, integral, and finally representation-theoretic.
+                </p>
+    
+                <p><strong>Logical architecture of the thesis.</strong></p>
+    
+                <div class="blog-equation">
+                    \[
+                    \text{Finite-dimensional model}
+                    \;\longrightarrow\;
+                    \text{Polynomial FC}
+                    \;\longrightarrow\;
+                    \text{Continuous FC}
+                    \;\longrightarrow\;
+                    \text{Borel FC}
+                    \;\longrightarrow\;
+                    \text{Spectral Measure}
+                    \;\longrightarrow\;
+                    \text{Spectral Integral}
+                    \;\longrightarrow\;
+                    \text{Bounded Spectral Theorem.}
+                    \]
+                </div>
+    
+                <p>
+                    This is what gives the thesis its coherence. Each chapter contributes a necessary layer, and the final theorem does not arrive as a sudden
+                    formal statement but as the inevitable end point of the preceding structure. The reader is led from a concrete linear-algebraic intuition
+                    to an operator-theoretic theorem whose natural home is measure theory and Hilbert space geometry.
+                </p>
+    
+                <p class="blog-impact">
+                    Impact: the thesis gives a conceptually transparent route from diagonalization in finite dimensions to the full bounded spectral theorem,
+                    showing how topology, duality, measurable structure, and operator algebras cooperate to turn a self-adjoint operator into multiplication
+                    on a spectral space.
+                </p>
+    
+               
+            </div>
+        </section>
+    </main>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!--
 
     <main class="thinking-main">
