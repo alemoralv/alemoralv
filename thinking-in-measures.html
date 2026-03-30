@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thinking in Measures | Alejandro Morera Alvarez</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <canvas id="vector-field-canvas"></canvas>
+
+    <section class="hero" id="home">
+        <div class="hero-decoration hero-decoration-1"></div>
+        <div class="hero-decoration hero-decoration-2"></div>
+        <div class="hero-decoration hero-decoration-3"></div>
+
+        <nav>
+            <div class="nav-inner">
+                <a href="index.html#home" class="nav-logo">alemoralv.</a>
+                <a href="thinking-in-measures.html" class="nav-cta" aria-current="page">Thinking in Measures</a>
+                <ul class="nav-links">
+                    <li><a href="index.html#about" class="nav-link">About Me</a></li>
+                    <li><a href="index.html#projects" class="nav-link">Projects</a></li>
+                    <li><a href="index.html#notes" class="nav-link">Notes</a></li>
+                    <li><a href="index.html#academic-background" class="nav-link">Academic</a></li>
+                    <li><a href="index.html#modules" class="nav-link">Recommended Literature</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="hero-content thinking-hero-content">
+            <div class="hero-text thinking-hero-text">
+                <p class="hero-greeting">A focused reading track</p>
+                <h1 class="hero-name thinking-title">Thinking in Measures</h1>
+                <p class="hero-bio thinking-subtitle">
+                    Ten-minute paper notes with the core ideas, why they matter, and where they can be applied.
+                    Posts on this page are written to stay readable while keeping mathematical precision.
+                </p>
+                <p class="thinking-equation-preview">
+                    Example inline equation: \( \mathbb{E}[X_t^2] = \mathrm{Var}(X_t) + (\mathbb{E}[X_t])^2 \)
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <main class="thinking-main">
+        <section class="card blog-card">
+            <header class="blog-header">
+                <h2>How Wasserstein Geometry Shapes Learning Dynamics</h2>
+                <p class="blog-meta">10 min read - Measure theory, optimization, machine learning</p>
+            </header>
+            <p>
+                This note explains how moving probability mass can be used to study optimization paths.
+                The key idea is to compare distributions through transport maps rather than pointwise errors.
+            </p>
+            <p>
+                In practice, this viewpoint helps interpret convergence behavior in stochastic systems and
+                clarifies why some dynamics remain stable under perturbations.
+            </p>
+            <div class="blog-equation">
+                \[
+                W_2^2(\mu,\nu) = \inf_{\gamma \in \Pi(\mu,\nu)} \int_{\mathbb{R}^d \times \mathbb{R}^d} \|x-y\|^2 \, d\gamma(x,y)
+                \]
+            </div>
+            <p class="blog-impact">
+                Impact: gives a geometric language for model behavior and bridges probability, PDE, and optimization.
+            </p>
+        </section>
+
+        <section class="card blog-card">
+            <header class="blog-header">
+                <h2>Concentration Inequalities in High Dimensions</h2>
+                <p class="blog-meta">10 min read - Probability, random structures, data science</p>
+            </header>
+            <p>
+                This note summarizes why high-dimensional random objects often stay close to their expected value.
+                The result is a practical toolkit for proving reliability of randomized algorithms.
+            </p>
+            <p>
+                The main lesson is that tail bounds become a design principle: they translate uncertainty
+                into explicit confidence guarantees.
+            </p>
+            <div class="blog-equation">
+                \[
+                \mathbb{P}\!\left(|X - \mathbb{E}X| \ge t\right) \le 2\exp\!\left(-\frac{2t^2}{\sum_{i=1}^n c_i^2}\right)
+                \]
+            </div>
+            <p class="blog-impact">
+                Impact: supports robust reasoning in modern AI pipelines where randomness is unavoidable.
+            </p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Alejandro Morera Alvarez. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)'], ['$', '$']],
+                displayMath: [['\\[', '\\]'], ['$$', '$$']]
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            }
+        };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="vectorfield.js"></script>
+</body>
+</html>
