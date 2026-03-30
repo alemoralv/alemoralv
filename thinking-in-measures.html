@@ -33,7 +33,7 @@
 
         <div class="hero-content thinking-hero-content">
             <div class="hero-text thinking-hero-text">
-                <p class="hero-greeting">Measure theory, probability, and mathematical physics in a cup of coffee.</p>
+                <p class="hero-greeting">Measure theory, random dynamics, and mathematical physics in a cup of coffee.</p>
                 <h1 class="hero-name thinking-title">Thinking in Measures</h1>
                 <p class="hero-bio thinking-subtitle">
                     Brief notes on papers and core insights gathered throughout my studies:
@@ -52,30 +52,29 @@
                         <p style="margin-bottom: 0;">
                             The central object is a label-dependent mild equation: for each graph label \(\alpha \in I\), the limiting process evolves under a semigroup, while its drift and noise are averaged against a family of laws indexed by the surrounding network structure. In other words, the thesis connects graph limits, Wasserstein geometry on path space, and stochastic evolution equations to describe how large random networks of infinite-dimensional particles behave in the limit.
                         </p>
+                        <div class="thinking-equation-preview">
+                            \[
+                            \begin{aligned}
+                            \bar u_\alpha(t)
+                            &= S(t)\bar u_{\alpha,0}
+                            + \int_0^t S(t-s)
+                               \left(
+                                 \int_I \!\int_H g\!\bigl(\bar u_\alpha(s),y\bigr)\,
+                                 \mu_{\beta,s}(dy)\,\eta^\alpha(d\beta)
+                               \right) ds \\
+                            &\quad
+                            + \int_0^t S(t-s)
+                               \left(
+                                 \int_I \!\int_H h\!\bigl(\bar u_\alpha(s),y\bigr)\,
+                                 \mu_{\beta,s}(dy)\,\hat\eta^\alpha(d\beta)
+                               \right) dW_\alpha^Q(s),
+                            \qquad
+                            \mu_{\beta,t}:=(\mathrm{ev}_t)_\#\mu_\beta .
+                            \end{aligned}
+                            \]
+                        </div>
                     </div>
                 </details>
-        
-                <div class="thinking-equation-preview">
-                    \[
-                    \begin{aligned}
-                    \bar u_\alpha(t)
-                    &= S(t)\bar u_{\alpha,0}
-                    + \int_0^t S(t-s)
-                       \left(
-                         \int_I \!\int_H g\!\bigl(\bar u_\alpha(s),y\bigr)\,
-                         \mu_{\beta,s}(dy)\,\eta^\alpha(d\beta)
-                       \right) ds \\
-                    &\quad
-                    + \int_0^t S(t-s)
-                       \left(
-                         \int_I \!\int_H h\!\bigl(\bar u_\alpha(s),y\bigr)\,
-                         \mu_{\beta,s}(dy)\,\hat\eta^\alpha(d\beta)
-                       \right) dW_\alpha^Q(s),
-                    \qquad
-                    \mu_{\beta,t}:=(\mathrm{ev}_t)_\#\mu_\beta .
-                    \end{aligned}
-                    \]
-                </div>
             </div>
         </div>
     </section>
