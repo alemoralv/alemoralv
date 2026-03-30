@@ -40,17 +40,40 @@
                     the central idea, why it matters, and where it can be applied.
                     Posts on this page stay readable while keeping mathematical precision.
                 </p>
+        
+                <details class="thinking-spoiler" style="margin: 1.25rem 0 1rem 0;">
+                    <summary style="cursor: pointer; font-weight: 600; margin-bottom: 0.75rem;">
+                        Thesis spoiler: what my research is about
+                    </summary>
+                    <div style="margin-top: 0.9rem;">
+                        <p style="margin-bottom: 0.9rem;">
+                            My master’s thesis studies mean-field limits for stochastic interacting particle systems when the state space is no longer finite-dimensional, but a separable Hilbert space. The guiding question is how to extend the digraph measure (DGM) framework to settings where each particle is itself an evolving function, field, or profile, so that the limit is described on path space rather than just on <em>\(\mathbb{R}^d\)</em>.
+                        </p>
+                        <p style="margin-bottom: 0;">
+                            The central object is a label-dependent mild equation: for each graph label \(\alpha \in I\), the limiting process evolves under a semigroup, while its drift and noise are averaged against a family of laws indexed by the surrounding network structure. In other words, the thesis connects graph limits, Wasserstein geometry on path space, and stochastic evolution equations to describe how large random networks of infinite-dimensional particles behave in the limit.
+                        </p>
+                    </div>
+                </details>
+        
                 <div class="thinking-equation-preview">
                     \[
+                    \begin{aligned}
                     \bar u_\alpha(t)
-                    = S(t)\bar u_{\alpha,0}
-                    + \int_0^t S(t-s)\left(\int_I\!\int_H g\!\bigl(\bar u_\alpha(s),y\bigr)\,\mu_{\beta,s}(dy)\,\eta^\alpha(d\beta)\right)\,ds
-                    \]
-                    \[
-                    + \int_0^t S(t-s)\left(\int_I\!\int_H h\!\bigl(\bar u_\alpha(s),y\bigr)\,\mu_{\beta,s}(dy)\,\hat\eta^\alpha(d\beta)\right)\,dW^Q_\alpha(s),
-                    \]
-                    \[
-                    \mu_{\beta,t}:=(\mathrm{ev}_t)_\#\mu_\beta.
+                    &= S(t)\bar u_{\alpha,0}
+                    + \int_0^t S(t-s)
+                       \left(
+                         \int_I \!\int_H g\!\bigl(\bar u_\alpha(s),y\bigr)\,
+                         \mu_{\beta,s}(dy)\,\eta^\alpha(d\beta)
+                       \right) ds \\
+                    &\quad
+                    + \int_0^t S(t-s)
+                       \left(
+                         \int_I \!\int_H h\!\bigl(\bar u_\alpha(s),y\bigr)\,
+                         \mu_{\beta,s}(dy)\,\hat\eta^\alpha(d\beta)
+                       \right) dW_\alpha^Q(s),
+                    \qquad
+                    \mu_{\beta,t}:=(\mathrm{ev}_t)_\#\mu_\beta .
+                    \end{aligned}
                     \]
                 </div>
             </div>
