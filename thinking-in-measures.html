@@ -36,12 +36,22 @@
                 <p class="hero-greeting">A focused reading track</p>
                 <h1 class="hero-name thinking-title">Thinking in Measures</h1>
                 <p class="hero-bio thinking-subtitle">
-                    Ten-minute paper notes with the core ideas, why they matter, and where they can be applied.
-                    Posts on this page are written to stay readable while keeping mathematical precision.
+                    Brief notes on papers and core insights gathered throughout my studies:
+                    the central idea, why it matters, and where it can be applied.
+                    Posts on this page stay readable while keeping mathematical precision.
+                    For each \(\alpha \in I\), there exists an adapted mild solution \(\bar u_\alpha\) of
                 </p>
-                <p class="thinking-equation-preview">
-                    Example inline equation: \( \mathbb{E}[X_t^2] = \mathrm{Var}(X_t) + (\mathbb{E}[X_t])^2 \)
-                </p>
+                <div class="thinking-equation-preview">
+                    \[
+                    \bar u_\alpha(t)
+                    = S(t)\bar u_{\alpha,0}
+                    + \int_0^t S(t-s)\left(\int_I\!\int_H g\!\bigl(\bar u_\alpha(s),y\bigr)\,\mu_{\beta,s}(dy)\,\eta^\alpha(d\beta)\right)\,ds
+                    + \int_0^t S(t-s)\left(\int_I\!\int_H h\!\bigl(\bar u_\alpha(s),y\bigr)\,\mu_{\beta,s}(dy)\,\hat\eta^\alpha(d\beta)\right)\,dW^Q_\alpha(s),
+                    \]
+                    \[
+                    \mu_{\beta,t}:=(\mathrm{ev}_t)_\#\mu_\beta.
+                    \]
+                </div>
             </div>
         </div>
     </section>
@@ -49,48 +59,58 @@
     <main class="thinking-main">
         <section class="card blog-card">
             <header class="blog-header">
-                <h2>How Wasserstein Geometry Shapes Learning Dynamics</h2>
-                <p class="blog-meta">10 min read - Measure theory, optimization, machine learning</p>
+                <button class="blog-toggle-btn" type="button" onclick="toggleBlog(this)" aria-expanded="false">
+                    <span>How Wasserstein Geometry Shapes Learning Dynamics</span>
+                    <span class="blog-toggle-icon" aria-hidden="true">+</span>
+                </button>
             </header>
-            <p>
-                This note explains how moving probability mass can be used to study optimization paths.
-                The key idea is to compare distributions through transport maps rather than pointwise errors.
-            </p>
-            <p>
-                In practice, this viewpoint helps interpret convergence behavior in stochastic systems and
-                clarifies why some dynamics remain stable under perturbations.
-            </p>
-            <div class="blog-equation">
-                \[
-                W_2^2(\mu,\nu) = \inf_{\gamma \in \Pi(\mu,\nu)} \int_{\mathbb{R}^d \times \mathbb{R}^d} \|x-y\|^2 \, d\gamma(x,y)
-                \]
+            <div class="blog-content">
+                <p class="blog-meta">Brief read - Measure theory, optimization, machine learning</p>
+                <p>
+                    This note explains how moving probability mass can be used to study optimization paths.
+                    The key idea is to compare distributions through transport maps rather than pointwise errors.
+                </p>
+                <p>
+                    In practice, this viewpoint helps interpret convergence behavior in stochastic systems and
+                    clarifies why some dynamics remain stable under perturbations.
+                </p>
+                <div class="blog-equation">
+                    \[
+                    W_2^2(\mu,\nu) = \inf_{\gamma \in \Pi(\mu,\nu)} \int_{\mathbb{R}^d \times \mathbb{R}^d} \|x-y\|^2 \, d\gamma(x,y)
+                    \]
+                </div>
+                <p class="blog-impact">
+                    Impact: gives a geometric language for model behavior and bridges probability, PDE, and optimization.
+                </p>
             </div>
-            <p class="blog-impact">
-                Impact: gives a geometric language for model behavior and bridges probability, PDE, and optimization.
-            </p>
         </section>
 
         <section class="card blog-card">
             <header class="blog-header">
-                <h2>Concentration Inequalities in High Dimensions</h2>
-                <p class="blog-meta">10 min read - Probability, random structures, data science</p>
+                <button class="blog-toggle-btn" type="button" onclick="toggleBlog(this)" aria-expanded="false">
+                    <span>Concentration Inequalities in High Dimensions</span>
+                    <span class="blog-toggle-icon" aria-hidden="true">+</span>
+                </button>
             </header>
-            <p>
-                This note summarizes why high-dimensional random objects often stay close to their expected value.
-                The result is a practical toolkit for proving reliability of randomized algorithms.
-            </p>
-            <p>
-                The main lesson is that tail bounds become a design principle: they translate uncertainty
-                into explicit confidence guarantees.
-            </p>
-            <div class="blog-equation">
-                \[
-                \mathbb{P}\!\left(|X - \mathbb{E}X| \ge t\right) \le 2\exp\!\left(-\frac{2t^2}{\sum_{i=1}^n c_i^2}\right)
-                \]
+            <div class="blog-content">
+                <p class="blog-meta">Brief read - Probability, random structures, data science</p>
+                <p>
+                    This note summarizes why high-dimensional random objects often stay close to their expected value.
+                    The result is a practical toolkit for proving reliability of randomized algorithms.
+                </p>
+                <p>
+                    The main lesson is that tail bounds become a design principle: they translate uncertainty
+                    into explicit confidence guarantees.
+                </p>
+                <div class="blog-equation">
+                    \[
+                    \mathbb{P}\!\left(|X - \mathbb{E}X| \ge t\right) \le 2\exp\!\left(-\frac{2t^2}{\sum_{i=1}^n c_i^2}\right)
+                    \]
+                </div>
+                <p class="blog-impact">
+                    Impact: supports robust reasoning in modern AI pipelines where randomness is unavoidable.
+                </p>
             </div>
-            <p class="blog-impact">
-                Impact: supports robust reasoning in modern AI pipelines where randomness is unavoidable.
-            </p>
         </section>
     </main>
 
@@ -98,6 +118,30 @@
         <p>&copy; 2026 Alejandro Morera Alvarez. All Rights Reserved.</p>
     </footer>
 
+    <script>
+        function toggleBlog(btn) {
+            const blogCard = btn.closest('.blog-card');
+            const content = blogCard.querySelector('.blog-content');
+            const icon = btn.querySelector('.blog-toggle-icon');
+            const isExpanded = blogCard.classList.toggle('expanded');
+
+            btn.setAttribute('aria-expanded', String(isExpanded));
+
+            if (isExpanded) {
+                content.style.maxHeight = content.scrollHeight + 'px';
+                icon.textContent = '−';
+            } else {
+                content.style.maxHeight = '0';
+                icon.textContent = '+';
+            }
+        }
+
+        window.addEventListener('resize', () => {
+            document.querySelectorAll('.blog-card.expanded .blog-content').forEach((content) => {
+                content.style.maxHeight = content.scrollHeight + 'px';
+            });
+        });
+    </script>
     <script>
         window.MathJax = {
             tex: {

@@ -584,7 +584,7 @@ a:hover {
 }
 
 .thinking-equation-preview {
-    margin-top: 1rem;
+    margin: 1rem auto 0;
     font-size: 1rem;
     color: var(--text-medium);
     background: rgba(255, 255, 255, 0.72);
@@ -592,6 +592,8 @@ a:hover {
     box-shadow: var(--shadow-neu-sm);
     padding: 0.8rem 1rem;
     width: fit-content;
+    max-width: 100%;
+    text-align: center;
 }
 
 .thinking-main {
@@ -599,15 +601,64 @@ a:hover {
 }
 
 .blog-card {
-    padding-top: 2.2rem;
+    padding-top: 1.6rem;
+    padding-bottom: 1.6rem;
 }
 
 .blog-header {
-    margin-bottom: 0.75rem;
+    margin-bottom: 0;
+}
+
+.blog-toggle-btn {
+    width: 100%;
+    padding: 0;
+    background: transparent;
+    border: none;
+    text-align: left;
+    color: var(--text-dark);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.8rem;
+    font-size: clamp(1.8rem, 3.1vw, 2.5rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.04em;
+    font-family: inherit;
+}
+
+.blog-toggle-btn:hover {
+    color: var(--primary-color);
+}
+
+.blog-toggle-btn:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 4px;
+    border-radius: 6px;
+}
+
+.blog-toggle-icon {
+    font-size: 1.8rem;
+    font-weight: 300;
+    color: var(--primary-color);
+    flex-shrink: 0;
+    width: 2rem;
+    text-align: center;
+}
+
+.blog-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.35s ease-out;
+}
+
+.blog-card.expanded .blog-content {
+    padding-top: 0.8rem;
 }
 
 .blog-meta {
-    margin-top: -0.4rem;
+    margin-top: 0;
     margin-bottom: 1.2rem;
     color: var(--text-light);
     font-weight: 600;
