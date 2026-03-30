@@ -62,6 +62,19 @@ body {
     flex-direction: column;
 }
 
+.hero-formula-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 700ms ease;
+}
+
+.hero-formula-overlay.is-fading {
+    opacity: 0;
+}
+
 .hero::before {
     content: '';
     position: absolute;

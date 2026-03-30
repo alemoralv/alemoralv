@@ -19,6 +19,15 @@
     MOBILE_BREAKPOINT: 768,
   };
 
+  var HERO_FORMULA_INTRO_CONFIG = {
+    DURATION_MS: 6200,
+    FADE_MS: 700,
+    MOBILE_STROKES: 18,
+    DESKTOP_STROKES: 32,
+    TOP_COVERAGE: 0.84,
+    COVER_ALPHA: 0.94,
+  };
+
   var REVEAL_SECTION_SELECTORS = ['#about', '#notes', '#projects', '#academic-background', '#modules'];
 
   // ---- Simplex Noise 3D ----
@@ -87,6 +96,212 @@
 
   function easeOutCubic(t) {
     return 1 - Math.pow(1 - t, 3);
+  }
+
+  function clamp(value, min, max) {
+    if (value < min) return min;
+    if (value > max) return max;
+    return value;
+  }
+
+  function randomInRange(min, max) {
+    return min + Math.random() * (max - min);
+  }
+
+  function buildStrokeSegments(width, height, strokeCount) {
+    var strokes = [];
+    var safeHeight = Math.max(120, height * HERO_FORMULA_INTRO_CONFIG.TOP_COVERAGE);
+    var yBands = [0.14, 0.25, 0.37, 0.49, 0.61, 0.73];
+    var i;
+
+    for (i = 0; i < strokeCount; i++) {
+      var points = [];
+      var pointCount = Math.random() > 0.5 ? 4 : 3;
+      var band = yBands[i % yBands.length];
+      var yBase = safeHeight * band + randomInRange(-18, 18);
+      var x = randomInRange(width * 0.08, width * 0.26);
+      var y = clamp(yBase + randomInRange(-10, 10), 16, safeHeight - 16);
+      var p;
+
+      points.push({ x: x, y: y });
+      for (p = 1; p < pointCount; p++) {
+        x += randomInRange(width * 0.09, width * 0.22);
+        y += randomInRange(-14, 14);
+        points.push({
+          x: clamp(x, 12, width - 12),
+          y: clamp(y, 16, safeHeight - 16)
+        });
+      }
+
+      var lengths = [];
+      var totalLength = 0;
+      for (p = 0; p < points.length - 1; p++) {
+        var dx = points[p + 1].x - points[p].x;
+        var dy = points[p + 1].y - points[p].y;
+        var segmentLength = Math.sqrt(dx * dx + dy * dy);
+        lengths.push(segmentLength);
+        totalLength += segmentLength;
+      }
+
+      var start = i / strokeCount * 0.72 + randomInRange(0, 0.1);
+      var duration = randomInRange(0.14, 0.24);
+
+      strokes.push({
+        points: points,
+        lengths: lengths,
+        totalLength: totalLength,
+        width: randomInRange(1.8, 3.2),
+        start: start,
+        end: start + duration
+      });
+    }
+
+    return strokes;
+  }
+
+  function drawPartialStroke(ctx, stroke, progress) {
+    if (!stroke || !stroke.points || stroke.points.length < 2) return;
+    var revealLength = stroke.totalLength * clamp(progress, 0, 1);
+    var remaining = revealLength;
+    var points = stroke.points;
+    var lengths = stroke.lengths;
+    var i;
+
+    ctx.beginPath();
+    ctx.moveTo(points[0].x, points[0].y);
+
+    for (i = 0; i < lengths.length; i++) {
+      var segLength = lengths[i];
+      var x1 = points[i].x;
+      var y1 = points[i].y;
+      var x2 = points[i + 1].x;
+      var y2 = points[i + 1].y;
+
+      if (remaining <= 0) {
+        break;
+      }
+
+      if (remaining >= segLength) {
+        ctx.lineTo(x2, y2);
+        remaining -= segLength;
+      } else {
+        var t = remaining / segLength;
+        ctx.lineTo(x1 + (x2 - x1) * t, y1 + (y2 - y1) * t);
+        remaining = 0;
+      }
+    }
+
+    ctx.stroke();
+  }
+
+  function initHeroFormulaIntro() {
+    var hero = document.querySelector('.hero#home') || document.querySelector('.hero');
+    if (!hero || hero.dataset.formulaIntroDone === '1') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      hero.dataset.formulaIntroDone = '1';
+      return;
+    }
+
+    var overlay = document.createElement('canvas');
+    overlay.className = 'hero-formula-overlay';
+    overlay.setAttribute('aria-hidden', 'true');
+    hero.appendChild(overlay);
+
+    var ctx = overlay.getContext('2d', { alpha: true, desynchronized: true });
+    if (!ctx) {
+      overlay.remove();
+      hero.dataset.formulaIntroDone = '1';
+      return;
+    }
+
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var width = 0;
+    var height = 0;
+    var strokes = [];
+    var rafId = null;
+    var fadeTimer = null;
+    var resizeTimer = null;
+    var startAt = null;
+    var strokeCount = window.innerWidth < CONFIG.MOBILE_BREAKPOINT
+      ? HERO_FORMULA_INTRO_CONFIG.MOBILE_STROKES
+      : HERO_FORMULA_INTRO_CONFIG.DESKTOP_STROKES;
+
+    function resizeOverlay() {
+      var rect = hero.getBoundingClientRect();
+      width = Math.max(1, Math.floor(rect.width));
+      height = Math.max(1, Math.floor(rect.height));
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      overlay.width = Math.floor(width * dpr);
+      overlay.height = Math.floor(height * dpr);
+      overlay.style.width = width + 'px';
+      overlay.style.height = height + 'px';
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      strokes = buildStrokeSegments(width, height, strokeCount);
+    }
+
+    function destroyOverlay() {
+      if (rafId) cancelAnimationFrame(rafId);
+      if (fadeTimer) clearTimeout(fadeTimer);
+      if (resizeTimer) clearTimeout(resizeTimer);
+      window.removeEventListener('resize', onResize);
+      overlay.remove();
+      hero.dataset.formulaIntroDone = '1';
+    }
+
+    function onResize() {
+      if (resizeTimer) clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(resizeOverlay, 180);
+    }
+
+    function finishAnimation() {
+      overlay.classList.add('is-fading');
+      fadeTimer = setTimeout(destroyOverlay, HERO_FORMULA_INTRO_CONFIG.FADE_MS + 60);
+    }
+
+    function renderFrame(timestamp) {
+      if (!startAt) startAt = timestamp;
+      var elapsed = timestamp - startAt;
+      var overallProgress = clamp(elapsed / HERO_FORMULA_INTRO_CONFIG.DURATION_MS, 0, 1);
+
+      ctx.clearRect(0, 0, width, height);
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.globalAlpha = HERO_FORMULA_INTRO_CONFIG.COVER_ALPHA;
+      ctx.fillStyle = 'rgb(240, 240, 243)';
+      ctx.fillRect(0, 0, width, height);
+
+      ctx.globalCompositeOperation = 'destination-out';
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      var i;
+      for (i = 0; i < strokes.length; i++) {
+        var stroke = strokes[i];
+        var strokeProgress = (overallProgress - stroke.start) / (stroke.end - stroke.start);
+        if (strokeProgress <= 0) continue;
+
+        // Two passes per stroke keep the reveal chalk-like without expensive effects.
+        ctx.lineWidth = stroke.width;
+        ctx.globalAlpha = 0.9;
+        drawPartialStroke(ctx, stroke, strokeProgress);
+
+        ctx.lineWidth = Math.max(1.1, stroke.width * 0.55);
+        ctx.globalAlpha = 0.55;
+        drawPartialStroke(ctx, stroke, strokeProgress * 0.98);
+      }
+
+      if (overallProgress >= 1) {
+        finishAnimation();
+        return;
+      }
+
+      rafId = requestAnimationFrame(renderFrame);
+    }
+
+    resizeOverlay();
+    window.addEventListener('resize', onResize, { passive: true });
+    rafId = requestAnimationFrame(renderFrame);
   }
 
   // ---- Needle (fixed-position line segment) ----
@@ -425,6 +640,7 @@
   }
 
   function init() {
+    initHeroFormulaIntro();
     setupAlternatingScrollReveal();
     instance = new VectorField();
   }
