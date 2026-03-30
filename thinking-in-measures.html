@@ -45,7 +45,7 @@
                     \[
                     \bar u_\alpha(t)
                     = S(t)\bar u_{\alpha,0}
-                    + \int_0^t S(t-s)\left(\int_I\!\int_H g\!\bigl(\bar u_\alpha(s),y\bigr)\,\mu_{\beta,s}(dy)\,\eta^\alpha(d\beta)\right)\,ds
+                    + \int_0^t S(t-s)\left(\int_I\!\int_H g\!\bigl(\bar u_\alpha(s),y\bigr)\,\mu_{\beta,s}(dy)\,\eta^\alpha(d\beta)\right)\,ds \\
                     + \int_0^t S(t-s)\left(\int_I\!\int_H h\!\bigl(\bar u_\alpha(s),y\bigr)\,\mu_{\beta,s}(dy)\,\hat\eta^\alpha(d\beta)\right)\,dW^Q_\alpha(s),
                     \]
                     \[
@@ -55,6 +55,544 @@
             </div>
         </div>
     </section>
+
+
+
+
+    <main class="thinking-main">
+        <section class="card blog-card">
+            <header class="blog-header">
+                <button class="blog-toggle-btn" type="button" onclick="toggleBlog(this)" aria-expanded="false">
+                    <span>Fyodorov–Bouchaud Formula and Beyond: from Gaussian Free Fields to a Closed Moment Law</span>
+                    <span class="blog-toggle-icon" aria-hidden="true">+</span>
+                </button>
+            </header>
+    
+            <div class="blog-content">
+                <p class="blog-meta">15 min read - probability, Gaussian free fields, multiplicative chaos, conformal field theory, special functions</p>
+    
+                <p>
+                    This note explains the mathematical story behind the paper <em>Fyodorov–Bouchaud Formula and Beyond</em>.
+                    At its center is a random quantity built from the Gaussian free field on the unit circle:
+                    a boundary partition function whose moments turn out to admit a completely explicit formula.
+                    The striking point is not just that the answer is closed-form, but that the route to it goes
+                    through several worlds at once: distribution-valued Gaussian fields, Gaussian multiplicative chaos,
+                    Liouville conformal field theory, BPZ differential equations, and hypergeometric functions.
+                </p>
+    
+                <p>
+                    The paper is organized as a gradual ascent. First, it builds the Gaussian free field carefully,
+                    because the field is too singular to exist pointwise. Then it explains why exponentiating such an
+                    object should still make sense after renormalization, which leads to Gaussian multiplicative chaos.
+                    Next it moves into Liouville conformal field theory, where carefully chosen vertex operators encode
+                    the random partition function of interest. From there, the heart of the proof is to derive a BPZ
+                    differential equation, rewrite it as a hypergeometric equation, extract a shift relation for the
+                    moments, and finally identify the full law. After that, the paper asks a deeper question: why did
+                    the magic work so perfectly here, and why does it fail when one perturbs the setup?
+                </p>
+    
+                <h3>1. The final object and the main theorem</h3>
+    
+                <p>
+                    The random variable studied in the paper is
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    Y_\gamma
+                    =
+                    \frac{1}{2\pi}\int_0^{2\pi} e^{\frac{\gamma}{2}X(e^{i\theta})}\,d\theta,
+                    \qquad \gamma\in(0,2),
+                    \]
+                </div>
+    
+                <p>
+                    where \(X\) is the Gaussian free field on the unit circle, understood through a regularization
+                    procedure rather than pointwise evaluation. The main result is the Fyodorov–Bouchaud formula:
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \mathbb{E}\!\left[Y_\gamma^p\right]
+                    =
+                    \frac{\Gamma\!\left(1-\frac{p\gamma^2}{4}\right)}
+                         {\Gamma\!\left(1-\frac{\gamma^2}{4}\right)^p},
+                    \qquad p<\frac{4}{\gamma^2}.
+                    \]
+                </div>
+    
+                <p>
+                    So every admissible moment is explicit. Even better, the paper states the equivalent distributional identity
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    Y_\gamma
+                    \overset{d}{=}
+                    \frac{1}{\Gamma\!\left(1-\frac{\gamma^2}{4}\right)\,E(1)^{-\gamma^2/4}},
+                    \]
+                </div>
+    
+                <p>
+                    where \(E(1)\) is an exponential random variable of parameter \(1\).
+                    In plain terms, the partition function is not just moment-computable: its law can be identified
+                    explicitly from those moments.
+                </p>
+    
+                <h3>2. Why the Gaussian free field is subtle</h3>
+    
+                <p>
+                    The Gaussian free field is not an ordinary random function. The paper begins from the Green function
+                    \(G(x,y)\) of a boundary value problem and tries to use it as a covariance kernel. Formally one would
+                    like to say “take a centered Gaussian field with covariance \(G\).” The problem is that in two dimensions
+                    the diagonal blows up logarithmically, so \(G(x,x)=\infty\). That means the field cannot be evaluated
+                    pointwise in the usual way.
+                </p>
+    
+                <p>
+                    The workaround is to index the field not by points but by test objects with finite Green energy.
+                    If \(\rho_1,\rho_2\) are such objects, one defines
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \Gamma_G(\rho_1,\rho_2)
+                    :=
+                    \iint G(x,y)\,d\rho_1(x)\,d\rho_2(y),
+                    \]
+                </div>
+    
+                <p>
+                    and then constructs a centered Gaussian process \((X_\rho)_\rho\) with that covariance.
+                    So the field is really a random distribution. This matters a lot later, because every exponential
+                    involving \(X\) must be interpreted only after smoothing.
+                </p>
+    
+                <p>
+                    The paper then specializes to the unit disk and the upper half-plane with Neumann boundary conditions
+                    and a mean-zero constraint. On the disk, the Green function is
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    G_{\mathbb D}(x,y)=\log \frac{1}{|x-y|\,|1-x\overline y|},
+                    \]
+                </div>
+    
+                <p>
+                    and by conformal transport one gets the corresponding Green function on the upper half-plane.
+                    This move is not decorative: the half-plane is the convenient arena for the Liouville CFT calculations,
+                    while the disk is the natural place for the boundary partition function.
+                </p>
+    
+                <h3>3. From the GFF to Gaussian multiplicative chaos</h3>
+    
+                <p>
+                    Once the field is distribution-valued, expressions like \(e^{\gamma X(z)}\) are meaningless at face value.
+                    The paper therefore introduces a regularization \(X_\varepsilon\), for instance via circle averages on the
+                    disk or mollification on the half-plane, and defines the renormalized random measure
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    M_\varepsilon(dz)
+                    :=
+                    e^{\gamma X_\varepsilon(z)-\frac{\gamma^2}{2}\mathbb E[X_\varepsilon(z)^2]}\,\sigma(dz).
+                    \]
+                </div>
+    
+                <p>
+                    The subtraction of \(\frac{\gamma^2}{2}\mathbb E[X_\varepsilon(z)^2]\) is the crucial renormalization.
+                    Without it, the exponential would blow up as \(\varepsilon\to0\). With it, the paper recalls that
+                    for \(\gamma\in(0,2)\) one gets a non-degenerate limit random measure \(M\), independent of the specific
+                    regularization scheme. This is Gaussian multiplicative chaos.
+                </p>
+    
+                <p>
+                    Conceptually, GMC is the right way to exponentiate a log-correlated Gaussian field.
+                    It is also the probabilistic backbone of Liouville quantum gravity. In the paper, it supplies the
+                    random measure hidden inside the Liouville correlation functions and ultimately inside the moments of \(Y_\gamma\).
+                </p>
+    
+                <h3>4. Why Liouville conformal field theory enters</h3>
+    
+                <p>
+                    Up to this point the discussion is probabilistic. The next leap is into conformal field theory.
+                    The paper introduces Liouville CFT on the upper half-plane with reference metric \(\hat g\),
+                    background charge
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    Q=\frac{2}{\gamma}+\frac{\gamma}{2},
+                    \]
+                </div>
+    
+                <p>
+                    and Polyakov action
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    S(X,\hat g)
+                    =
+                    \frac{1}{4\pi}\int_D\!\Big(|\partial_{\hat g}X|^2+Q R_{\hat g}X+4\pi\mu e^{\gamma X}\Big)\,\lambda_{\hat g}
+                    +
+                    \frac{1}{2\pi}\int_{\partial D}\!\Big(QK_{\hat g}X+2\pi\mu_\partial e^{\frac{\gamma}{2}X}\Big)\,\lambda_{\partial\hat g}.
+                    \]
+                </div>
+    
+                <p>
+                    The important observables are the vertex operators. In the bulk,
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    V_\alpha(z)=e^{\alpha\left(X(z)+\frac{Q}{2}\log \hat g(z)\right)},
+                    \]
+                </div>
+    
+                <p>
+                    and on the boundary,
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    V_\beta(s)=e^{\frac{\beta}{2}\left(X(s)+\frac{Q}{2}\log \hat g(s)\right)}.
+                    \]
+                </div>
+    
+                <p>
+                    These are again formal until regularized, but once that is done the corresponding Liouville correlations
+                    exist under the Seiberg bounds. The crucial strategic insight of the paper is that the negative moments
+                    of the partition function can be recast as special Liouville correlation functions on the disk.
+                    So instead of attacking \(\mathbb E[Y_\gamma^p]\) directly, one studies the correct CFT observable.
+                </p>
+    
+                <h3>5. The key mechanism: a BPZ equation for a two-point function</h3>
+    
+                <p>
+                    The core technical step is the derivation of a BPZ differential equation for the half-plane correlation
+                    with one degenerate insertion:
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \big\langle V_{-\gamma/2}(z)\,V_\alpha(z_1)\big\rangle_{\mathbb H}.
+                    \]
+                </div>
+    
+                <p>
+                    The paper writes down a second-order PDE for this correlation. The exact expression is a bit long,
+                    but its structure is what matters: a second derivative in the degenerate variable \(z\), first derivatives
+                    in all marked points, and rational coefficients dictated by conformal weights. Schematically,
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \left(
+                    \frac{4}{\gamma^2}\partial_{zz}
+                    +\text{rational coefficient terms}
+                    +\text{first-order derivative terms}
+                    \right)
+                    \big\langle V_{-\gamma/2}(z)V_\alpha(z_1)\big\rangle_{\mathbb H}
+                    =0.
+                    \]
+                </div>
+    
+                <p>
+                    This is the moment where probability and CFT genuinely fuse. The proof is not abstract; it is computational,
+                    but in a very structured way. The paper uses Gaussian integration by parts obtained from Girsanov’s theorem,
+                    computes covariance identities of the regularized GFF, differentiates the regularized correlation, and then
+                    shows that all metric-dependent terms cancel through a special identity. That cancellation is one of the hidden
+                    miracles of the argument.
+                </p>
+    
+                <p>
+                    One useful way to read this part is as follows. The degenerate insertion \(V_{-\gamma/2}\) is special enough
+                    to force a second-order differential equation. The Gaussian structure is strong enough to make the derivatives
+                    of the correlation computable. And the exact balance of coefficients is rigid enough that the unwanted pieces
+                    disappear. When all three line up, a BPZ equation appears.
+                </p>
+    
+                <h3>6. From BPZ to hypergeometric functions</h3>
+    
+                <p>
+                    Once the two-point function is transferred to the disk and rewritten in terms of a single real variable \(t\),
+                    the paper obtains an equation for a function \(G(\gamma,p,t)\). After the change of variables \(x=t^2\),
+                    this becomes the standard hypergeometric equation
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \left(
+                    x(1-x)\frac{d^2}{dx^2}
+                    +\big(C-(A+B+1)x\big)\frac{d}{dx}
+                    -AB
+                    \right)H(x)=0,
+                    \]
+                </div>
+    
+                <p>
+                    with parameters
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    A=-\frac{\gamma^2 p}{4},\qquad
+                    B=-\frac{\gamma^2}{4},\qquad
+                    C=\frac{\gamma^2}{4}(1-p)+1.
+                    \]
+                </div>
+    
+                <p>
+                    This is a decisive simplification. Hypergeometric equations have a two-dimensional solution space with
+                    well-understood local bases near \(x=0\) and \(x=1\). So the probabilistic problem is reduced to matching
+                    the correct asymptotic expansions of a special function.
+                </p>
+    
+                <p>
+                    In other words, the probabilistic complexity gets compressed into two analytic questions:
+                    what are the right expansion coefficients, and how are the two local bases related?
+                    Once that is under control, the rest of the proof becomes a special-functions argument.
+                </p>
+    
+                <h3>7. The shift equation: the recursive engine of the proof</h3>
+    
+                <p>
+                    The paper introduces
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    U(\gamma,p)
+                    :=
+                    \mathbb E\!\left[\left(\int_0^{2\pi} e^{\frac{\gamma}{2}X(e^{i\theta})}\,d\theta\right)^p\right],
+                    \qquad
+                    U(\gamma,p)=(2\pi)^p\mathbb E[Y_\gamma^p].
+                    \]
+                </div>
+    
+                <p>
+                    By analyzing the hypergeometric expansions near the boundary and comparing coefficients,
+                    it derives the shift relation
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    U(\gamma,p)
+                    =
+                    \frac{2\pi\,\Gamma\!\left(1-\frac{p\gamma^2}{4}\right)}
+                         {\Gamma\!\left(1-\frac{\gamma^2}{4}\right)\,
+                          \Gamma\!\left(1-\frac{(p-1)\gamma^2}{4}\right)}
+                    \,U(\gamma,p-1),
+                    \qquad p\le 0.
+                    \]
+                </div>
+    
+                <p>
+                    This is the recursive engine of the proof. Starting from \(U(\gamma,0)=1\), the paper obtains all
+                    non-positive integer moments. Then it uses moment determinacy and Fourier inversion to identify the law
+                    of \(Y_\gamma^{-1}\), transforms back to \(Y_\gamma\), and from that recovers the full moment formula
+                    for all real \(p<4/\gamma^2\).
+                </p>
+    
+                <p>
+                    So the proof has a beautiful architecture:
+                    a CFT correlation becomes a BPZ equation,
+                    the BPZ equation becomes a hypergeometric ODE,
+                    the hypergeometric ODE yields a shift relation,
+                    and the shift relation pins down the law.
+                </p>
+    
+                <h3>8. Why the answer is so elegant</h3>
+    
+                <p>
+                    A natural question is why one should ever expect such a clean Gamma-function answer.
+                    The paper’s structure itself gives the clue. Gamma functions are the native language of Mellin transforms,
+                    recursive relations, and hypergeometric connection coefficients. Once the problem is converted into a
+                    hypergeometric one, Gamma ratios are almost unavoidable. The real achievement is not merely computing
+                    the coefficients, but showing that the probabilistic observable lands in exactly the right rigid class
+                    of special functions.
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \mathbb E[Y_\gamma^{-n}]
+                    =
+                    \Gamma\!\left(1+\frac{n\gamma^2}{4}\right)\,
+                    \Gamma\!\left(1-\frac{\gamma^2}{4}\right)^n,
+                    \qquad n\in\mathbb N,
+                    \]
+                </div>
+    
+                <p>
+                    and from there the density can be identified explicitly. This is the point where the theorem stops
+                    feeling like a collection of formal identities and starts feeling like a complete probabilistic classification.
+                </p>
+    
+                <h3>9. The “beyond” part: what could go wrong analytically?</h3>
+    
+                <p>
+                    The later chapters are not an appendix in spirit; they are the conceptual payoff.
+                    The paper asks what happens if one perturbs the regularization or the insertion pattern.
+                    In particular, it tweaks the regularization by replacing the special boundary weight \(\gamma/2\)
+                    inside the exponential insertion by a more general parameter \(\eta\).
+                </p>
+    
+                <p>
+                    The message is subtle. Convergence of the regularized object may still survive under such changes,
+                    so one does not immediately lose the random observable. But the exact analytic cancellations that made the
+                    BPZ derivation work are no longer guaranteed. The first-derivative formulas change, metric-dependent terms
+                    need not vanish in the right way, and the special second-order BPZ structure can fail.
+                </p>
+    
+                <p>
+                    This is an important lesson: the theorem is not just a consequence of “Gaussianity plus effort.”
+                    It depends on a very finely tuned choice of insertions and normalizations. The special parameter
+                    \(V_{-\gamma/2}\) is not a cosmetic choice; it is the one that brings the degenerate structure needed
+                    for a second-order equation. Change the setup slightly, and the rigid ODE machinery can break.
+                </p>
+    
+                <p>
+                    The paper also explores more insertions and a geometric change-of-variable viewpoint.
+                    The upshot is that one can still transport the equation and still see hypergeometric structure in the right
+                    variables, but the simplicity of the original argument is highly unstable. The beautiful final formula sits
+                    at a very special intersection of probability, geometry, and representation theory.
+                </p>
+    
+                <h3>10. The deeper reason: the algebraic viewpoint</h3>
+    
+                <p>
+                    The final chapter explains that the BPZ equation is not an accidental differential identity discovered by
+                    brave differentiation. It is the analytic shadow of a representation-theoretic fact.
+                    The paper introduces the Witt algebra and its central extension, the Virasoro algebra, whose generators satisfy
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    [L_n,L_m]=(n-m)L_{n+m}
+                    +\delta_{n+m,0}\frac{n}{12}(n^2-1)Z.
+                    \]
+                </div>
+    
+                <p>
+                    It then discusses Verma modules, Hermitian forms, and the quotienting phenomenon that produces irreducible
+                    Virasoro modules. The decisive point is that certain fields correspond to highest-weight representations
+                    containing null vectors. Those null vectors are algebraic relations among descendants.
+                </p>
+    
+                <p>
+                    Once translated into CFT language through Ward identities, those algebraic relations become linear differential
+                    equations for correlation functions. That is the true origin of the BPZ equation. The computations in the
+                    earlier chapter were the analytic realization of an underlying representation-theoretic mechanism.
+                </p>
+    
+                <p>
+                    This perspective also clarifies the “what goes wrong” chapter. If the insertion is no longer in the right
+                    degenerate representation, then there is no reason for a second-order BPZ equation to exist. The failure is
+                    not just technical; it reflects the absence of the algebraic structure that previously forced the ODE.
+                </p>
+    
+                <h3>11. How to read the whole paper in one sentence</h3>
+    
+                <p>
+                    The paper proves an explicit Gamma-function formula for the moments of a boundary GMC partition function by
+                    embedding the problem into Liouville CFT, deriving a BPZ equation from a degenerate insertion, converting it
+                    into a hypergeometric equation, extracting a shift relation, and then explaining that the whole mechanism works
+                    only because of a very rigid algebraic structure in the background.
+                </p>
+    
+                <h3>12. Final takeaway</h3>
+    
+                <p>
+                    This is a very nice project because it does two jobs at once.
+                    First, it gives a readable path to a famous exact formula in log-correlated probability.
+                    Second, it refuses to stop at the formula and instead asks why the proof is so structured.
+                    The answer is that the closed moment law is born from a special compatibility:
+                    the Gaussian free field provides the log-correlated randomness,
+                    GMC turns exponentials of that field into genuine random measures,
+                    Liouville CFT packages the observable into correlation functions,
+                    the degenerate insertion creates the BPZ equation,
+                    hypergeometric theory solves the resulting ODE,
+                    and Virasoro representation theory explains why such an ODE should exist at all.
+                </p>
+    
+                <p class="blog-impact">
+                    Impact: the paper shows how an exact law in random geometry emerges from a precise chain linking GFF regularization, GMC renormalization, BPZ differential equations, hypergeometric analysis, and Virasoro algebra.
+                </p>
+            </div>
+        </section>
+    </main>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--
 
     <main class="thinking-main">
         <section class="card blog-card">
@@ -85,6 +623,17 @@
             </div>
         </section>
 
+    -->
+
+
+
+
+
+
+
+
+    <!--
+
         <section class="card blog-card">
             <header class="blog-header">
                 <button class="blog-toggle-btn" type="button" onclick="toggleBlog(this)" aria-expanded="false">
@@ -113,6 +662,10 @@
             </div>
         </section>
     </main>
+-->
+
+
+
 
     <footer>
         <p>&copy; 2026 Alejandro Morera Alvarez. All Rights Reserved.</p>
