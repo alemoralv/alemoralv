@@ -12,7 +12,7 @@
                 <p>
                     We consider the following geometric probability problem: sample <em>n</em> points from the closed unit disk,
                     order them by polar angle, and connect consecutive points. The resulting angularly induced polygon,
-                    which we call the <em>fractagon</em>, has a random signed area <em>A<sub>n</sub></em>. The central point of the thesis
+                    which we call the <em>fractagon</em>, has a random signed area <em>A<sub>n</sub></em>. The central point of the paper
                     is that this area is not asymptotically erratic. On the contrary, it converges almost surely to a deterministic quantity.
                 </p>
     
@@ -22,57 +22,8 @@
                     This decomposition is the conceptual center of both the uniform theorem and its generalized version.
                 </p>
     
-                <div class="blog-diagram">
-                    <svg viewBox="0 0 560 340" role="img" aria-label="Central diagram for the fractagon construction in polar coordinates" style="width:100%; height:auto;">
-                        <defs>
-                            <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-                                <polygon points="0 0, 8 4, 0 8" fill="#c23b22"></polygon>
-                            </marker>
-                        </defs>
+
     
-                        <!-- disk -->
-                        <circle cx="280" cy="170" r="120" fill="none" stroke="#b8bec9" stroke-width="2"></circle>
-    
-                        <!-- faint sample polygon -->
-                        <polyline points="222,92 310,64 372,112 388,190 340,254 258,280 192,232 176,150 222,92"
-                                  fill="rgba(120,140,180,0.08)" stroke="#8a93a6" stroke-width="1.5"></polyline>
-    
-                        <!-- origin -->
-                        <circle cx="280" cy="170" r="4" fill="#111827"></circle>
-                        <text x="268" y="188" font-size="16" fill="#111827">O</text>
-    
-                        <!-- selected vertices -->
-                        <circle cx="342" cy="85" r="5" fill="#1f4db8"></circle>
-                        <circle cx="392" cy="122" r="5" fill="#1f4db8"></circle>
-    
-                        <!-- radii -->
-                        <line x1="280" y1="170" x2="342" y2="85" stroke="#4b5d79" stroke-width="2.5"></line>
-                        <line x1="280" y1="170" x2="392" y2="122" stroke="#4b5d79" stroke-width="2.5"></line>
-    
-                        <!-- edge -->
-                        <line x1="342" y1="85" x2="392" y2="122" stroke="#111827" stroke-width="3"></line>
-    
-                        <!-- arc for angle spacing -->
-                        <path d="M 326 106 A 62 62 0 0 1 350 141"
-                              fill="none" stroke="#c23b22" stroke-width="2.5" marker-end="url(#arrowhead)"></path>
-    
-                        <!-- labels -->
-                        <text x="314" y="118" font-size="16" fill="#c23b22">ΔΘᵢ</text>
-                        <text x="299" y="110" font-size="16" fill="#374151">R(i)</text>
-                        <text x="338" y="157" font-size="16" fill="#374151">R(i+1)</text>
-                        <text x="324" y="76" font-size="16" fill="#1f4db8">z(i)</text>
-                        <text x="399" y="120" font-size="16" fill="#1f4db8">z(i+1)</text>
-    
-                        <!-- area shading -->
-                        <polygon points="280,170 342,85 392,122"
-                                 fill="rgba(194,59,34,0.12)" stroke="none"></polygon>
-                    </svg>
-                </div>
-    
-                <p class="blog-caption">
-                    Central diagram: the area is built from the oriented triangles determined by the origin and two consecutive
-                    vertices in angular order.
-                </p>
     
                 <div class="blog-equation">
                     \[
@@ -159,7 +110,7 @@
                 </div>
     
                 <p>
-                    Since the maximal spacing tends to zero almost surely, the approximation \(\sin x \sim x\) becomes effective
+                    Then, there comes an application of what I like to call "Extremal Gap Theory", in particular, that on the unit interval: Since the maximal spacing tends to zero almost surely, the approximation \(\sin x \sim x\) becomes effective
                     over the entire partition. Hence the random trigonometric sum recovers the full angular mass of the circle.
                 </p>
     
@@ -266,12 +217,17 @@
                 </div>
     
                 <p>
-                    The central diagram is therefore not only illustrative, but it isin fact the proof in geometric form.
+                    The figures in the paper are therefore not only illustrative, but are in fact the proof in geometric form.
                     Each edge contributes a local signed area term of the form
                     \(\frac{1}{2}R(i)R(i+1)\sin(\Delta\Theta_i)\),
                     and the theorem shows that these local contributions assemble into a deterministic global limit.
                     In the uniform case that limit is \(4\pi/9\); in the general case it is the quadratic quantity
                     \(\frac{1}{2}\int_0^{2\pi} m(\theta)^2\,d\theta\).
+                </p>
+
+                <p>
+                    Next steps include tackling the problem in a setting where the area is not measured by the Lebesgue measure, but instead by a general (possibly singular, signed, etc.) measure.
+                    This will be explored once I finish my master thesis.
                 </p>
     
                 <p class="blog-impact">
