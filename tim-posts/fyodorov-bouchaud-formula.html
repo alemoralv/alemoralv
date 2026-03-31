@@ -1,0 +1,472 @@
+        <section class="card blog-card">
+            <header class="blog-header">
+                <button class="blog-toggle-btn" type="button" onclick="toggleBlog(this)" aria-expanded="false">
+                    <span>How Liouville Theory Reveals the Fyodorov–Bouchaud Formula</span>
+                    <span class="blog-toggle-icon" aria-hidden="true">+</span>
+                </button>
+            </header>
+    
+            <div class="blog-content">
+                <p class="blog-meta">15 min read - Gaussian free fields, Gaussian multiplicative chaos, conformal field theory, probability, SLE</p>
+                <p><a href="pdfs/PDM___Compact.pdf">FB Formula and BPZ Equations</a></p>
+    
+                <p>
+                    This research project studies an object which at first seems too singular to admit an exact law:
+                    the partition function of Gaussian multiplicative chaos on the unit circle.
+                    The surprise is that, once the problem is placed in the language of Liouville conformal field theory,
+                    the randomness becomes rigid enough to satisfy differential equations, hypergeometric identities,
+                    and eventually an explicit distributional formula.
+                </p>
+    
+                <p>
+                    The project is not only about proving one famous identity. It also clarifies why the relevant BPZ equation appears,
+                    proposes a generalized BPZ framework, studies semiclassical and rare-event consequences,
+                    and then reinterprets the same structure dynamically through SLEs and algebraically through the Virasoro algebra.
+                    In that sense, the formula is the center of the story, but not the whole story.
+                </p>
+    
+                <h3 class="blog-section-title">Foundations</h3>
+    
+                <p>
+                    The starting point is the Gaussian free field,
+                    not as an honest function, but as a random distribution with covariance given by a Green kernel.
+                    This already explains why the problem is delicate: in two dimensions the covariance has logarithmic singularities,
+                    so one cannot simply evaluate the field pointwise and exponentiate it.
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \Delta G(x,\cdot)=\delta_x(\cdot),
+                    \]
+                </div>
+    
+                <p>
+                    together with appropriate boundary conditions, is the equation underlying the covariance kernel.
+                    The field is then interpreted distributionally, and one regularizes it by smooth approximations \(X_\varepsilon\).
+                    This lets one define the Gaussian multiplicative chaos through a renormalized exponential.
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    M_\varepsilon(dz)
+                    =
+                    e^{\gamma X_\varepsilon(z)-\frac{\gamma^2}{2}\mathbb{E}[X_\varepsilon(z)^2]}\,\sigma(dz),
+                    \qquad \gamma\in(0,2).
+                    \]
+                </div>
+    
+                <p>
+                    The limit of these measures, as \(\varepsilon\downarrow 0\), is the GMC measure.
+                    This is the random geometry behind the whole project.
+                    The logarithmic divergence is not removed by magic, but by the exact renormalization above.
+                    What remains is a nontrivial random measure with a very rich moment structure.
+                </p>
+    
+                <p>
+                    We then shift toward Liouville conformal field theory.
+                    This is an essential move: instead of studying a single random integral in isolation,
+                    the project embeds it into a family of correlation functions built from vertex operators.
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    V_\alpha(z)
+                    =
+                    e^{\alpha\left(X(z)+\frac{Q}{2}\log \hat g(z)\right)},
+                    \qquad
+                    \Delta_\alpha=\frac{\alpha}{2}\left(Q-\frac{\alpha}{2}\right),
+                    \qquad
+                    Q=\frac{2}{\gamma}+\frac{\gamma}{2}.
+                    \]
+                </div>
+    
+                <p>
+                    So, this first part builds the dictionary:
+                    rough field \(\to\) regularization \(\to\) chaos measure \(\to\) Liouville correlation functions.
+                    Without that dictionary, the main formula would look isolated.
+                    With it, the formula becomes one manifestation of a larger conformal structure.
+                </p>
+    
+                <h3 class="blog-section-title">Fyodorov–Bouchaud Formula: Statement and Proof</h3>
+    
+                <p>
+                    The central random variable of the project is the partition function
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    Y_\gamma
+                    =
+                    \frac{1}{2\pi}\int_0^{2\pi} e^{\frac{\gamma}{2}X(e^{i\theta})}\,d\theta,
+                    \qquad \gamma\in(0,2).
+                    \]
+                </div>
+    
+                <p>
+                    The main theorem states that for every \(p<4/\gamma^2\),
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \mathbb{E}[Y_\gamma^p]
+                    =
+                    \frac{\Gamma\!\left(1-\frac{p\gamma^2}{4}\right)}
+                         {\Gamma\!\left(1-\frac{\gamma^2}{4}\right)^p}.
+                    \]
+                </div>
+    
+                <p>
+                    Equivalently,
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    Y_\gamma
+                    \stackrel{d}{=}
+                    \frac{1}{\Gamma\!\left(1-\frac{\gamma^2}{4}\right)\,E(1)^{\gamma^2/4}},
+                    \]
+                </div>
+    
+                <p>
+                    where \(E(1)\) is an exponential random variable of parameter \(1\).
+                    This is the Fyodorov–Bouchaud formula.
+                    The final expression is classical in appearance, but the object it describes is genuinely singular.
+                </p>
+    
+                <p>
+                    The project proves this result through LCFT, and here one of its main novelties appears:
+                    instead of only using the classical degenerate insertion,
+                    it introduces a tweaked regularization with an extra parameter \(\eta\)
+                    and asks for which values a BPZ equation still survives.
+                    This makes precise why the usual choice is special.
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \left(
+                    \frac{1}{\alpha_1^2}\partial_{z_1z_1}
+                    +
+                    \frac{\Delta_{\alpha_1}}{(z_1-\bar z_1)^2}
+                    +
+                    \frac{\Delta_{\alpha_2}}{(z_1-z_2)^2}
+                    +
+                    \frac{\Delta_{\alpha_2}}{(z_1-\bar z_2)^2}
+                    +
+                    \frac{1}{z_1-\bar z_1}\partial_{\bar z_1}
+                    +
+                    \frac{1}{z_1-z_2}\partial_{z_2}
+                    +
+                    \frac{1}{z_1-\bar z_2}\partial_{\bar z_2}
+                    \right)
+                    \langle V_{\alpha_1}(z_1)V_{\alpha_2}(z_2)\rangle_{H,\eta}
+                    =0.
+                    \]
+                </div>
+    
+                <p>
+                    The project shows that this holds precisely for the distinguished choices
+                    \[
+                    (\alpha_1,\eta)=\left(-\frac{\gamma}{2},\frac{\gamma}{2}\right)
+                    \quad\text{or}\quad
+                    (\alpha_1,\eta)=\left(-\frac{2}{\gamma},\frac{2}{\gamma}\right).
+                    \]
+                    So the usual degenerate insertion is not merely convenient:
+                    it is singled out by an exact compatibility condition.
+                </p>
+    
+                <p>
+                    The proof mechanism is elegant and concrete.
+                    Girsanov’s theorem is used repeatedly to shift the Gaussian field,
+                    derive integration-by-parts identities,
+                    and compute derivatives of the correlation function.
+                    Metric-dependent terms initially appear, but they cancel out thanks to a structural identity.
+                    This is one of the most important parts of the project:
+                    geometry seems to complicate the formulas, and then the geometry itself removes the complication.
+                </p>
+    
+                <p>
+                    After that, the problem is pushed from the upper half-plane to the unit disk by conformal maps.
+                    A Möbius transform then compresses the geometry of two marked points into a single parameter
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    t
+                    =
+                    \left|\frac{z_1-z_2}{z_1-\bar z_2}\right|,
+                    \qquad t\in(0,1).
+                    \]
+                </div>
+    
+                <p>
+                    This is the geometric step that turns the BPZ PDE into a hypergeometric ODE.
+                    Once that happens, the negative moments of the partition function can be encoded in a hypergeometric expansion.
+                    The asymptotics at \(t=0\) and \(t=1\) produce shift relations,
+                    and those relations ultimately reconstruct the entire moment formula.
+                </p>
+    
+                <p>
+                    Another novelty is that the generalized BPZ mechanism is not restricted to two-point functions.
+                    The project extends it to \(n\)-point correlation functions.
+                    This part then clarifies the structural reason behind the proof and pushes it into a broader framework.
+                </p>
+    
+                <h3 class="blog-section-title">Fyodorov–Bouchaud Formula: Consequences</h3>
+    
+                <p>
+                    Once the exact law is known, the project turns to asymptotic consequences.
+                    The first one is the semiclassical limit, where the coupling becomes small and the random object starts to exhibit a more classical behavior.
+                    This is where exact formulas become especially powerful: they can be expanded, rescaled, and interpreted.
+                </p>
+    
+                <p>
+                    The chapter also studies rare events through large deviations.
+                    This is a natural question in Gaussian multiplicative chaos,
+                    since the measure is designed precisely to capture highly uneven concentrations of mass.
+                    The rate function then describes how unlikely certain rescaled values become as the coupling tends to zero.
+                </p>
+    
+                <p>
+                    In words, this part asks:
+                    once the partition function is explicit, what does it tell us about typical behavior, atypical behavior,
+                    and the transition between the two?
+                    That is why this chapter is more than an appendix to the theorem.
+                    It shows that the exact law has real asymptotic content.
+                </p>
+    
+                <h3 class="blog-section-title">BPZ Equations: A Dynamical and Algebraic Viewpoint</h3>
+    
+                <p>
+                    The last chapter of the project gives it its broadest perspective.
+                    The same BPZ equations that controlled the GMC partition function are now re-read dynamically through Schramm–Loewner evolutions
+                    and algebraically through the Virasoro algebra.
+                    This is one of the most appealing aspects of the project:
+                    the same differential equation belongs at once to probability, complex dynamics, and representation theory.
+                </p>
+    
+                <h4 class="blog-subsection-title">4.1 BPZ Equations and SLEs</h4>
+    
+                <p>
+                    The dynamical viewpoint begins with the chordal Loewner equation on the upper half-plane:
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \begin{cases}
+                    \displaystyle \frac{\partial}{\partial t}g_t(z)=\frac{2}{g_t(z)-\sqrt{\kappa}\,B_t},\\[1ex]
+                    g_0(z)=z.
+                    \end{cases}
+                    \]
+                </div>
+    
+                <p>
+                    This is the SLE flow.
+                    One should think of \(g_t\) as a random conformal evolution driven by Brownian motion.
+                    The project then broadens the picture by allowing a semimartingale driver
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    dX_t=\kappa\,b(X_t)\,dt+\sqrt{\kappa}\,dB_t,
+                    \qquad X_0=0.
+                    \]
+                </div>
+    
+                <p>
+                    Via Girsanov, this can be related back to the Brownian-driven case,
+                    so the generalized setting is not disconnected from the classical one.
+                    It is a controlled deformation of it.
+                </p>
+    
+                <p>
+                    A key idea in the chapter is that the conformal images of marked points, together with the derivatives of the Loewner map,
+                    naturally generate martingales whenever a certain differential equation holds.
+                    Differentiating the Loewner equation in \(z\) gives
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \partial_t g_t'(z)
+                    =
+                    -\frac{2\,g_t'(z)}{(g_t(z)-X_t)^2},
+                    \qquad
+                    dg_t'(z)
+                    =
+                    -\frac{2\,g_t'(z)}{(g_t(z)-X_t)^2}\,dt.
+                    \]
+                </div>
+    
+                <p>
+                    From this the project introduces
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    G_t:=\prod_{i=1}^n g_t'(z_i)^{\Delta_{\alpha_i}},
+                    \]
+                </div>
+    
+                <p>
+                    and derives the evolution
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    dG_t
+                    =
+                    -2G_t\sum_{i=1}^n \frac{\Delta_{\alpha_i}}{(g_t(z_i)-X_t)^2}\,dt.
+                    \]
+                </div>
+    
+                <p>
+                    This is the point where the BPZ structure enters dynamically.
+                    If one writes
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    M_t(z_1,\dots,z_n)
+                    =
+                    G_t\,h(g_t(z_1),\dots,g_t(z_n)),
+                    \]
+                </div>
+    
+                <p>
+                    then the project shows that \(M_t\) is a local martingale if and only if \(h\) satisfies a BPZ-type PDE.
+                    In the SLE setting recorded in the project, the condition is
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \left(
+                    \frac{\kappa}{2}
+                    \sum_{i,j=1}^n
+                    \partial_x\Phi(t,x,g_t^{-1}(y_i))
+                    \partial_x\Phi(t,x,g_t^{-1}(y_j))
+                    \frac{\partial^2}{\partial y_i\partial y_j}
+                    +
+                    \sum_{i=1}^n \frac{2}{y_i-x}\frac{\partial}{\partial y_i}
+                    -
+                    \sum_{i=1}^n \frac{2\Delta_{\alpha_i}}{(y_i-x)^2}
+                    \right)
+                    h(y_1,\dots,y_n)=0.
+                    \]
+                </div>
+    
+                <p>
+                    So the BPZ equation is no longer just a static conformal-field-theoretic identity.
+                    It becomes exactly the condition that makes a naturally constructed SLE observable into a martingale.
+                    This is a very clean dynamical meaning.
+                </p>
+    
+                <p>
+                    The project goes further and records the stochastic differential of the martingale itself:
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    dM_t
+                    =
+                    \sqrt{\kappa}\,G_t
+                    \sum_{i=1}^n
+                    \partial_x\Phi(t,X_t,z_i)\,
+                    (\partial_i h)(g_t(z_1),\dots,g_t(z_n))\,dB_t.
+                    \]
+                </div>
+    
+                <p>
+                    When this local martingale is a true martingale, one gets a mean-value representation:
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    h(z_1,\dots,z_n)
+                    =
+                    \mathbb{E}\!\left[
+                    h(g_t(z_1),\dots,g_t(z_n))
+                    \prod_{i=1}^n
+                    \bigl((\partial_z\Phi)(t,X_t,z_i)\bigr)^{\Delta_{\alpha_i}}
+                    \right].
+                    \]
+                </div>
+    
+                <p>
+                    This is a particularly nice formula.
+                    It says that the correlation-type quantity \(h\) can be recovered as an average of its image under the random conformal flow,
+                    weighted by the conformal derivatives.
+                    In other words, BPZ observables are transported by the SLE dynamics in a martingale-preserving way.
+                </p>
+    
+                <p>
+                    The chapter then reaches one of its most beautiful interpretations:
+                    certain three-point correlation functions are actual probabilities.
+                    More precisely, if one considers an SLE from \(0\) to \(\infty\),
+                    the probability that the curve passes to the left of a marked point \(z_1\in\mathbb H\)
+                    is identified with a Liouville three-point function:
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \mathbb{P}\!\left(\text{SLE from }0\text{ to }\infty\text{ passes to the left of }z_1\right)
+                    =
+                    \bigl\langle V_{-\gamma/2}(z_1)V_{\alpha_2}(0)V_{\alpha_3}(\infty)\bigr\rangle_{H,\gamma/2}.
+                    \]
+                </div>
+    
+                <p>
+                    This is the point where the project’s dynamical viewpoint becomes especially vivid.
+                    A correlation function is no longer merely a formal object in a field theory;
+                    it is the probability of a geometric event involving a random curve.
+                    That is a remarkable bridge between LCFT and stochastic planar geometry.
+                </p>
+    
+                <p>
+                    The project even suggests a possible discrete analogue:
+                    a meromorphic random dynamical system with noisy iteration,
+                    meant as a discrete counterpart to the continuous Loewner flow.
+                    This gives the chapter a forward-looking quality.
+                    It does not only reinterpret known equations;
+                    it hints at further directions in random complex dynamics.
+                </p>
+    
+                <h4 class="blog-subsection-title">4.2 BPZ Equations and Virasoro Algebras</h4>
+    
+                <p>
+                    The final section explains why BPZ equations should exist from an algebraic point of view.
+                    The Witt algebra is generated by vector fields
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    L_n := z^{1-n}\frac{d}{dz},
+                    \qquad
+                    [L_n,L_m]=(n-m)L_{n+m},
+                    \qquad n,m\in\mathbb Z.
+                    \]
+                </div>
+    
+                <p>
+                    Its central extension is the Virasoro algebra.
+                    In the background of BPZ theory lies the fact that, for special conformal weights,
+                    the corresponding representations become degenerate.
+                    Those degeneracies force the conformal blocks to satisfy linear differential equations.
+                    The BPZ equations are thus not accidental analytic facts;
+                    they are shadows of representation-theoretic constraints.
+                </p>
+    
+                <p>
+                    This closes the circle of the project.
+                    A random partition function from Gaussian multiplicative chaos leads to LCFT correlation functions;
+                    those satisfy BPZ equations;
+                    the same BPZ equations appear as martingale conditions in SLE;
+                    and their existence is explained algebraically by Virasoro degeneracy.
+                    The formula sits at the meeting point of all these viewpoints.
+                </p>
+    
+                <p class="blog-impact">
+                    Impact: this research project shows that the partition function of Gaussian multiplicative chaos on the circle is not merely computable,
+                    but structurally rigid. Its exact law is uncovered through LCFT, its special differential equations are clarified through a generalized BPZ framework,
+                    its asymptotics reveal semiclassical and rare-event behavior, and its dynamical meaning emerges through SLE martingales and geometric probabilities.
+                </p>
+            </div>
+        </section>
