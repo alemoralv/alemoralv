@@ -136,252 +136,282 @@
         <section class="card blog-card">
             <header class="blog-header">
                 <button class="blog-toggle-btn" type="button" onclick="toggleBlog(this)" aria-expanded="false">
-                    <span>Fractagon Convergence Theorem: Random Polygons on the Disk</span>
+                    <span>Fractagon Convergence Theorem</span>
                     <span class="blog-toggle-icon" aria-hidden="true">+</span>
                 </button>
             </header>
             <div class="blog-content">
-                <p class="blog-meta">15-minute read - Probability, geometry, order statistics</p>
-                <p><a href="pdfs/fractagonCT.pdf">Fractagon Convergence Theorem</a></p>
+                <p class="blog-meta">15-minute read - Geometric probability, random polygons, asymptotic analysis</p>
+                <p><a href="pdfs/fractagonCT.pdf">fractagonCT</a></p>
     
                 <p>
-                    This note studies a geometric random construction on the closed unit disk. One samples
-                    points independently, writes them in polar coordinates, orders them by angle, and then
-                    connects consecutive points. The resulting polygon is random at every finite stage, but
-                    its area exhibits a deterministic asymptotic law. The main point is that the angular order
-                    imposes enough structure for the randomness to average out in a precise way.
+                    We consider the following geometric probability problem: sample <em>n</em> points from the closed unit disk,
+                    order them by polar angle, and connect consecutive points. The resulting angularly induced polygon,
+                    which we call the <em>fractagon</em>, has a random signed area <em>A<sub>n</sub></em>. The central point of the thesis
+                    is that this area is not asymptotically erratic. On the contrary, it converges almost surely to a deterministic quantity.
                 </p>
     
                 <p>
-                    The argument proceeds by separating the geometry from the probability. The geometry is encoded
-                    by the shoelace formula in polar form, while the probabilistic part enters through the law of
-                    the radii, the behavior of uniform spacings, and a fourth-moment concentration estimate. In the
-                    uniform case this yields a concrete constant; in the general case it yields an integral functional
-                    of the conditional radial profile.
+                    The mechanism is already visible in the local geometry. Once the sample is ordered by angle, each edge contributes
+                    an oriented triangular term, and the total area is obtained by summing those contributions around the circle.
+                    This decomposition is the conceptual center of both the uniform theorem and its generalized version.
                 </p>
     
-                <div class="blog-equation">
-                    \[
-                    A_n = \frac12 \sum_{i=1}^n R_{(i)} R_{(i+1)} \sin(\Delta \Theta_i),
-                    \qquad R_{(n+1)} := R_{(1)}.
-                    \]
-                </div>
-    
-                <div style="margin: 1.5rem 0; padding: 1rem; border: 1px solid rgba(120,120,120,0.25); border-radius: 18px; background: rgba(255,255,255,0.02); overflow-x: auto;">
-                    <svg viewBox="0 0 1100 300" width="100%" role="img" aria-label="Visual convergence of fractagons as the number of vertices increases">
+                <div class="blog-diagram">
+                    <svg viewBox="0 0 560 340" role="img" aria-label="Central diagram for the fractagon construction in polar coordinates" style="width:100%; height:auto;">
                         <defs>
-                            <marker id="arrowFractagon" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
-                                <path d="M0,0 L0,6 L9,3 z" fill="currentColor"></path>
+                            <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+                                <polygon points="0 0, 8 4, 0 8" fill="#c23b22"></polygon>
                             </marker>
                         </defs>
     
-                        <text x="550" y="28" text-anchor="middle" font-size="22" font-family="Georgia, serif" fill="currentColor">
-                            Convergence picture
-                        </text>
+                        <!-- disk -->
+                        <circle cx="280" cy="170" r="120" fill="none" stroke="#b8bec9" stroke-width="2"></circle>
     
-                        <circle cx="130" cy="150" r="74" fill="none" stroke="currentColor" stroke-opacity="0.25" stroke-width="2"></circle>
-                        <polygon points="130,82 156,102 180,133 168,176 139,222 100,206 77,169 84,128 103,102"
-                                 fill="rgba(100,130,255,0.12)" stroke="currentColor" stroke-width="2"></polygon>
-                        <text x="130" y="255" text-anchor="middle" font-size="17" font-family="Georgia, serif" fill="currentColor">small n</text>
+                        <!-- faint sample polygon -->
+                        <polyline points="222,92 310,64 372,112 388,190 340,254 258,280 192,232 176,150 222,92"
+                                  fill="rgba(120,140,180,0.08)" stroke="#8a93a6" stroke-width="1.5"></polyline>
     
-                        <line x1="220" y1="150" x2="310" y2="150" stroke="currentColor" stroke-width="2.2" marker-end="url(#arrowFractagon)"></line>
+                        <!-- origin -->
+                        <circle cx="280" cy="170" r="4" fill="#111827"></circle>
+                        <text x="268" y="188" font-size="16" fill="#111827">O</text>
     
-                        <circle cx="400" cy="150" r="74" fill="none" stroke="currentColor" stroke-opacity="0.25" stroke-width="2"></circle>
-                        <polygon points="400,78 425,84 452,100 468,125 472,156 463,184 443,206 414,220 384,223 355,213 334,190 327,159 330,128 345,102 370,85"
-                                 fill="rgba(100,130,255,0.10)" stroke="currentColor" stroke-width="1.8"></polygon>
-                        <text x="400" y="255" text-anchor="middle" font-size="17" font-family="Georgia, serif" fill="currentColor">more vertices</text>
+                        <!-- selected vertices -->
+                        <circle cx="342" cy="85" r="5" fill="#1f4db8"></circle>
+                        <circle cx="392" cy="122" r="5" fill="#1f4db8"></circle>
     
-                        <line x1="490" y1="150" x2="580" y2="150" stroke="currentColor" stroke-width="2.2" marker-end="url(#arrowFractagon)"></line>
+                        <!-- radii -->
+                        <line x1="280" y1="170" x2="342" y2="85" stroke="#4b5d79" stroke-width="2.5"></line>
+                        <line x1="280" y1="170" x2="392" y2="122" stroke="#4b5d79" stroke-width="2.5"></line>
     
-                        <circle cx="670" cy="150" r="74" fill="none" stroke="currentColor" stroke-opacity="0.25" stroke-width="2"></circle>
-                        <polygon points="670,76 694,80 716,89 733,104 743,123 746,146 742,168 731,188 713,204 691,214 668,219 644,216 622,207 605,192 594,172 591,149 595,126 606,107 624,91 646,81"
-                                 fill="rgba(100,130,255,0.08)" stroke="currentColor" stroke-width="1.6"></polygon>
-                        <text x="670" y="255" text-anchor="middle" font-size="17" font-family="Georgia, serif" fill="currentColor">dense fractagon</text>
+                        <!-- edge -->
+                        <line x1="342" y1="85" x2="392" y2="122" stroke="#111827" stroke-width="3"></line>
     
-                        <line x1="760" y1="150" x2="850" y2="150" stroke="currentColor" stroke-width="2.2" marker-end="url(#arrowFractagon)"></line>
+                        <!-- arc for angle spacing -->
+                        <path d="M 326 106 A 62 62 0 0 1 350 141"
+                              fill="none" stroke="#c23b22" stroke-width="2.5" marker-end="url(#arrowhead)"></path>
     
-                        <circle cx="940" cy="150" r="74" fill="rgba(100,130,255,0.10)" stroke="currentColor" stroke-width="2"></circle>
-                        <text x="940" y="255" text-anchor="middle" font-size="17" font-family="Georgia, serif" fill="currentColor">deterministic limit law</text>
+                        <!-- labels -->
+                        <text x="314" y="118" font-size="16" fill="#c23b22">ΔΘᵢ</text>
+                        <text x="299" y="110" font-size="16" fill="#374151">R(i)</text>
+                        <text x="338" y="157" font-size="16" fill="#374151">R(i+1)</text>
+                        <text x="324" y="76" font-size="16" fill="#1f4db8">z(i)</text>
+                        <text x="399" y="120" font-size="16" fill="#1f4db8">z(i+1)</text>
+    
+                        <!-- area shading -->
+                        <polygon points="280,170 342,85 392,122"
+                                 fill="rgba(194,59,34,0.12)" stroke="none"></polygon>
                     </svg>
                 </div>
     
-                <p>
-                    What matters is not merely that the polygon fills the disk visually. The limiting area is obtained
-                    through a balance between adjacent radii and angular spacings. The randomness of the vertex cloud
-                    survives only through a very specific statistic, and the theorem identifies exactly which statistic it is.
-                </p>
-    
-                <p><strong>Chapter 1. Fractagon Convergence Theorem, Uniform Case.</strong></p>
-    
-                <p>
-                    The first chapter treats the basic model: \(Z_1, Z_2, \dots\) are i.i.d. and uniformly distributed on
-                    the closed unit disk
-                    \[
-                    D=\{z\in\mathbb{R}^2:\|z\|\leq 1\}.
-                    \]
-                    Writing \(Z_k=(R_k,\Phi_k)\) in polar coordinates, one obtains the familiar decomposition
-                    \(\Phi_k \sim \mathrm{Uniform}([0,2\pi))\), \(F_R(r)=r^2\) on \([0,1]\), and independence between
-                    the radial and angular components. In particular,
-                    \[
-                    \mathbb{E}[R]=\frac23, \qquad \mathbb{E}[R^2]=\frac12.
-                    \]
-                    The polygon is formed by sorting the sample according to angle and connecting the ordered points cyclically.
-                </p>
-    
-                <p>
-                    At this stage, the key geometric identity is the polar shoelace formula displayed above. If
-                    \(\Delta\Theta_i\) denotes the angular spacing between consecutive ordered angles, then the total angle
-                    satisfies
-                    \[
-                    \sum_{i=1}^n \Delta\Theta_i = 2\pi,
-                    \]
-                    and the area is a weighted sum of the products \(R_{(i)}R_{(i+1)}\). The notation makes clear that the
-                    problem is neither purely radial nor purely angular: it is an interaction between local geometry and
-                    ordered randomness.
+                <p class="blog-caption">
+                    Central diagram: the area is built from the oriented triangles determined by the origin and two consecutive
+                    vertices in angular order.
                 </p>
     
                 <div class="blog-equation">
                     \[
-                    A_n \xrightarrow{\mathrm{a.s.}} \frac{4\pi}{9}.
+                    A_n = \frac{1}{2}\sum_{i=1}^{n} R(i)R(i+1)\sin(\Delta\Theta_i),
+                    \qquad
+                    \sum_{i=1}^{n}\Delta\Theta_i = 2\pi.
                     \]
                 </div>
     
+                <p><strong>1. Fractagon Convergence Theorem, Uniform Case</strong></p>
                 <p>
-                    This first convergence theorem is proved by conditioning on the angles. Once the angular order is fixed,
-                    the reordered radii remain i.i.d. with the same law as the original radius. Hence the conditional expectation
-                    factorizes, and one finds
-                    \[
-                    \mathbb{E}[A_n \mid \mathcal{G}_n]
-                    =
-                    \frac12 \sum_{i=1}^n \sin(\Delta\Theta_i)\,
-                    \mathbb{E}[R_{(i)}R_{(i+1)} \mid \mathcal{G}_n]
-                    =
-                    \frac{2}{9}\sum_{i=1}^n \sin(\Delta\Theta_i).
-                    \]
-                    The constant \(4/9\) is therefore not accidental: it is the square of the mean radius, and it is the
-                    exact coefficient carried by the conditional area.
-                </p>
-    
-                <p>
-                    The second ingredient is the asymptotic behavior of the angular spacings. Their maximal spacing
-                    \(M_n := \max_i \Delta\Theta_i\) tends to zero almost surely, more precisely at logarithmic order. This
-                    implies that the sine sum is asymptotically equivalent to the sum of the spacings:
-                    \[
-                    \sum_{i=1}^n \sin(\Delta\Theta_i) \xrightarrow{\mathrm{a.s.}} 2\pi.
-                    \]
-                    Geometrically, this says that once all gaps are small, the curved angular contribution is well approximated
-                    by the linear one.
-                </p>
-    
-                <p>
-                    The final step is probabilistic rather than geometric. One shows that the fluctuation
-                    \(A_n-\mathbb{E}[A_n\mid\mathcal{G}_n]\) has a fourth moment of order \(O(n^{-2})\). The reason is that
-                    the centered edge contributions form a bounded \(1\)-dependent family, so a fourth-moment bound applies.
-                    Summability then yields almost sure convergence by Borel--Cantelli. The theorem thus emerges from a clean
-                    three-step mechanism: conditional averaging, control of spacings, and concentration.
-                </p>
-    
-                <div style="margin: 1.5rem 0; padding: 1rem; border: 1px solid rgba(120,120,120,0.25); border-radius: 18px; background: rgba(255,255,255,0.02); overflow-x: auto;">
-                    <svg viewBox="0 0 1200 220" width="100%" role="img" aria-label="Proof architecture for the uniform fractagon theorem">
-                        <defs>
-                            <marker id="arrowProof" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
-                                <path d="M0,0 L0,6 L9,3 z" fill="currentColor"></path>
-                            </marker>
-                        </defs>
-    
-                        <rect x="40" y="60" width="250" height="95" rx="18" fill="none" stroke="currentColor" stroke-width="2"></rect>
-                        <text x="165" y="95" text-anchor="middle" font-size="20" font-family="Georgia, serif" fill="currentColor">Conditional structure</text>
-                        <text x="165" y="122" text-anchor="middle" font-size="16" font-family="Georgia, serif" fill="currentColor">reordered radii stay i.i.d.</text>
-    
-                        <line x1="292" y1="108" x2="380" y2="108" stroke="currentColor" stroke-width="2.2" marker-end="url(#arrowProof)"></line>
-    
-                        <rect x="390" y="60" width="250" height="95" rx="18" fill="none" stroke="currentColor" stroke-width="2"></rect>
-                        <text x="515" y="95" text-anchor="middle" font-size="20" font-family="Georgia, serif" fill="currentColor">Spacing asymptotics</text>
-                        <text x="515" y="122" text-anchor="middle" font-size="16" font-family="Georgia, serif" fill="currentColor">\(\sum \sin(\Delta\Theta_i)\to 2\pi\)</text>
-    
-                        <line x1="642" y1="108" x2="730" y2="108" stroke="currentColor" stroke-width="2.2" marker-end="url(#arrowProof)"></line>
-    
-                        <rect x="740" y="60" width="250" height="95" rx="18" fill="none" stroke="currentColor" stroke-width="2"></rect>
-                        <text x="865" y="95" text-anchor="middle" font-size="20" font-family="Georgia, serif" fill="currentColor">Fourth-moment control</text>
-                        <text x="865" y="122" text-anchor="middle" font-size="16" font-family="Georgia, serif" fill="currentColor">fluctuations are summable</text>
-    
-                        <line x1="992" y1="108" x2="1080" y2="108" stroke="currentColor" stroke-width="2.2" marker-end="url(#arrowProof)"></line>
-    
-                        <rect x="1090" y="60" width="80" height="95" rx="18" fill="none" stroke="currentColor" stroke-width="2"></rect>
-                        <text x="1130" y="100" text-anchor="middle" font-size="20" font-family="Georgia, serif" fill="currentColor">a.s.</text>
-                        <text x="1130" y="127" text-anchor="middle" font-size="20" font-family="Georgia, serif" fill="currentColor">limit</text>
-                    </svg>
-                </div>
-    
-                <p><strong>Chapter 2. Fractagon Convergence Theorem, Version 2.</strong></p>
-    
-                <p>
-                    The second chapter removes the independence between radius and angle while preserving a uniform angular
-                    marginal. One now assumes only that the points are i.i.d. in the disk, that \(\Phi\) is uniform on
-                    \([0,2\pi)\), and that the regression function
-                    \[
-                    m(\theta):=\mathbb{E}[R\mid \Phi=\theta]
-                    \]
-                    is bounded and Lipschitz. The theorem then shows that the limit is no longer a universal constant.
-                    Instead, it is determined by the \(L^2\)-energy of this conditional radial profile.
+                    In the first theorem, the sample points are independent and uniformly distributed on the unit disk.
+                    The remarkable fact is that the signed area of the corresponding fractagon converges almost surely
+                    to a constant. Thus a random polygon, formed from a highly irregular finite sample, acquires a deterministic
+                    asymptotic area.
                 </p>
     
                 <div class="blog-equation">
                     \[
-                    A_n \xrightarrow{\mathrm{a.s.}} \frac12 \int_0^{2\pi} m(\theta)^2\,d\theta
-                    = \frac12 \|m\|_{L^2([0,2\pi))}^2.
+                    A_n \xrightarrow{\mathrm{a.s.}} \frac{4\pi}{9} \approx 1.3963.
                     \]
                 </div>
     
                 <p>
-                    This statement is structurally natural. After conditioning on the ordered angles, the attached radii are
-                    no longer identically distributed in an unconditional sense, but they remain conditionally independent,
-                    and their conditional means are precisely \(m(\Phi_{(i)})\). Therefore the conditional area takes the form
+                    The limit is driven by two simple features. First, the average radial contribution is fixed by the
+                    uniform law on the disk. Second, the angular spacings become uniformly small, so the polygon resolves
+                    the full circle more and more faithfully as the number of vertices increases.
+                </p>
+    
+                <p><strong>1.1 Probability Space and Sampling Process</strong></p>
+                <p>
+                    Write each sampled point in polar coordinates as \((R_k,\Phi_k)\). For the uniform distribution on the unit disk,
+                    the angular variable is uniform on \([0,2\pi)\), the radial variable has distribution function
+                    \(F_R(r)=r^2\) and density \(f_R(r)=2r\), and the radial and angular components are independent.
+                    The first moment of the radius is therefore \(\mathbb{E}[R]=2/3\), which will appear in the limiting constant.
+                </p>
+    
+                <div class="blog-equation">
                     \[
-                    \mathbb{E}[A_n\mid \mathcal{G}_n]
-                    =
-                    \frac12 \sum_{i=1}^n
-                    m(\Phi_{(i)})\,m(\Phi_{(i+1)})\,\sin(\Delta\Theta_i).
+                    f_{R,\Phi}(r,\theta)=2r\cdot \frac{1}{2\pi},
+                    \qquad
+                    \mathbb{E}[R]=\frac{2}{3},
+                    \qquad
+                    \mathbb{E}[R^2]=\frac{1}{2}.
                     \]
-                    This is the exact analogue of the uniform case, except that the constant \(4/9\) has been replaced by
-                    a spatially varying profile.
+                </div>
+    
+                <p><strong>1.2 Polygon Construction</strong></p>
+                <p>
+                    Let \(\Phi(1)\leq \cdots \leq \Phi(n)\) be the angular order statistics, and let \(R(i)\) denote the radius
+                    paired with \(\Phi(i)\). The fractagon is the polygon obtained by joining these vertices cyclically.
+                    Its geometry is controlled by the angular spacings
+                    \(\Delta\Theta_i\), which form a random partition of the circle.
                 </p>
     
-                <p>
-                    From here, the proof becomes a Riemann-sum argument. First one replaces \(\sin(\Delta\Theta_i)\) by
-                    \(\Delta\Theta_i\). Then one replaces the adjacent product
-                    \(m(\Phi_{(i)})m(\Phi_{(i+1)})\) by \(m(\Phi_{(i)})^2\). Finally one compares the resulting sum with
-                    the integral of \(m^2\). The Lipschitz assumption on \(m\) ensures that each error is controlled by
-                    \(\sum_i (\Delta\Theta_i)^2\), and this term vanishes almost surely because the maximal spacing goes to
-                    zero. The limit is therefore read off directly from the geometry of increasingly fine angular partitions.
-                </p>
-    
-                <p>
-                    The concentration step remains essentially unchanged. The centered edge variables are still bounded and
-                    \(1\)-dependent once one conditions on the angles, so the same fourth-moment mechanism applies. Thus the
-                    conditional expectation converges to the target integral, the fluctuation tends to zero almost surely, and
-                    the full area converges almost surely as claimed.
-                </p>
-    
-                <p>
-                    The independent uniform model is recovered immediately by taking \(m(\theta)\equiv \mathbb{E}[R]=2/3\).
-                    In that case,
+                <div class="blog-equation">
                     \[
-                    \frac12 \int_0^{2\pi} m(\theta)^2\,d\theta
-                    =
-                    \frac12 \cdot 2\pi \cdot \left(\frac23\right)^2
-                    =
-                    \frac{4\pi}{9},
+                    \Delta\Theta_i=
+                    \begin{cases}
+                    \Phi(i+1)-\Phi(i), & 1\leq i\leq n-1,\\[4pt]
+                    2\pi-\Phi(n)+\Phi(1), & i=n.
+                    \end{cases}
                     \]
-                    so the first theorem appears as a special case of the second. What changes from one chapter to the next
-                    is therefore not the geometric mechanism, but only the statistic of the radial law that survives in the limit.
+                </div>
+    
+                <p>
+                    The crucial point is that, once the angles are sorted, the area is still expressed by the same local wedge formula.
+                    Each consecutive pair contributes an oriented triangular term, and the global object is a sum of these local pieces.
+                </p>
+    
+                <p><strong>1.3 Proof of the Main Result</strong></p>
+                <p>
+                    The proof proceeds in three steps. First, one computes the conditional expectation of the area given the angles.
+                    Second, one shows that the sine sum associated with the angular spacings converges to \(2\pi\).
+                    Third, one proves that the centered fluctuation is small enough, in fourth moment, to vanish almost surely.
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \mathbb{E}[A_n \mid G_n]
+                    =
+                    \frac{2}{9}\sum_{i=1}^{n}\sin(\Delta\Theta_i).
+                    \]
+                </div>
+    
+                <p>
+                    Since the maximal spacing tends to zero almost surely, the approximation \(\sin x \sim x\) becomes effective
+                    over the entire partition. Hence the random trigonometric sum recovers the full angular mass of the circle.
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \sum_{i=1}^{n}\sin(\Delta\Theta_i)\xrightarrow{\mathrm{a.s.}} 2\pi.
+                    \]
+                </div>
+    
+                <p>
+                    What remains is to control the difference between the area and its conditional expectation.
+                    This is done through a fourth-moment estimate and a Borel&ndash;Cantelli argument.
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \mathbb{E}\!\left[\left|A_n-\mathbb{E}[A_n\mid G_n]\right|^4\right]
+                    = O\!\left(\frac{1}{n^2}\right).
+                    \]
+                </div>
+    
+                <p>
+                    Combining the conditional limit with the concentration estimate yields the theorem.
+                    The asymptotic area is therefore the product of a radial mean-square mechanism and an angular partition mechanism.
+                </p>
+    
+                <p><strong>2. Fractagon Convergence Theorem, Version 2</strong></p>
+                <p>
+                    The second theorem removes the independence between radius and angle. The angular marginal remains uniform,
+                    but the radial component may now depend on direction. In that setting, the limiting area is governed by
+                    the regression function
+                    \(m(\theta)=\mathbb{E}[R\mid \Phi=\theta]\).
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    A_n \xrightarrow{\mathrm{a.s.}}
+                    \frac{1}{2}\int_{0}^{2\pi} m(\theta)^2\,d\theta
+                    =
+                    \frac{1}{2}\|m\|_{L^2([0,2\pi))}^2.
+                    \]
+                </div>
+    
+                <p>
+                    This formula shows that the limit is no longer determined by a constant radial mean.
+                    Instead, it records the full directional profile of the sample through the square of the conditional expectation.
+                    The independent case is recovered when \(m\) is constant.
+                </p>
+    
+                <p><strong>2.1 Conditional Independence Structure</strong></p>
+                <p>
+                    After conditioning on the angles, the radii remain independent, but their laws now depend on the observed directions.
+                    The concomitant \(R(i)\) has the conditional law of the radius given \(\Phi=\Phi(i)\), and this allows the same
+                    wedge decomposition to be retained with angle-dependent coefficients.
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \mathbb{E}[R(i)\mid G_n]=m(\Phi(i)),
+                    \qquad
+                    \mathbb{E}[R(i)R(j)\mid G_n]
+                    =
+                    m(\Phi(i))\,m(\Phi(j)),
+                    \quad i\neq j.
+                    \]
+                </div>
+    
+                <p><strong>2.2 Convergence of the Conditional Expectation</strong></p>
+                <p>
+                    The conditional area becomes a random Riemann sum over the angular partition.
+                    The Lipschitz regularity of \(m\) makes it possible to replace \(\sin(\Delta\Theta_i)\) by \(\Delta\Theta_i\),
+                    then replace the adjacent product \(m(\Phi(i))m(\Phi(i+1))\) by the square \(m(\Phi(i))^2\),
+                    and finally pass from the discrete sum to the integral of \(m^2\).
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    \mathbb{E}[A_n\mid G_n]
+                    =
+                    \frac{1}{2}\sum_{i=1}^{n}
+                    m(\Phi(i))m(\Phi(i+1))\sin(\Delta\Theta_i)
+                    \xrightarrow{\mathrm{a.s.}}
+                    \frac{1}{2}\int_{0}^{2\pi} m(\theta)^2\,d\theta.
+                    \]
+                </div>
+    
+                <p>
+                    The error terms are controlled by \(\sum_i (\Delta\Theta_i)^2\), which vanishes almost surely because the
+                    maximal spacing tends to zero. In this way, the angular partition becomes asymptotically fine enough to recover
+                    the continuous quadratic profile of \(m\).
+                </p>
+    
+                <p><strong>2.3 Almost Sure Convergence</strong></p>
+                <p>
+                    The final argument has the same structure as in the uniform case. After subtracting the conditional expectation,
+                    one obtains a centered, conditionally 1-dependent sequence. The same fourth-moment method gives summable tail bounds,
+                    and Borel&ndash;Cantelli completes the proof.
+                </p>
+    
+                <div class="blog-equation">
+                    \[
+                    A_n - \mathbb{E}[A_n\mid G_n] \xrightarrow{\mathrm{a.s.}} 0.
+                    \]
+                </div>
+    
+                <p>
+                    The central diagram is therefore not only illustrative, but it isin fact the proof in geometric form.
+                    Each edge contributes a local signed area term of the form
+                    \(\frac{1}{2}R(i)R(i+1)\sin(\Delta\Theta_i)\),
+                    and the theorem shows that these local contributions assemble into a deterministic global limit.
+                    In the uniform case that limit is \(4\pi/9\); in the general case it is the quadratic quantity
+                    \(\frac{1}{2}\int_0^{2\pi} m(\theta)^2\,d\theta\).
                 </p>
     
                 <p class="blog-impact">
-                    Impact: the note identifies a remarkably rigid law behind a random polygonal construction. In the uniform
-                    case the limiting area is the explicit constant \(4\pi/9\); in the general case it is the quadratic functional
-                    \(\frac12\|m\|_{L^2}^2\). The result is a clean example of how order statistics, geometric identities,
-                    and conditional expectation combine to turn a random discrete object into a deterministic asymptotic theorem.
+                    Impact: the fractagon provides a clean example in which random discrete geometry converges to a deterministic
+                    limit through the interaction of angular spacings, conditional expectation, and almost sure concentration.
                 </p>
             </div>
         </section>
