@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auctiva | Automation with Human Oversight</title>
+    <meta name="description" content="Auctiva helps small and medium-sized firms automate daily operations with and without AI, always keeping humans in the loop.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        .auctiva-hero-content {
+            grid-template-columns: 1.15fr 0.85fr;
+            max-width: 1200px;
+            gap: 2.5rem;
+            padding-top: 3rem;
+            padding-bottom: 4rem;
+        }
+
+        .auctiva-hero-text {
+            max-width: 720px;
+        }
+
+        .auctiva-eyebrow {
+            display: inline-block;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #2f3542;
+            background: rgba(255, 255, 255, 0.75);
+            border-radius: 999px;
+            padding: 0.35rem 0.8rem;
+            margin-bottom: 0.9rem;
+        }
+
+        .auctiva-hero-subtitle {
+            max-width: 620px;
+            font-size: 1rem;
+            color: var(--text-medium);
+            line-height: 1.75;
+            margin-bottom: 1.25rem;
+        }
+
+        .auctiva-hero-points {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.5rem;
+            display: grid;
+            gap: 0.6rem;
+        }
+
+        .auctiva-hero-points li {
+            background: rgba(255, 255, 255, 0.78);
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-neu-sm);
+            padding: 0.65rem 0.9rem;
+            color: var(--text-dark);
+            font-size: 0.92rem;
+        }
+
+        .auctiva-hero-aside {
+            display: grid;
+            gap: 1rem;
+            align-content: center;
+        }
+
+        .auctiva-metric {
+            background: var(--bg-white);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-neu-sm);
+            padding: 1rem 1.1rem;
+        }
+
+        .auctiva-metric h3 {
+            margin: 0 0 0.25rem;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            line-height: 1.2;
+        }
+
+        .auctiva-metric p {
+            margin: 0;
+            font-size: 0.88rem;
+            color: var(--text-medium);
+            line-height: 1.6;
+        }
+
+        .auctiva-grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .auctiva-mini-card {
+            background: #fbfbfd;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-neu-sm);
+            padding: 1rem;
+        }
+
+        .auctiva-mini-card h3 {
+            margin: 0 0 0.5rem;
+            font-size: 1rem;
+            color: var(--text-dark);
+        }
+
+        .auctiva-mini-card p {
+            margin: 0;
+            color: var(--text-medium);
+            font-size: 0.9rem;
+            line-height: 1.65;
+        }
+
+        .auctiva-steps {
+            list-style: none;
+            counter-reset: workflow;
+            display: grid;
+            gap: 0.9rem;
+            padding: 0;
+            margin: 0;
+        }
+
+        .auctiva-steps li {
+            counter-increment: workflow;
+            position: relative;
+            background: #fbfbfd;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-neu-sm);
+            padding: 0.95rem 1rem 0.95rem 3.1rem;
+        }
+
+        .auctiva-steps li::before {
+            content: counter(workflow);
+            position: absolute;
+            left: 1rem;
+            top: 0.95rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            background: var(--primary-color);
+        }
+
+        .auctiva-steps h3 {
+            margin: 0 0 0.25rem;
+            font-size: 1rem;
+            color: var(--text-dark);
+        }
+
+        .auctiva-steps p {
+            margin: 0;
+            color: var(--text-medium);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .auctiva-table {
+            width: 100%;
+            border-collapse: collapse;
+            overflow: hidden;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-neu-sm);
+        }
+
+        .auctiva-table th,
+        .auctiva-table td {
+            padding: 0.75rem 0.9rem;
+            text-align: left;
+            vertical-align: top;
+            font-size: 0.9rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+            background: #ffffff;
+        }
+
+        .auctiva-table th {
+            font-weight: 700;
+            color: var(--text-dark);
+            background: var(--primary-light);
+        }
+
+        .auctiva-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .auctiva-pill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .auctiva-pill-list li {
+            padding: 0.35rem 0.75rem;
+            background: var(--primary-light);
+            color: #11406b;
+            border-radius: 999px;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        .auctiva-form-grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .auctiva-field {
+            display: grid;
+            gap: 0.4rem;
+        }
+
+        .auctiva-field label {
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .auctiva-field input,
+        .auctiva-field select,
+        .auctiva-field textarea {
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 0.85rem;
+            font: inherit;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: var(--text-dark);
+            background: #f7f8fb;
+            box-shadow: inset 2px 2px 5px #d8dce4, inset -2px -2px 5px #ffffff;
+        }
+
+        .auctiva-field input:focus,
+        .auctiva-field select:focus,
+        .auctiva-field textarea:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 1px;
+        }
+
+        .auctiva-field--full {
+            grid-column: 1 / -1;
+        }
+
+        .auctiva-contact-actions {
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .auctiva-contact-actions .btn-primary {
+            border: none;
+            cursor: pointer;
+        }
+
+        .auctiva-note {
+            font-size: 0.82rem;
+            color: var(--text-light);
+            margin: 0;
+        }
+
+        .site-footer {
+            text-align: center;
+            padding: 1.5rem 1rem 2rem;
+            color: var(--text-light);
+            font-size: 0.85rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        @media (max-width: 980px) {
+            .auctiva-hero-content {
+                grid-template-columns: 1fr;
+                padding-top: 2rem;
+            }
+
+            .auctiva-grid,
+            .auctiva-form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="vector-field-canvas"></canvas>
+
+    <section class="hero" id="home">
+        <div class="hero-decoration hero-decoration-1"></div>
+        <div class="hero-decoration hero-decoration-2"></div>
+        <div class="hero-decoration hero-decoration-3"></div>
+
+        <nav>
+            <div class="nav-inner">
+                <a href="#home" class="nav-logo">auctiva.</a>
+                <a href="#contact" class="nav-cta">Request an Automation Audit</a>
+                <ul class="nav-links">
+                    <li><a href="#services" class="nav-link">Services</a></li>
+                    <li><a href="#workflow" class="nav-link">Workflow</a></li>
+                    <li><a href="#use-cases" class="nav-link">Use Cases</a></li>
+                    <li><a href="#trust" class="nav-link">Trust</a></li>
+                    <li><a href="#contact" class="nav-link">Contact</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <div class="hero-content auctiva-hero-content">
+            <div class="hero-text auctiva-hero-text">
+                <span class="auctiva-eyebrow">Automation for growing SMEs</span>
+                <h1 class="hero-name">Auctiva</h1>
+                <p class="auctiva-hero-subtitle">
+                    We design and deploy practical automation systems for small and medium-sized firms.
+                    From rule-based operational flows to AI-supported workflows, every process keeps a
+                    human decision point where accuracy and accountability matter.
+                </p>
+                <ul class="auctiva-hero-points">
+                    <li>Automate repetitive work without losing process visibility.</li>
+                    <li>Introduce AI only where it creates measurable operational lift.</li>
+                    <li>Keep teams in control with clear approvals and escalation paths.</li>
+                </ul>
+                <div class="button-container">
+                    <a href="#contact" class="btn-primary">Book a Discovery Call</a>
+                </div>
+            </div>
+            <aside class="auctiva-hero-aside" aria-label="Business impact highlights">
+                <article class="auctiva-metric">
+                    <h3>Faster cycles</h3>
+                    <p>Reduce turnaround on recurring administrative and ops tasks with robust automations.</p>
+                </article>
+                <article class="auctiva-metric">
+                    <h3>Lower error rates</h3>
+                    <p>Standardize execution with controlled workflows and automated validation gates.</p>
+                </article>
+                <article class="auctiva-metric">
+                    <h3>Human oversight</h3>
+                    <p>Critical decisions stay with your team through review, approval, and exception routing.</p>
+                </article>
+            </aside>
+        </div>
+    </section>
+
+    <main>
+        <section id="services" class="card scroll-reveal from-left">
+            <h2>What We Automate</h2>
+            <div class="auctiva-grid">
+                <article class="auctiva-mini-card">
+                    <h3>Without AI: Operational Automation</h3>
+                    <p>
+                        Rule-based workflows for data movement, status tracking, reminders, approvals, and system sync.
+                        Ideal for stable repetitive tasks where predictability and consistency are the priority.
+                    </p>
+                </article>
+                <article class="auctiva-mini-card">
+                    <h3>With AI: Assisted Decision Workflows</h3>
+                    <p>
+                        AI-supported classification, drafting, triage, and retrieval workflows with explicit confidence checks
+                        and human validation before high-impact actions are finalized.
+                    </p>
+                </article>
+            </div>
+        </section>
+
+        <section id="workflow" class="card scroll-reveal from-right">
+            <h2>How We Work</h2>
+            <ol class="auctiva-steps">
+                <li>
+                    <h3>Discovery and Process Mapping</h3>
+                    <p>We identify operational bottlenecks, baseline cycle times, and define measurable success criteria.</p>
+                </li>
+                <li>
+                    <h3>Prototype and Validation</h3>
+                    <p>We build a controlled pilot with clear acceptance tests, fallback paths, and team feedback loops.</p>
+                </li>
+                <li>
+                    <h3>Deployment With Human Checkpoints</h3>
+                    <p>Automations are rolled out in phases with approval gates, escalation routes, and ownership assignment.</p>
+                </li>
+                <li>
+                    <h3>Monitoring and Continuous Improvement</h3>
+                    <p>We track performance, exceptions, and quality signals to refine reliability over time.</p>
+                </li>
+            </ol>
+        </section>
+
+        <section id="use-cases" class="card scroll-reveal from-left">
+            <h2>Typical SME Use Cases</h2>
+            <table class="auctiva-table" aria-label="Auctiva use cases">
+                <thead>
+                    <tr>
+                        <th>Team</th>
+                        <th>Automated Task</th>
+                        <th>Human-in-the-loop checkpoint</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Operations</td>
+                        <td>Order intake validation and routing</td>
+                        <td>Supervisor approves exceptions and outliers.</td>
+                    </tr>
+                    <tr>
+                        <td>Finance</td>
+                        <td>Invoice matching and reminder workflows</td>
+                        <td>Finance lead reviews disputed or high-value items.</td>
+                    </tr>
+                    <tr>
+                        <td>Customer Success</td>
+                        <td>Ticket triage and response drafting</td>
+                        <td>Agents approve final responses in priority categories.</td>
+                    </tr>
+                    <tr>
+                        <td>People Ops</td>
+                        <td>Onboarding checklist orchestration</td>
+                        <td>HR confirms completion of policy-sensitive steps.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section id="trust" class="card scroll-reveal from-right">
+            <h2>Governance, Reliability, and Security</h2>
+            <p>
+                Auctiva automation projects are built with auditable process design, role-based ownership, and explicit
+                decision boundaries between automated execution and human judgment.
+            </p>
+            <br>
+            <ul class="auctiva-pill-list" aria-label="Trust principles">
+                <li>Audit-ready workflow logs</li>
+                <li>Documented exception handling</li>
+                <li>Role-based approval policies</li>
+                <li>Progressive rollout strategy</li>
+                <li>Operational resilience checkpoints</li>
+            </ul>
+        </section>
+
+        <section id="contact" class="card scroll-reveal from-left">
+            <h2>Start With a Process Audit</h2>
+            <p>
+                Share your current workflow challenges and we will map where automation can deliver measurable impact,
+                with a practical implementation roadmap for your team.
+            </p>
+            <br>
+            <form action="#" method="post">
+                <div class="auctiva-form-grid">
+                    <div class="auctiva-field">
+                        <label for="full-name">Full name</label>
+                        <input id="full-name" name="full-name" type="text" autocomplete="name" required>
+                    </div>
+                    <div class="auctiva-field">
+                        <label for="work-email">Work email</label>
+                        <input id="work-email" name="work-email" type="email" autocomplete="email" required>
+                    </div>
+                    <div class="auctiva-field">
+                        <label for="company-name">Company</label>
+                        <input id="company-name" name="company-name" type="text" autocomplete="organization" required>
+                    </div>
+                    <div class="auctiva-field">
+                        <label for="company-size">Company size</label>
+                        <select id="company-size" name="company-size" required>
+                            <option value="">Select size</option>
+                            <option value="1-25">1-25 employees</option>
+                            <option value="26-100">26-100 employees</option>
+                            <option value="101-250">101-250 employees</option>
+                            <option value="251-500">251-500 employees</option>
+                            <option value="500+">500+ employees</option>
+                        </select>
+                    </div>
+                    <div class="auctiva-field auctiva-field--full">
+                        <label for="pain-point">Main process pain point</label>
+                        <textarea id="pain-point" name="pain-point" rows="4" required></textarea>
+                    </div>
+                    <div class="auctiva-field auctiva-field--full">
+                        <label for="current-tools">Current tools stack (optional)</label>
+                        <input id="current-tools" name="current-tools" type="text" placeholder="CRM, ERP, email stack, ticketing, spreadsheets">
+                    </div>
+                    <div class="auctiva-field">
+                        <label for="timeline">Preferred timeline</label>
+                        <select id="timeline" name="timeline">
+                            <option value="">Select timeline</option>
+                            <option value="2-4-weeks">2-4 weeks</option>
+                            <option value="1-2-months">1-2 months</option>
+                            <option value="3-plus-months">3+ months</option>
+                        </select>
+                    </div>
+                    <div class="auctiva-field">
+                        <label for="budget">Estimated budget range</label>
+                        <select id="budget" name="budget">
+                            <option value="">Select range</option>
+                            <option value="under-5k">Under $5k</option>
+                            <option value="5k-15k">$5k-$15k</option>
+                            <option value="15k-30k">$15k-$30k</option>
+                            <option value="30k-plus">$30k+</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="auctiva-contact-actions">
+                    <button type="submit" class="btn-primary">Submit request</button>
+                    <p class="auctiva-note">Prefer email? Contact us at <a href="mailto:hello@auctiva.io">hello@auctiva.io</a>.</p>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Auctiva. Built for practical automation outcomes.</p>
+    </footer>
+
+    <script src="vectorfield.js"></script>
+</body>
+</html>
