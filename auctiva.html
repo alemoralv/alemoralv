@@ -3,89 +3,378 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auctiva | Automation with Human Oversight</title>
-    <meta name="description" content="Auctiva helps small and medium-sized firms automate daily operations with and without AI, always keeping humans in the loop.">
+    <title>Auctiva | Human-Managed Automation for SMEs</title>
+    <meta name="description" content="Auctiva helps SMEs automate operations with controlled AI adoption and human oversight at every critical decision.">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
+        .auctiva-hero {
+            min-height: auto;
+            background: linear-gradient(180deg, #f5f6f8 0%, #eef0f4 100%);
+        }
+
+        .auctiva-hero::before {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.64) 0%, rgba(232, 241, 255, 0.38) 100%);
+            opacity: 1;
+            filter: none;
+        }
+
+        .auctiva-hero nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(247, 248, 250, 0.88);
+        }
+
+        .auctiva-hero .nav-inner {
+            max-width: 1240px;
+            padding: 1rem 1.75rem;
+        }
+
+        .auctiva-logo {
+            font-size: 2rem;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+
+        .auctiva-nav-cta {
+            background: #1680eb;
+            box-shadow: 0 6px 18px rgba(22, 128, 235, 0.34);
+            font-size: 0.82rem;
+            padding: 0.65rem 1.6rem;
+        }
+
+        .auctiva-nav-cta:hover {
+            background: #0c66bf;
+        }
+
         .auctiva-hero-content {
-            grid-template-columns: 1.15fr 0.85fr;
-            max-width: 1200px;
-            gap: 2.5rem;
-            padding-top: 3rem;
-            padding-bottom: 4rem;
+            grid-template-columns: 1.04fr 0.96fr;
+            max-width: 1240px;
+            gap: 1.8rem;
+            padding-top: 2.8rem;
+            padding-bottom: 2rem;
+            align-items: start;
         }
 
         .auctiva-hero-text {
-            max-width: 720px;
+            max-width: 635px;
         }
 
         .auctiva-eyebrow {
-            display: inline-block;
-            font-size: 0.78rem;
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.8rem;
             font-weight: 700;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: #2f3542;
-            background: rgba(255, 255, 255, 0.75);
+            color: #233245;
+            background: rgba(255, 255, 255, 0.86);
+            border: 1px solid rgba(12, 42, 78, 0.08);
             border-radius: 999px;
             padding: 0.35rem 0.8rem;
             margin-bottom: 0.9rem;
         }
 
-        .auctiva-hero-subtitle {
-            max-width: 620px;
-            font-size: 1rem;
-            color: var(--text-medium);
-            line-height: 1.75;
-            margin-bottom: 1.25rem;
+        .auctiva-title {
+            margin: 0 0 0.85rem;
+            font-size: clamp(2.15rem, 4.65vw, 3.45rem);
+            line-height: 1.12;
+            letter-spacing: -1.1px;
+            color: #0f1827;
+            max-width: 16ch;
         }
 
-        .auctiva-hero-points {
+        .auctiva-subtitle {
+            margin: 0 0 1.2rem;
+            color: #36485f;
+            font-size: 1.03rem;
+            line-height: 1.65;
+        }
+
+        .auctiva-hero-list {
             list-style: none;
+            margin: 0 0 1.4rem;
             padding: 0;
-            margin: 0 0 1.5rem;
             display: grid;
-            gap: 0.6rem;
+            gap: 0.68rem;
+            max-width: 580px;
         }
 
-        .auctiva-hero-points li {
-            background: rgba(255, 255, 255, 0.78);
-            border-radius: var(--radius-sm);
-            box-shadow: var(--shadow-neu-sm);
+        .auctiva-hero-list li {
+            display: grid;
+            grid-template-columns: 1.6rem 1fr;
+            gap: 0.72rem;
+            align-items: start;
+            color: #1f2d40;
+            font-size: 0.95rem;
+            line-height: 1.45;
+            padding: 0.5rem 0.6rem 0.5rem 0.2rem;
+        }
+
+        .auctiva-list-icon {
+            width: 1.6rem;
+            height: 1.6rem;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(180deg, #f7faff 0%, #e6effd 100%);
+            color: #0f73d2;
+            box-shadow: 0 2px 6px rgba(16, 95, 170, 0.18);
+            margin-top: 0.03rem;
+        }
+
+        .auctiva-list-icon svg {
+            width: 0.9rem;
+            height: 0.9rem;
+        }
+
+        .auctiva-hero-cta {
+            margin-top: 0.2rem;
+            padding-inline: 1.45rem;
+            font-size: 0.84rem;
+            letter-spacing: 0.02em;
+        }
+
+        .auctiva-device-wrap {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            position: relative;
+            padding-top: 0.2rem;
+        }
+
+        .auctiva-device {
+            width: min(560px, 100%);
+            background: #f4f6fa;
+            border-radius: 26px;
+            border: 10px solid #1a1e25;
+            transform: rotate(-6deg);
+            transform-origin: center;
+            box-shadow: 0 20px 40px rgba(22, 30, 43, 0.32);
+            overflow: hidden;
+        }
+
+        .auctiva-device-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
             padding: 0.65rem 0.9rem;
-            color: var(--text-dark);
+            background: #ffffff;
+            border-bottom: 1px solid rgba(26, 41, 62, 0.1);
+            font-size: 0.78rem;
+            color: #4a5a70;
+            font-weight: 600;
+        }
+
+        .auctiva-device-body {
+            padding: 0.9rem;
+            background: linear-gradient(180deg, #f8f9fc 0%, #edf2fa 100%);
+        }
+
+        .auctiva-flow-title {
+            margin: 0 0 0.6rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #233548;
+        }
+
+        .auctiva-flow-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 0.4rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .auctiva-flow-step {
+            background: #ffffff;
+            border: 1px solid rgba(30, 61, 97, 0.14);
+            border-radius: 10px;
+            padding: 0.45rem 0.35rem;
+            font-size: 0.56rem;
+            line-height: 1.22;
+            text-align: center;
+            color: #445971;
+            min-height: 52px;
+            display: grid;
+            align-content: center;
+            justify-items: center;
+            gap: 0.2rem;
+        }
+
+        .auctiva-flow-step svg {
+            width: 0.9rem;
+            height: 0.9rem;
+            color: #1f7fdd;
+        }
+
+        .auctiva-approval {
+            width: min(220px, 100%);
+            margin-left: auto;
+            background: #e8f2ff;
+            border: 1px solid rgba(21, 109, 192, 0.2);
+            border-radius: 10px;
+            padding: 0.5rem 0.55rem;
+            color: #27405a;
+            box-shadow: 0 8px 20px rgba(56, 103, 161, 0.2);
+            font-size: 0.68rem;
+            line-height: 1.35;
+        }
+
+        .auctiva-approval strong {
+            display: block;
+            margin-bottom: 0.35rem;
+            color: #153554;
+            font-size: 0.7rem;
+        }
+
+        .auctiva-approval button {
+            margin-top: 0.45rem;
+            border: none;
+            border-radius: 999px;
+            background: #1b7fe0;
+            color: #ffffff;
+            font-size: 0.62rem;
+            font-weight: 700;
+            padding: 0.28rem 0.56rem;
+            cursor: default;
+        }
+
+        .auctiva-trust-strip {
+            position: relative;
+            z-index: 1;
+            max-width: 1240px;
+            margin: 0 auto;
+            background: rgba(247, 249, 253, 0.94);
+            border-top: 1px solid rgba(20, 37, 58, 0.08);
+            padding: 0.95rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .auctiva-trust-strip p {
+            margin: 0;
+            color: #2d3a4b;
+            font-weight: 600;
             font-size: 0.92rem;
         }
 
-        .auctiva-hero-aside {
-            display: grid;
-            gap: 1rem;
-            align-content: center;
+        .auctiva-logo-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
-        .auctiva-metric {
-            background: var(--bg-white);
+        .auctiva-logo-badge {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #f1f4fb;
+            box-shadow: inset 1px 1px 2px rgba(169, 179, 194, 0.56), inset -1px -1px 2px #ffffff;
+            display: grid;
+            place-items: center;
+            color: #334b63;
+        }
+
+        .auctiva-logo-badge svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .auctiva-help-section {
+            position: relative;
+            margin-top: 2.5rem;
+        }
+
+        .auctiva-help-section::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: var(--radius-lg);
+            background: linear-gradient(180deg, rgba(253, 254, 255, 0.72) 0%, rgba(241, 244, 250, 0.9) 100%);
+            pointer-events: none;
+        }
+
+        .auctiva-help-wrap {
+            position: relative;
+            z-index: 1;
+            max-width: 1040px;
+            margin: 0 auto;
+            padding: 2.1rem 1rem 1.2rem;
+            text-align: center;
+        }
+
+        .auctiva-help-wrap h2 {
+            margin: 0;
+            font-size: clamp(1.85rem, 4vw, 2.65rem);
+            line-height: 1.12;
+            color: #1a2435;
+            letter-spacing: -0.7px;
+        }
+
+        .auctiva-help-wrap > p {
+            margin: 0.45rem auto 1.2rem;
+            color: #3f4f63;
+            font-size: 1rem;
+            max-width: 58ch;
+        }
+
+        .auctiva-help-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.75rem;
+        }
+
+        .auctiva-help-card {
+            background: rgba(255, 255, 255, 0.88);
             border-radius: var(--radius-md);
             box-shadow: var(--shadow-neu-sm);
-            padding: 1rem 1.1rem;
+            padding: 1.15rem 1rem;
+            text-align: left;
         }
 
-        .auctiva-metric h3 {
-            margin: 0 0 0.25rem;
-            font-size: 1.3rem;
-            font-weight: 800;
-            color: var(--text-dark);
-            line-height: 1.2;
+        .auctiva-help-icon {
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(180deg, #68c2ff 0%, #3383e8 100%);
+            color: #ffffff;
+            margin-bottom: 0.8rem;
+            box-shadow: 0 9px 20px rgba(38, 117, 206, 0.34);
         }
 
-        .auctiva-metric p {
+        .auctiva-help-icon svg {
+            width: 1.45rem;
+            height: 1.45rem;
+        }
+
+        .auctiva-help-card h3 {
+            margin: 0 0 0.32rem;
+            font-size: 1.5rem;
+            line-height: 1.1;
+            color: #1d293a;
+            letter-spacing: -0.5px;
+        }
+
+        .auctiva-help-card p {
             margin: 0;
-            font-size: 0.88rem;
-            color: var(--text-medium);
-            line-height: 1.6;
+            color: #405266;
+            line-height: 1.52;
+            font-size: 0.95rem;
+        }
+
+        .auctiva-content {
+            max-width: 1080px;
+            padding-top: 2rem;
         }
 
         .auctiva-grid {
@@ -277,15 +566,57 @@
             z-index: 1;
         }
 
-        @media (max-width: 980px) {
+        @media (max-width: 1100px) {
             .auctiva-hero-content {
                 grid-template-columns: 1fr;
-                padding-top: 2rem;
+                gap: 1.4rem;
+                padding-top: 2.15rem;
             }
 
+            .auctiva-device {
+                width: min(530px, 100%);
+                transform: rotate(-2.5deg);
+            }
+
+            .auctiva-help-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 900px) {
             .auctiva-grid,
             .auctiva-form-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .auctiva-trust-strip {
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .auctiva-logo {
+                font-size: 1.5rem;
+            }
+
+            .auctiva-hero .nav-inner {
+                padding: 0.75rem 1rem;
+            }
+
+            .auctiva-title {
+                font-size: clamp(1.92rem, 8.4vw, 2.4rem);
+            }
+
+            .auctiva-subtitle {
+                font-size: 0.95rem;
+            }
+
+            .auctiva-flow-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .auctiva-approval {
+                margin-left: 0;
             }
         }
     </style>
@@ -293,15 +624,14 @@
 <body>
     <canvas id="vector-field-canvas"></canvas>
 
-    <section class="hero" id="home">
+    <section class="hero auctiva-hero" id="home">
         <div class="hero-decoration hero-decoration-1"></div>
         <div class="hero-decoration hero-decoration-2"></div>
         <div class="hero-decoration hero-decoration-3"></div>
 
         <nav>
             <div class="nav-inner">
-                <a href="#home" class="nav-logo">auctiva.</a>
-                <a href="#contact" class="nav-cta">Request an Automation Audit</a>
+                <a href="#home" class="nav-logo auctiva-logo">auctiva.</a>
                 <ul class="nav-links">
                     <li><a href="#services" class="nav-link">Services</a></li>
                     <li><a href="#workflow" class="nav-link">Workflow</a></li>
@@ -309,143 +639,228 @@
                     <li><a href="#trust" class="nav-link">Trust</a></li>
                     <li><a href="#contact" class="nav-link">Contact</a></li>
                 </ul>
+                <a href="#contact" class="nav-cta auctiva-nav-cta">Request a Free Operational Audit</a>
             </div>
         </nav>
 
         <div class="hero-content auctiva-hero-content">
             <div class="hero-text auctiva-hero-text">
-                <span class="auctiva-eyebrow">Automation for growing SMEs</span>
-                <h1 class="hero-name">Auctiva</h1>
-                <p class="auctiva-hero-subtitle">
-                    We design and deploy practical automation systems for small and medium-sized firms.
-                    From rule-based operational flows to AI-supported workflows, every process keeps a
-                    human decision point where accuracy and accountability matter.
+                <span class="auctiva-eyebrow">Automation for Growing SMEs</span>
+                <h1 class="auctiva-title">Scale Without Control Loss. Human-Managed Automation for Your Business.</h1>
+                <p class="auctiva-subtitle">
+                    Stop drowning in operational tasks. We build and manage custom automation systems,
+                    combining deterministic process automation and carefully governed AI so your team keeps
+                    ownership of critical approvals.
                 </p>
-                <ul class="auctiva-hero-points">
-                    <li>Automate repetitive work without losing process visibility.</li>
-                    <li>Introduce AI only where it creates measurable operational lift.</li>
-                    <li>Keep teams in control with clear approvals and escalation paths.</li>
+                <ul class="auctiva-hero-list">
+                    <li>
+                        <span class="auctiva-list-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M4 12h16M12 4v16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                        </span>
+                        <span><strong>Process Visibility:</strong> clear insight into every automated task, trigger, and exception.</span>
+                    </li>
+                    <li>
+                        <span class="auctiva-list-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M7 15l3-3 2 2 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 19h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                        </span>
+                        <span><strong>Smart AI Scaling:</strong> apply intelligence only where it drives measurable operational lift.</span>
+                    </li>
+                    <li>
+                        <span class="auctiva-list-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z" stroke="currentColor" stroke-width="2"/><path d="M9.5 12.5l2 2 3-3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </span>
+                        <span><strong>Secure Control:</strong> keep your team in charge with mandatory human checks on sensitive actions.</span>
+                    </li>
                 </ul>
                 <div class="button-container">
-                    <a href="#contact" class="btn-primary">Book a Discovery Call</a>
+                    <a href="#contact" class="btn-primary auctiva-hero-cta">SCHEDULE YOUR FREE OPERATIONAL AUDIT</a>
                 </div>
             </div>
-            <aside class="auctiva-hero-aside" aria-label="Business impact highlights">
-                <article class="auctiva-metric">
-                    <h3>Faster cycles</h3>
-                    <p>Reduce turnaround on recurring administrative and ops tasks with robust automations.</p>
+
+            <div class="auctiva-device-wrap" aria-label="Auctiva control center preview">
+                <article class="auctiva-device">
+                    <header class="auctiva-device-header">
+                        <span>Auctiva. Control Center</span>
+                        <span>Account Payable Automation</span>
+                    </header>
+                    <div class="auctiva-device-body">
+                        <p class="auctiva-flow-title">Workflow Status</p>
+                        <div class="auctiva-flow-grid">
+                            <div class="auctiva-flow-step">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M5 6h14v12H5z" stroke="currentColor" stroke-width="2"/><path d="M9 10h6M9 14h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                                <span>Invoice Received</span>
+                            </div>
+                            <div class="auctiva-flow-step">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M8 6v12m8-12v12M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                                <span>Data Extracted</span>
+                            </div>
+                            <div class="auctiva-flow-step">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M6 12l4 4 8-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <span>Rule Check</span>
+                            </div>
+                            <div class="auctiva-flow-step">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z" stroke="currentColor" stroke-width="2"/></svg>
+                                <span>Approval Needed</span>
+                            </div>
+                            <div class="auctiva-flow-step">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M4 12h16M12 4l8 8-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                <span>Processing</span>
+                            </div>
+                        </div>
+                        <div class="auctiva-approval">
+                            <strong>Approval Needed</strong>
+                            M. Chan - Invoice mismatch detected. Confirm or escalate?
+                            <button type="button">APPROVE</button>
+                        </div>
+                    </div>
                 </article>
-                <article class="auctiva-metric">
-                    <h3>Lower error rates</h3>
-                    <p>Standardize execution with controlled workflows and automated validation gates.</p>
-                </article>
-                <article class="auctiva-metric">
-                    <h3>Human oversight</h3>
-                    <p>Critical decisions stay with your team through review, approval, and exception routing.</p>
-                </article>
-            </aside>
+            </div>
+        </div>
+
+        <div class="auctiva-trust-strip" aria-label="Trusted by operational leaders">
+            <p>Trusted by Operational Leaders at:</p>
+            <div class="auctiva-logo-row">
+                <span class="auctiva-logo-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/><path d="M4 12h16" stroke="currentColor" stroke-width="2"/></svg></span>
+                <span class="auctiva-logo-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 18V7m5 11V5m5 13v-8m4 8H3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+                <span class="auctiva-logo-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 16l3-3 3 2 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 19h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+                <span class="auctiva-logo-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="7" height="7" stroke="currentColor" stroke-width="2"/><rect x="13" y="13" width="7" height="7" stroke="currentColor" stroke-width="2"/></svg></span>
+                <span class="auctiva-logo-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12h16M12 4v16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+                <span class="auctiva-logo-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 4l8 8-8 8-8-8 8-8z" stroke="currentColor" stroke-width="2"/></svg></span>
+                <span class="auctiva-logo-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 18l5-12 5 8 6-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <span class="auctiva-logo-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 7h12v10H6z" stroke="currentColor" stroke-width="2"/><path d="M9 10h6M9 14h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+                <span class="auctiva-logo-badge" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z" stroke="currentColor" stroke-width="2"/></svg></span>
+            </div>
         </div>
     </section>
 
-    <main>
+    <section class="auctiva-help-section" id="impact">
+        <div class="auctiva-help-wrap">
+            <h2>How Auctiva Helps</h2>
+            <p>Practical automation systems that lighten your team's load, not replace them.</p>
+            <div class="auctiva-help-grid">
+                <article class="auctiva-help-card">
+                    <div class="auctiva-help-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M6 14l2-4 3 2 3-5 4 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 20h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                    </div>
+                    <h3>Faster Cycles</h3>
+                    <p>Reduce repetitive work, speed up operations, and hit deadlines with predictable execution.</p>
+                </article>
+                <article class="auctiva-help-card">
+                    <div class="auctiva-help-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z" stroke="currentColor" stroke-width="2"/><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <h3>Fewer Errors</h3>
+                    <p>Minimize mistakes with standardized workflows, data validation, and clear exception handling.</p>
+                </article>
+                <article class="auctiva-help-card">
+                    <div class="auctiva-help-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="2"/><path d="M5 20c0-3.2 3.1-5 7-5s7 1.8 7 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M18 8l1.3 1.3 2.7-2.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <h3>Human Oversight</h3>
+                    <p>Keep critical decisions with your team through explicit approvals and review checkpoints.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <main class="auctiva-content">
         <section id="services" class="card scroll-reveal from-left">
-            <h2>What We Automate</h2>
+            <h2>Services</h2>
             <div class="auctiva-grid">
                 <article class="auctiva-mini-card">
-                    <h3>Without AI: Operational Automation</h3>
+                    <h3>Rule-Based Automation (No AI Required)</h3>
                     <p>
-                        Rule-based workflows for data movement, status tracking, reminders, approvals, and system sync.
-                        Ideal for stable repetitive tasks where predictability and consistency are the priority.
+                        Deterministic workflows for recurring operational tasks: data transfers, approvals,
+                        reminders, reporting, reconciliation, and cross-tool orchestration.
                     </p>
                 </article>
                 <article class="auctiva-mini-card">
-                    <h3>With AI: Assisted Decision Workflows</h3>
+                    <h3>AI-Augmented Automation (With Governance)</h3>
                     <p>
-                        AI-supported classification, drafting, triage, and retrieval workflows with explicit confidence checks
-                        and human validation before high-impact actions are finalized.
+                        Classification, drafting, triage, and retrieval workflows where AI handles first-pass work
+                        while your team approves high-impact outputs before execution.
                     </p>
                 </article>
             </div>
         </section>
 
         <section id="workflow" class="card scroll-reveal from-right">
-            <h2>How We Work</h2>
+            <h2>Human-in-the-Loop Workflow</h2>
             <ol class="auctiva-steps">
                 <li>
-                    <h3>Discovery and Process Mapping</h3>
-                    <p>We identify operational bottlenecks, baseline cycle times, and define measurable success criteria.</p>
+                    <h3>Discover and Map</h3>
+                    <p>Identify manual bottlenecks, map current process variants, and define the target outcome metrics.</p>
                 </li>
                 <li>
-                    <h3>Prototype and Validation</h3>
-                    <p>We build a controlled pilot with clear acceptance tests, fallback paths, and team feedback loops.</p>
+                    <h3>Prototype and Validate</h3>
+                    <p>Build a controlled pilot with explicit acceptance criteria and clear failure-handling behavior.</p>
                 </li>
                 <li>
-                    <h3>Deployment With Human Checkpoints</h3>
-                    <p>Automations are rolled out in phases with approval gates, escalation routes, and ownership assignment.</p>
+                    <h3>Deploy With Approval Gates</h3>
+                    <p>Roll out in phases with role-based checkpoints so sensitive actions always require human confirmation.</p>
                 </li>
                 <li>
-                    <h3>Monitoring and Continuous Improvement</h3>
-                    <p>We track performance, exceptions, and quality signals to refine reliability over time.</p>
+                    <h3>Monitor and Improve</h3>
+                    <p>Track turnaround time, exception rates, and quality signals to continuously improve reliability.</p>
                 </li>
             </ol>
         </section>
 
         <section id="use-cases" class="card scroll-reveal from-left">
-            <h2>Typical SME Use Cases</h2>
-            <table class="auctiva-table" aria-label="Auctiva use cases">
+            <h2>Industry Use Cases</h2>
+            <table class="auctiva-table" aria-label="Auctiva use cases by team">
                 <thead>
                     <tr>
                         <th>Team</th>
                         <th>Automated Task</th>
-                        <th>Human-in-the-loop checkpoint</th>
+                        <th>Human Checkpoint</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>Operations</td>
-                        <td>Order intake validation and routing</td>
-                        <td>Supervisor approves exceptions and outliers.</td>
+                        <td>Order intake validation and workflow routing</td>
+                        <td>Supervisor reviews exceptions and SLA risks.</td>
                     </tr>
                     <tr>
                         <td>Finance</td>
-                        <td>Invoice matching and reminder workflows</td>
-                        <td>Finance lead reviews disputed or high-value items.</td>
+                        <td>Invoice capture, matching, and reminder sequences</td>
+                        <td>Finance lead approves disputes and high-value mismatches.</td>
                     </tr>
                     <tr>
-                        <td>Customer Success</td>
+                        <td>Customer Support</td>
                         <td>Ticket triage and response drafting</td>
-                        <td>Agents approve final responses in priority categories.</td>
+                        <td>Agents approve outbound responses for priority categories.</td>
                     </tr>
                     <tr>
                         <td>People Ops</td>
-                        <td>Onboarding checklist orchestration</td>
-                        <td>HR confirms completion of policy-sensitive steps.</td>
+                        <td>New hire onboarding orchestration</td>
+                        <td>HR validates policy-sensitive and compliance-critical steps.</td>
                     </tr>
                 </tbody>
             </table>
         </section>
 
         <section id="trust" class="card scroll-reveal from-right">
-            <h2>Governance, Reliability, and Security</h2>
+            <h2>Trust and Reliability</h2>
             <p>
-                Auctiva automation projects are built with auditable process design, role-based ownership, and explicit
-                decision boundaries between automated execution and human judgment.
+                Every Auctiva system is designed with explicit accountability boundaries between automated execution
+                and human judgment, plus operational safeguards for secure and predictable delivery.
             </p>
             <br>
-            <ul class="auctiva-pill-list" aria-label="Trust principles">
+            <ul class="auctiva-pill-list" aria-label="Auctiva trust principles">
                 <li>Audit-ready workflow logs</li>
-                <li>Documented exception handling</li>
-                <li>Role-based approval policies</li>
-                <li>Progressive rollout strategy</li>
-                <li>Operational resilience checkpoints</li>
+                <li>Documented escalation and exception policy</li>
+                <li>Role-based permissions and approvals</li>
+                <li>Progressive rollout methodology</li>
+                <li>Continuous reliability monitoring</li>
             </ul>
         </section>
 
         <section id="contact" class="card scroll-reveal from-left">
-            <h2>Start With a Process Audit</h2>
+            <h2>Book a Free Operational Audit</h2>
             <p>
-                Share your current workflow challenges and we will map where automation can deliver measurable impact,
-                with a practical implementation roadmap for your team.
+                Tell us where operations are slowing down and we will send a practical automation roadmap tailored to your team.
             </p>
             <br>
             <form action="#" method="post">
@@ -478,8 +893,8 @@
                         <textarea id="pain-point" name="pain-point" rows="4" required></textarea>
                     </div>
                     <div class="auctiva-field auctiva-field--full">
-                        <label for="current-tools">Current tools stack (optional)</label>
-                        <input id="current-tools" name="current-tools" type="text" placeholder="CRM, ERP, email stack, ticketing, spreadsheets">
+                        <label for="current-tools">Current tooling stack</label>
+                        <input id="current-tools" name="current-tools" type="text" placeholder="ERP, CRM, ticketing, spreadsheets, etc.">
                     </div>
                     <div class="auctiva-field">
                         <label for="timeline">Preferred timeline</label>
@@ -491,7 +906,7 @@
                         </select>
                     </div>
                     <div class="auctiva-field">
-                        <label for="budget">Estimated budget range</label>
+                        <label for="budget">Estimated budget</label>
                         <select id="budget" name="budget">
                             <option value="">Select range</option>
                             <option value="under-5k">Under $5k</option>
@@ -503,16 +918,25 @@
                 </div>
                 <div class="auctiva-contact-actions">
                     <button type="submit" class="btn-primary">Submit request</button>
-                    <p class="auctiva-note">Prefer email? Contact us at <a href="mailto:hello@auctiva.io">hello@auctiva.io</a>.</p>
+                    <p class="auctiva-note">Prefer email? Reach us at <a href="mailto:hello@auctiva.io">hello@auctiva.io</a>.</p>
                 </div>
             </form>
         </section>
     </main>
 
     <footer class="site-footer">
-        <p>&copy; 2026 Auctiva. Built for practical automation outcomes.</p>
+        <p>&copy; 2026 Auctiva. Human-managed automation for growing teams.</p>
     </footer>
 
     <script src="vectorfield.js"></script>
+    <script>
+        const navLinks = document.querySelectorAll('.nav-link');
+        navLinks.forEach((link) => {
+            link.addEventListener('click', () => {
+                navLinks.forEach((item) => item.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+    </script>
 </body>
 </html>
