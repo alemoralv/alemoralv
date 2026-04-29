@@ -41,39 +41,40 @@
                     Posts on this page stay readable while keeping mathematical precision.
                 </p>
         
-                <details class="thinking-spoiler" style="margin: 1.25rem 0 1rem 0;">
-                    <summary style="cursor: pointer; font-weight: 600; margin-bottom: 0.75rem;">
-                        Thesis spoiler: what my research is about
-                    </summary>
-                    <div style="margin-top: 0.9rem;">
-                        <p style="margin-bottom: 0.9rem;">
-                            My master’s thesis studies mean-field limits for stochastic interacting particle systems when the state space is no longer finite-dimensional, but a separable Hilbert space. The guiding question is how to extend the digraph measure (DGM) framework to settings where each particle is itself an evolving function, field, or profile, so that the limit is described on path space rather than just on <em>\(\mathbb{R}^d\)</em>.
-                        </p>
-                        <p style="margin-bottom: 0;">
-                            The central object is a label-dependent mild equation: for each graph label \(\alpha \in I\), the limiting process evolves under a semigroup, while its drift and noise are averaged against a family of laws indexed by the surrounding network structure. In other words, the thesis connects graph limits, Wasserstein geometry on path space, and stochastic evolution equations to describe how large random networks of infinite-dimensional particles behave in the limit.
-                        </p>
-                        <div class="thinking-equation-preview">
-                            \[
-                            \begin{aligned}
-                            \bar u_\alpha(t)
-                            &= S(t)\bar u_{\alpha,0}
-                            + \int_0^t S(t-s)
-                               \left(
-                                 \int_I \!\int_H g\!\bigl(\bar u_\alpha(s),y\bigr)\,
-                                 \mu_{\beta,s}(dy)\,\eta^\alpha(d\beta)
-                               \right) ds \\
-                            &\quad
-                            + \int_0^t S(t-s)
-                               \left(
-                                 \int_I \!\int_H h\!\bigl(\bar u_\alpha(s),y\bigr)\,
-                                 \mu_{\beta,s}(dy)\,\hat\eta^\alpha(d\beta)
-                               \right) dW_\alpha^Q(s), \\
-                            \mu_{\beta,t}:&=(\mathrm{ev}_t)_\#\mu_\beta .
-                            \end{aligned}
-                            \]
-                        </div>
+                <div class="thinking-spoiler" style="margin: 1.25rem 0 1rem 0;">
+                    <p style="font-weight: 600; margin-bottom: 0.75rem;">
+                        Master Thesis: Mean-Field Limits for Stochastic Interacting Particle Systems: Convergence and Regularity on Hilbert Spaces.
+                    </p>
+                    <h2 style="font-size: 1.05rem; margin: 0 0 0.75rem 0;">Abstract</h2>
+                    <p style="margin-bottom: 0.9rem;">
+                        This master thesis studies mean-field limits for stochastic interacting particle systems whose states take values in separable Hilbert spaces and whose heterogeneous interaction structure is encoded by digraph measures. Starting from Gaussian and Wiener measure theory on Hilbert spaces, stochastic integration, the Burkholder--Davis--Gundy inequality, and \(C_0\)-semigroup methods, we formulate the finite particle system in mild form and establish its well-posedness.
+                    </p>
+                    <p style="margin-bottom: 0.9rem;">
+                        The main part of the thesis extends the digraph-measure approach to heterogeneous mean-field limits to the Hilbert-space setting. The limiting object is not a single exchangeable McKean--Vlasov law, but a label-dependent family of path-space laws \((\mu_\alpha)_{\alpha\in I}\), referred to as the independent process. We construct the corresponding independent process, prove existence and uniqueness of the law-valued solution, and show that the empirical path measure of the particle system converges weakly in probability to the averaged limiting law \(\bar\mu=\int_I \mu_\alpha\,d\alpha\). A central additional result is a quantitative label-regularity theorem: under Lipschitz assumptions on the initial laws and on the fibers of the digraph measures, this regularity propagates to the limiting family \(\alpha\mapsto\mu_\alpha\). We also derive a weak nonlinear Kolmogorov equation for the time marginals of the limiting process.
+                    </p>
+                    <p style="margin-bottom: 0.9rem;">
+                        The thesis then analyses the assumptions behind this result. In particular, it discusses the continuity frontier of the theory by separating operator-analytic regularity, state-space regularity, and label-space regularity, and it gives explicit examples showing in what sense the Lipschitz assumptions are essential for the strong labelled conclusion. Finally, we study the case of analytic semigroups. In this parabolic setting, the independent process and the particle system gain additional spatial regularity in fractional-domain spaces \(H_\gamma\), and the mean-field convergence can be upgraded from \(C([0,T];H)\) to stronger path topologies \(C([\tau,T];H_\gamma)\), \(\tau>0\).
+                    </p>
+                    <p style="margin-bottom: 0.9rem;">
+                        One of the main results is the Label Regularity Theorem, which states that the regularity of the initial conditions and that of the limit system's interactions propagate in time to yield a time-uniform Lipschitz estimate in the label variable:
+                    </p>
+                    <div class="thinking-equation-preview">
+                        \[
+                        \begin{aligned}
+                        &\textbf{Theorem 2.4.1 (Label Regularity)}\\
+                        &\text{Let } \mu=(\mu_\alpha)_{\alpha\in I}\in\widetilde{\mathcal N}_{\infty}
+                        \text{ be a law-valued solution of the independent process.}\\
+                        &\text{Then, there exists a constant}\\[0.75rem]
+                        &\qquad C_L=C_L(M,\omega,T,L_g,L_h,B_g,B_h,m_\eta,m_{\hat\eta},L_0,L_\eta,L_{\hat\eta})<\infty\\[0.75rem]
+                        &\text{such that for all } t\in[0,T]\\[0.75rem]
+                        &\qquad W_{2,t}(\mu_{\alpha_1},\mu_{\alpha_2})\le C_L|\alpha_1-\alpha_2|,
+                        \qquad \alpha_1,\alpha_2\in I.\\[0.75rem]
+                        &\text{In particular, } W_{2,T}(\mu_{\alpha_1},\mu_{\alpha_2})\le C_L|\alpha_1-\alpha_2|
+                        \text{ for all } \alpha_1,\alpha_2\in I.
+                        \end{aligned}
+                        \]
                     </div>
-                </details>
+                </div>
             </div>
         </div>
     </section>
