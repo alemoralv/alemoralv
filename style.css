@@ -19,9 +19,10 @@
     /* Exponential deceleration: fast departure, long soft arrival. */
     --ease-out-quint: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
-    --dur-reveal: 640ms;
-    --dur-reveal-child: 480ms;
-    --dur-reveal-blur: 420ms;
+    /* 640ms was only defensible as cover for a blur that no longer exists;
+       a 16px move at that length reads as slow motion. */
+    --dur-reveal: 500ms;
+    --dur-reveal-child: 400ms;
     --radius-lg: 20px;
     --radius-md: 16px;
     --radius-sm: 12px;
@@ -43,6 +44,10 @@
 
 html {
     scroll-behavior: smooth;
+    /* `clip`, not `hidden`: hidden would make the root a scroll container and
+       break anchor scrolling. This is a backstop so no entrance transform can
+       ever open a horizontal scrollbar. */
+    overflow-x: clip;
 }
 
 body {
@@ -423,9 +428,19 @@ main {
    SCROLL REVEAL
 
    The block keeps its alternating approach direction, but travels a short
-   distance and arrives with a small rise and settle rather than sliding in
-   from off to the side. box-shadow is listed explicitly because this rule
-   replaces the card's own `all` transition while the entrance is armed.
+   distance and arrives with a small rise rather than sliding in from off to
+   the side. box-shadow is listed explicitly because this rule replaces the
+   card's own `all` transition while the entrance is armed.
+
+   Travel is capped at 16px because that is `main`'s horizontal padding. At
+   28px the leading edge of a `from-right` card sat 12px past the viewport on
+   every width below 1024px, flashing a horizontal scrollbar in and out and
+   reflowing the page sideways on every other section.
+
+   No blur and no scale. In a neumorphic world the shadow is the material, and
+   `filter` rasterises the element with its shadow, so the card arrived made of
+   a softer substance than it settled into. Both were softening devices doing
+   the same job as opacity, and both resampled the type on the way in.
 
    JS strips every reveal class once the entrance lands, which is why the
    resting state here is plain identity: nothing is left behind to make
@@ -434,25 +449,22 @@ main {
 
 .scroll-reveal {
     opacity: 0;
-    filter: blur(3px);
     transition: opacity var(--dur-reveal) var(--ease-out-quint),
                 transform var(--dur-reveal) var(--ease-out-quint),
-                filter var(--dur-reveal-blur) var(--ease-out-quint),
                 box-shadow 300ms var(--ease-out-quart);
 }
 
 .scroll-reveal.from-right {
-    transform: translate3d(28px, 10px, 0) scale(0.985);
+    transform: translate3d(16px, 10px, 0);
 }
 
 .scroll-reveal.from-left {
-    transform: translate3d(-28px, 10px, 0) scale(0.985);
+    transform: translate3d(-16px, 10px, 0);
 }
 
 .scroll-reveal.is-visible {
     opacity: 1;
-    filter: blur(0);
-    transform: translate3d(0, 0, 0) scale(1);
+    transform: translate3d(0, 0, 0);
 }
 
 /* The block's own contents arrive just behind it, in reading order, so a
@@ -472,11 +484,11 @@ main {
 /* Held only for the duration of the entrance, then removed with the classes. */
 .scroll-reveal.is-revealing,
 .scroll-reveal.is-revealing .reveal-child {
-    will-change: opacity, transform, filter;
+    will-change: opacity, transform;
 }
 
 .card.scroll-reveal.is-visible:hover {
-    transform: translate3d(0, -3px, 0) scale(1);
+    transform: translate3d(0, -3px, 0);
 }
 
 .card h2 {
@@ -998,11 +1010,11 @@ footer {
     /* Less room to travel, and a narrower viewport makes lateral movement
        read as a layout shift rather than an entrance. */
     .scroll-reveal.from-right {
-        transform: translate3d(16px, 8px, 0) scale(0.99);
+        transform: translate3d(12px, 8px, 0);
     }
 
     .scroll-reveal.from-left {
-        transform: translate3d(-16px, 8px, 0) scale(0.99);
+        transform: translate3d(-12px, 8px, 0);
     }
 
     main {
@@ -1063,7 +1075,6 @@ footer {
                       box-shadow 0.2s linear, border-color 0.2s linear;
         --dur-reveal: 260ms;
         --dur-reveal-child: 200ms;
-        --dur-reveal-blur: 1ms;
     }
 
     html {

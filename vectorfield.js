@@ -73,8 +73,15 @@
        the flow visibly parts and circulates around the arriving mass before
        relaxing back into the noise. The two animations on this page are one
        system: a field, and a perturbation of it. */
-    IMPULSE_MS: 1800,
+    /* 1800ms outlived the block's own arrival by more than a second, leaving
+       saturated marks moving in the gutter after the reader had started on the
+       text. The wave should finish with the block, not after it. */
+    IMPULSE_MS: 1200,
     IMPULSE_DELAY: 180,
+    /* A new wave waits until the previous one has mostly decayed instead of
+       evicting it. Never interrupt a front mid-flight: that reads as a
+       disappearance, where the whole point is the decay. */
+    IMPULSE_YIELD: 0.65,
     /* Reach is tuned to the width of the visible gutter beside a card, not to
        the viewport. With an exponential ease and a 560px reach the front
        crossed the gutter in the first 15% of its life and spent the rest
@@ -92,7 +99,10 @@
     IMPULSE_TRAIL: 260,
     IMPULSE_STRENGTH: 1,
     IMPULSE_ATTACK: 0.08,
-    IMPULSE_MAX_LIVE: 4
+    IMPULSE_MAX_LIVE: 2,
+    // How long a parked field keeps running after its last wave, so the
+    // needles relax back into the noise instead of freezing mid-swing.
+    PARK_TAIL_MS: 700
   };
 
   var REVEAL_SECTION_SELECTORS = ['#about', '#notes', '#projects', '#academic-background', '#modules'];
@@ -101,9 +111,17 @@
     CHILD_LEAD_MS: 70,
     CHILD_STAGGER_MS: 55,
     CHILD_STAGGER_CAP: 3,
+    NESTED_LEAD_MS: 40,
+    NESTED_STAGGER_MS: 40,
+    NESTED_CAP: 4,
     SETTLE_MS: 950,
-    THRESHOLD: 0.15,
-    ROOT_MARGIN: '0px 0px -10% 0px'
+    /* Threshold 0, not a fraction. A ratio threshold is unreachable for any
+       section taller than root/threshold — at 0.15 a section over ~5x the
+       viewport can sit fully on screen and never reach 15% of its own height,
+       so it would stay at opacity 0 while the reader looks straight at it.
+       Crossing the margin line is height-independent. */
+    THRESHOLD: 0,
+    ROOT_MARGIN: '0px 0px -12% 0px'
   };
 
   var reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -251,6 +269,8 @@
     this.elapsed = 0;
     this.zOff = 0;
     this.staticMode = false;
+    this.dormant = false;
+    this._parkAt = 0;
     this.blank = false;
 
     this.layoutMap = {
@@ -321,16 +341,33 @@
     this._start();
   };
 
+  VectorField.prototype._renderStatic = function () {
+    this.zOff = this.elapsed * CONFIG.TIME_SPEED;
+    this._seedAngles(false);
+    this._render(0);
+  };
+
   VectorField.prototype._start = function () {
-    if (this.staticMode) {
-      /* Reduced motion keeps the field as an image: the flow is still drawn
-         and still coloured by direction, it simply does not move or react. */
-      this.zOff = this.elapsed * CONFIG.TIME_SPEED;
-      this._seedAngles(false);
-      this._render(0);
-      return;
-    }
+    /* Reduced motion keeps the field as an image: the flow is still drawn and
+       still coloured by direction, it simply does not move or react. */
+    if (this.staticMode) { this._renderStatic(); return; }
+
+    /* Narrow viewports leave the field ~16px of gutter and a 36px seam between
+       cards — roughly one row of needles, with no pointer to organise it. A
+       continuous loop there spends noise3D on ~600 needles at 60Hz, on
+       battery, to light 0.07% of the canvas. Draw it once and park; a landing
+       block wakes it, because the seam it lights is directly above and below
+       the card the reader is arriving at. */
+    if (this.dormant) { this._renderStatic(); return; }
+
     this.lastTime = null;
+    if (this.animId === null) this.animId = requestAnimationFrame(this._tick);
+  };
+
+  VectorField.prototype._wake = function () {
+    if (this.staticMode || document.hidden) return;
+    this.lastTime = null;
+    this._parkAt = this.elapsed + CONFIG.PARK_TAIL_MS;
     if (this.animId === null) this.animId = requestAnimationFrame(this._tick);
   };
 
@@ -356,6 +393,10 @@
     if (this.staticMode) return;
     if (document.hidden) {
       this._stop();
+    } else if (this.dormant) {
+      // Resume only if a wave is still owed time; otherwise stay parked.
+      if (this.impulses.length) this._wake();
+      else this._render(0);
     } else {
       this._start();
     }
@@ -364,11 +405,15 @@
   VectorField.prototype._handleResize = function () {
     clearTimeout(this._resizeTimer);
     this._resizeTimer = setTimeout(function () {
+      var wasParked = this.dormant && this.animId === null;
       this._resize();
       this._rebuildLayoutMap();
-      if (this.staticMode) {
-        this._seedAngles(false);
-        this._render(0);
+      if (this.staticMode || this.dormant) {
+        // Crossing the breakpoint either way lands on a correct single frame.
+        this._stop();
+        this._renderStatic();
+      } else if (wasParked) {
+        this._start();
       }
     }.bind(this), 200);
   };
@@ -377,7 +422,8 @@
     clearTimeout(this._layoutTimer);
     this._layoutTimer = setTimeout(function () {
       this._rebuildLayoutMap();
-      if (this.staticMode) this._render(0);
+      // A parked or static field still has to reflect the new card geometry.
+      if (this.staticMode || (this.dormant && this.animId === null)) this._render(0);
     }.bind(this), 90);
   };
 
@@ -390,9 +436,9 @@
     this.canvas.style.width = this.width + 'px';
     this.canvas.style.height = this.height + 'px';
     this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
-    this.feather = this.width < CONFIG.MOBILE_BREAKPOINT
-      ? CONFIG.ZONE_FEATHER_NARROW
-      : CONFIG.ZONE_FEATHER;
+    var narrow = this.width < CONFIG.MOBILE_BREAKPOINT;
+    this.feather = narrow ? CONFIG.ZONE_FEATHER_NARROW : CONFIG.ZONE_FEATHER;
+    this.dormant = narrow;
     this._createNeedles();
   };
 
@@ -463,7 +509,13 @@
      travelled in. Called by the scroll reveal as a block starts to land. */
   VectorField.prototype.emitImpulse = function (box, spin) {
     if (this.staticMode || !box) return;
+
+    // Yield to a front that is still meaningfully alive rather than replacing it.
+    for (var q = 0; q < this.impulses.length; q++) {
+      if ((this.elapsed - this.impulses[q].t0) / CONFIG.IMPULSE_MS < CONFIG.IMPULSE_YIELD) return;
+    }
     if (this.impulses.length >= CONFIG.IMPULSE_MAX_LIVE) this.impulses.shift();
+
     this.impulses.push({
       box: box,
       spin: spin < 0 ? -1 : 1,
@@ -473,6 +525,9 @@
       rMax2: 0,
       env: 0
     });
+
+    // On a narrow viewport the loop is parked; a wave is the only reason to run.
+    if (this.dormant) this._wake();
   };
 
   VectorField.prototype._refreshLayoutObserverTargets = function () {
@@ -541,6 +596,12 @@
 
     this.elapsed += dt;
     this._render(dt);
+
+    // Park again once the wave that woke us has decayed and the field settled.
+    if (this.dormant) {
+      if (this.impulses.length) this._parkAt = this.elapsed + CONFIG.PARK_TAIL_MS;
+      else if (this.elapsed > this._parkAt) this._stop();
+    }
   };
 
   VectorField.prototype._render = function (dt) {
@@ -865,7 +926,30 @@
         Math.min(tier, REVEAL.CHILD_STAGGER_CAP) * REVEAL.CHILD_STAGGER_MS;
       kid.style.setProperty('--reveal-delay', delay + 'ms');
       tier++;
+
+      /* Staggering direct children alone leaves the dense sections arriving as
+         one slab: #projects is a heading plus a single list, #modules a heading
+         plus a single grid. Tier the first few items inside such a container so
+         the stagger reaches the content that actually needs it. */
+      if (isItemContainer(kid)) {
+        var items = kid.children;
+        var limit = Math.min(items.length, REVEAL.NESTED_CAP);
+        for (var q = 0; q < limit; q++) {
+          items[q].classList.add('reveal-child');
+          items[q].style.setProperty(
+            '--reveal-delay',
+            (delay + REVEAL.NESTED_LEAD_MS + q * REVEAL.NESTED_STAGGER_MS) + 'ms'
+          );
+        }
+      }
     }
+  }
+
+  function isItemContainer(el) {
+    var tag = el.tagName;
+    if (tag === 'UL' || tag === 'OL') return true;
+    var cls = typeof el.className === 'string' ? el.className : '';
+    return /grid|list/i.test(cls);
   }
 
   /* At rest the reveal transform is identity, opacity 1 and blur 0 — so every
@@ -883,7 +967,7 @@
     }
   }
 
-  function revealSection(section) {
+  function revealSection(section, emitWave) {
     if (section.dataset.revealState) return;
     section.dataset.revealState = 'running';
     section.classList.add('is-revealing');
@@ -891,7 +975,7 @@
 
     /* The block lands in the field. offsetBox ignores the in-flight transform,
        so the wave originates where the block comes to rest. */
-    if (instance) {
+    if (emitWave && instance) {
       instance.emitImpulse(offsetBox(section), section.classList.contains('from-left') ? -1 : 1);
     }
 
@@ -929,12 +1013,31 @@
     if (revealObserver) revealObserver.disconnect();
 
     revealObserver = new IntersectionObserver(function (entries, observer) {
+      var hits = [];
       for (var e = 0; e < entries.length; e++) {
-        var entry = entries[e];
-        if (!entry.isIntersecting) continue;
+        if (entries[e].isIntersecting) hits.push(entries[e].target);
+      }
+      if (!hits.length) return;
+
+      /* A nav anchor smooth-scrolls across several sections at once and they
+         all intersect in the same callback. They all reveal, but only the one
+         nearest the reader's eye emits a wave — four overlapping fronts is not
+         a focal moment. */
+      var focus = hits[0];
+      if (hits.length > 1) {
+        var mid = window.innerHeight * 0.5;
+        var best = Infinity;
+        for (var h = 0; h < hits.length; h++) {
+          var r = hits[h].getBoundingClientRect();
+          var d = Math.abs((r.top + r.bottom) * 0.5 - mid);
+          if (d < best) { best = d; focus = hits[h]; }
+        }
+      }
+
+      for (var k = 0; k < hits.length; k++) {
         // Fire once. Re-hiding on exit made every scroll pass replay the entrance.
-        observer.unobserve(entry.target);
-        revealSection(entry.target);
+        observer.unobserve(hits[k]);
+        revealSection(hits[k], hits[k] === focus);
       }
     }, {
       threshold: REVEAL.THRESHOLD,
