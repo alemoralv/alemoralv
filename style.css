@@ -16,6 +16,12 @@
     --shadow-neu-inset: inset 4px 4px 10px #d1d5db, inset -4px -4px 10px #ffffff;
     --shadow-hover: 6px 6px 24px #c5c9d4, -6px -6px 24px #ffffff;
     --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    /* Exponential deceleration: fast departure, long soft arrival. */
+    --ease-out-quint: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+    --dur-reveal: 640ms;
+    --dur-reveal-child: 480ms;
+    --dur-reveal-blur: 420ms;
     --radius-lg: 20px;
     --radius-md: 16px;
     --radius-sm: 12px;
@@ -413,31 +419,64 @@ main {
     transform: translateY(-3px);
 }
 
+/* ---------------------------------------------
+   SCROLL REVEAL
+
+   The block keeps its alternating approach direction, but travels a short
+   distance and arrives with a small rise and settle rather than sliding in
+   from off to the side. box-shadow is listed explicitly because this rule
+   replaces the card's own `all` transition while the entrance is armed.
+
+   JS strips every reveal class once the entrance lands, which is why the
+   resting state here is plain identity: nothing is left behind to make
+   hover sluggish or to hold a compositing layer.
+   --------------------------------------------- */
+
 .scroll-reveal {
     opacity: 0;
-    filter: blur(2px);
-    will-change: opacity, transform, filter;
-    transition: opacity 0.68s cubic-bezier(0.22, 1, 0.36, 1),
-                transform 0.68s cubic-bezier(0.22, 1, 0.36, 1),
-                filter 0.68s cubic-bezier(0.22, 1, 0.36, 1);
+    filter: blur(3px);
+    transition: opacity var(--dur-reveal) var(--ease-out-quint),
+                transform var(--dur-reveal) var(--ease-out-quint),
+                filter var(--dur-reveal-blur) var(--ease-out-quint),
+                box-shadow 300ms var(--ease-out-quart);
 }
 
 .scroll-reveal.from-right {
-    transform: translate3d(56px, 0, 0);
+    transform: translate3d(28px, 10px, 0) scale(0.985);
 }
 
 .scroll-reveal.from-left {
-    transform: translate3d(-56px, 0, 0);
+    transform: translate3d(-28px, 10px, 0) scale(0.985);
 }
 
 .scroll-reveal.is-visible {
     opacity: 1;
     filter: blur(0);
+    transform: translate3d(0, 0, 0) scale(1);
+}
+
+/* The block's own contents arrive just behind it, in reading order, so a
+   section reads as composed content rather than one sliding slab. */
+.reveal-armed .reveal-child {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0);
+    transition: opacity var(--dur-reveal-child) var(--ease-out-quint) var(--reveal-delay, 0ms),
+                transform var(--dur-reveal-child) var(--ease-out-quint) var(--reveal-delay, 0ms);
+}
+
+.reveal-armed.is-visible .reveal-child {
+    opacity: 1;
     transform: translate3d(0, 0, 0);
 }
 
+/* Held only for the duration of the entrance, then removed with the classes. */
+.scroll-reveal.is-revealing,
+.scroll-reveal.is-revealing .reveal-child {
+    will-change: opacity, transform, filter;
+}
+
 .card.scroll-reveal.is-visible:hover {
-    transform: translateY(-3px);
+    transform: translate3d(0, -3px, 0) scale(1);
 }
 
 .card h2 {
@@ -668,7 +707,12 @@ a:hover {
 .blog-content {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.35s ease-out;
+    /* Collapsing is faster than expanding — a close needs no anticipation. */
+    transition: max-height 260ms var(--ease-out-quart);
+}
+
+.blog-card.expanded .blog-content {
+    transition: max-height 420ms var(--ease-out-quint);
 }
 
 .blog-card.expanded .blog-content {
@@ -779,13 +823,15 @@ a:hover {
 .module-references {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.35s ease-out;
+    transition: max-height 260ms var(--ease-out-quart);
     background-color: #f8f9fb;
     border-top: 1px solid transparent;
 }
 
 .module-item.expanded .module-references {
     border-top-color: #e9ecef;
+    transition: max-height 420ms var(--ease-out-quint),
+                border-top-color 420ms var(--ease-out-quint);
 }
 
 .module-references ul {
@@ -949,12 +995,14 @@ footer {
         padding: 1.75rem;
     }
 
+    /* Less room to travel, and a narrower viewport makes lateral movement
+       read as a layout shift rather than an entrance. */
     .scroll-reveal.from-right {
-        transform: translate3d(30px, 0, 0);
+        transform: translate3d(16px, 8px, 0) scale(0.99);
     }
 
     .scroll-reveal.from-left {
-        transform: translate3d(-30px, 0, 0);
+        transform: translate3d(-16px, 8px, 0) scale(0.99);
     }
 
     main {
@@ -1000,23 +1048,56 @@ footer {
     }
 }
 
-/* Reduced motion */
+/* ---------------------------------------------
+   REDUCED MOTION
+
+   Reduce, do not erase. Killing every transition also kills the feedback
+   that tells someone their hover, focus, or click registered. What goes is
+   spatial movement, blur, staggered choreography, and anything that plays
+   without being asked. What stays is colour, shadow, and opacity — so the
+   interface still answers back, just without travelling.
+   --------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {
-    * {
-        transition: none !important;
-        animation: none !important;
+    :root {
+        --transition: color 0.2s linear, background-color 0.2s linear,
+                      box-shadow 0.2s linear, border-color 0.2s linear;
+        --dur-reveal: 260ms;
+        --dur-reveal-child: 200ms;
+        --dur-reveal-blur: 1ms;
     }
 
     html {
         scroll-behavior: auto;
     }
 
+    *,
+    *::before,
+    *::after {
+        animation-duration: 1ms !important;
+        animation-delay: 0ms !important;
+        animation-iteration-count: 1 !important;
+    }
+
+    /* Nothing translates, scales, or lifts under the pointer. */
+    *:hover,
+    *:focus,
+    *:focus-visible {
+        transform: none !important;
+    }
+
+    /* Blocks and their contents still arrive — they fade in place, together,
+       with no travel, no blur, and no stagger. */
     .scroll-reveal,
     .scroll-reveal.from-left,
     .scroll-reveal.from-right,
-    .scroll-reveal.is-visible {
-        opacity: 1 !important;
-        filter: none !important;
+    .reveal-armed .reveal-child {
         transform: none !important;
+        filter: none !important;
+        transition-delay: 0ms !important;
+    }
+
+    .blog-content,
+    .module-references {
+        transition-duration: 1ms;
     }
 }
