@@ -158,6 +158,7 @@
   var region = plane && plane.parentNode;
   var lines = [];
   var builtFor = 0;
+  var docMax = 0;
 
   function line(text, cls, i) {
     var j = jitter(i);
@@ -213,8 +214,15 @@
   function buildPlane() {
     if (!plane || !region) return;
 
-    var h = region.offsetHeight;
-    if (!h) return;
+    /* The board stops above the colophon. The tombstone is the page's
+       last mark, and a formula running past it — or through it — is
+       not an ending. */
+    var colophon = document.querySelector('.colophon');
+    var foot = colophon ? colophon.offsetHeight + 24 : 0;
+    plane.style.bottom = foot + 'px';
+
+    var h = region.offsetHeight - foot;
+    if (h <= 0) return;
     /* Rebuild only on a real change; a 1px reflow is not one. */
     if (Math.abs(h - builtFor) < 120 && lines.length) return;
     builtFor = h;
@@ -250,6 +258,10 @@
 
   function measure() {
     var y = window.pageYOffset;
+    /* Cached here, never in the scroll handler: reading scrollHeight is
+       a layout read, and the whole point of this engine is that a frame
+       performs none. */
+    docMax = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
     for (var i = 0; i < lines.length; i++) {
       lines[i].top = lines[i].el.getBoundingClientRect().top + y;
     }
@@ -301,12 +313,19 @@
     if (reduced.matches) return;
     var vh = window.innerHeight;
     var y = window.pageYOffset;
-    var start = 0.9 * vh;
     var span = 0.3 * vh;
     for (var i = 0; i < lines.length; i++) {
       var rec = lines[i];
       if (!rec.live) continue;
-      var raw = (start - (rec.top - y)) / span;
+      /* A line normally finishes when it has risen to 0.6vh from the
+         top of the viewport. For the last lines on the board that point
+         sits past the furthest anyone can scroll, so they would stay
+         half-written forever, chalk edge frozen mid-stroke. Their window
+         is pulled back to end at the last reachable scroll position, so
+         every formula on the page finishes. */
+      var finish = rec.top - 0.6 * vh;
+      if (finish > docMax) finish = docMax;
+      var raw = (y - (finish - span)) / span;
       set(rec, raw < 0 ? 0 : raw > 1 ? 1 : raw);
     }
   }
@@ -374,6 +393,24 @@
   /* -----------------------------------------------------------
      The index knows where you are
      ----------------------------------------------------------- */
+
+  /* The tombstone is written once the page's last line is reached. */
+  function armQed() {
+    var colophon = document.querySelector('.colophon');
+    if (!colophon) return;
+    if (typeof IntersectionObserver === 'undefined') {
+      colophon.classList.add('is-written');
+      return;
+    }
+    var io = new IntersectionObserver(function (entries, obs) {
+      for (var i = 0; i < entries.length; i++) {
+        if (!entries[i].isIntersecting) continue;
+        entries[i].target.classList.add('is-written');
+        obs.unobserve(entries[i].target);
+      }
+    }, { threshold: 0.35 });
+    io.observe(colophon);
+  }
 
   function spy() {
     var links = document.querySelectorAll('.index-link');
@@ -449,6 +486,7 @@
     window.__chalkBooted = true;
     numberReferences();
     armSheets();
+    armQed();
     spy();
     buildPlane();
 
