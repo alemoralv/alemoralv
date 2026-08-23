@@ -1,0 +1,320 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-23T00:00:00Z",
+  "title": "Design System: Alejandro Morera Alvarez",
+  "extensions": {
+    "worlds": [
+      {
+        "name": "Hörsaal",
+        "status": "current",
+        "files": ["index.html", "board.css", "chalkboard.js"],
+        "note": "The documented system. New surfaces inherit this."
+      },
+      {
+        "name": "Neumorphic (incumbent)",
+        "status": "incumbent-untouched",
+        "files": ["style.css", "vectorfield.js"],
+        "serves": ["thinking-in-measures.html", "auctiva.html", "tim-posts/*.html"],
+        "note": "Not deprecated and not scheduled for migration. Recorded so Hörsaal tokens are never applied to these pages, and neumorphic tokens never to index.html."
+      }
+    ],
+    "colorMeta": {
+      "board": {
+        "role": "neutral",
+        "displayName": "Lit Slate",
+        "canonical": "#333C36",
+        "provenance": "Sampled from bpzcalc.jpg (user's own photographed chalkboard); darkest chalk-free patches read rgb(39,41,35), warm olive-grey with red≈green>blue, then deliberately lifted in value so it reads as a board in a lit room rather than a screen in a dark one.",
+        "tonalRamp": ["#12150F", "#1B2019", "#242A26", "#2C342E", "#333C36", "#3E4842", "#5A6660", "#95A099"]
+      },
+      "board-deep": {
+        "role": "neutral",
+        "displayName": "Deep Slate",
+        "canonical": "#242A26",
+        "tonalRamp": ["#0D100E", "#151915", "#1D221E", "#242A26", "#2E3630", "#3E4842", "#69756E", "#A6B0AA"]
+      },
+      "board-lit": {
+        "role": "neutral",
+        "displayName": "Board Lit",
+        "canonical": "#3E4842",
+        "tonalRamp": ["#161A17", "#1F2420", "#282F2A", "#333C36", "#3E4842", "#4C574F", "#7A867E", "#B4BEB8"]
+      },
+      "chalk": {
+        "role": "neutral",
+        "displayName": "Bone Chalk",
+        "canonical": "#EFEAD9",
+        "contrastOnBoard": "9.5:1",
+        "tonalRamp": ["#2C2A22", "#4A4638", "#6B664F", "#8D8768", "#AFA985", "#CFC9AE", "#EFEAD9", "#F8F5EB"]
+      },
+      "chalk-body": {
+        "role": "neutral",
+        "displayName": "Body Chalk",
+        "canonical": "#D6D3C4",
+        "contrastOnBoard": "7.6:1",
+        "tonalRamp": ["#28271F", "#434134", "#605D4B", "#7E7A63", "#9D987D", "#BAB6A0", "#D6D3C4", "#EAE8DD"]
+      },
+      "chalk-soft": {
+        "role": "neutral",
+        "displayName": "Soft Chalk",
+        "canonical": "#C0BEAF",
+        "contrastOnBoard": "6.4:1",
+        "tonalRamp": ["#24231D", "#3C3B30", "#565446", "#716F5C", "#8D8B75", "#A7A592", "#C0BEAF", "#DAD9CF"]
+      },
+      "chalk-faint": {
+        "role": "neutral",
+        "displayName": "Faint Chalk",
+        "canonical": "#8A9086",
+        "contrastOnBoard": "~3.4:1",
+        "usage": "Non-text only: rules and nav chrome. Barred from text runs.",
+        "tonalRamp": ["#191B18", "#292C27", "#3C403A", "#51564E", "#686E64", "#787E74", "#8A9086", "#B3B8B0"]
+      },
+      "chalk-blue": {
+        "role": "primary",
+        "displayName": "Blue Chalk",
+        "canonical": "#A3CBDB",
+        "contrastOnBoard": "6.9:1; measured 7.03–7.05:1 on shipped links",
+        "usage": "Every link. The stick that means 'you can open this'.",
+        "tonalRamp": ["#16262D", "#1F3A46", "#2C5464", "#3E7185", "#5D93A8", "#80B0C4", "#A3CBDB", "#C8E1EC"]
+      },
+      "chalk-ochre": {
+        "role": "secondary",
+        "displayName": "Ochre Chalk",
+        "canonical": "#E0BE7A",
+        "contrastOnBoard": "6.4:1",
+        "usage": "The 'live' stick: section addresses, active nav state, drawn bullets, disclosure strokes, email keys, focus ring, hover box trace.",
+        "tonalRamp": ["#2B2211", "#43351B", "#5F4B26", "#7E6633", "#A08343", "#C2A25C", "#E0BE7A", "#EFD9AA"]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Chalk Rule (light)",
+        "canonical": "rgba(239, 234, 217, 0.20)",
+        "usage": "Bone chalk at 20% alpha. List dividers, module bottoms, colophon top."
+      },
+      "rule-mid": {
+        "role": "neutral",
+        "displayName": "Chalk Rule (mid)",
+        "canonical": "rgba(239, 234, 217, 0.34)",
+        "usage": "Bone chalk at 34% alpha. Section-head rule, index bottom, ledger leaders, quiet box outline."
+      },
+      "rule-strong": {
+        "role": "neutral",
+        "displayName": "Chalk Rule (strong)",
+        "canonical": "rgba(239, 234, 217, 0.58)",
+        "usage": "Bone chalk at 58% alpha. Drawn box outlines and the skip link."
+      },
+      "incumbent-bg": {
+        "role": "neutral",
+        "displayName": "Neumorphic Ground (incumbent)",
+        "canonical": "#f0f0f3",
+        "usage": "style.css only. Never on index.html."
+      },
+      "incumbent-surface": {
+        "role": "neutral",
+        "displayName": "White Surface (incumbent)",
+        "canonical": "#ffffff",
+        "usage": "style.css only. Never on index.html."
+      },
+      "incumbent-primary": {
+        "role": "primary",
+        "displayName": "Signal Blue (incumbent)",
+        "canonical": "#0073e6",
+        "usage": "style.css only. Never on index.html."
+      },
+      "incumbent-text": {
+        "role": "neutral",
+        "displayName": "Ink (incumbent)",
+        "canonical": "#1a1a2e",
+        "usage": "style.css only. Never on index.html."
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "ALEJANDRO, once, on the photographed board. Expanded chalk caps; the only display-scale text on the page." },
+      "headline": { "displayName": "Headline", "purpose": "Section titles. Expanded, tracked out and uppercased, because a board title is drawn large rather than weighted heavy." },
+      "title": { "displayName": "Title", "purpose": "Project and resource entry names in bone chalk, on the ledger line." },
+      "body": { "displayName": "Body", "purpose": "All running prose, capped at a 66ch measure (58ch for the hero bio)." },
+      "label": { "displayName": "Label", "purpose": "Uppercase micro-labels: ochre email keys, §4 category headings, section tallies, university tags." },
+      "chalk-hand": { "displayName": "Chalk Hand", "purpose": "Caveat, background chalk plane only. Never interface text, never information the visitor must read." }
+    },
+    "shadows": [],
+    "shadowPolicy": "This system has no shadows. No box-shadow and no text-shadow exists in board.css. Depth is material and tonal only: slate layers, vignette, scrims, the deep-slate index recess, and the colophon board foot. Blur appears only as chalk dust (2.5px on the advancing edge) and as a scrim softener (7px behind the display name) — never as elevation.",
+    "motion": [
+      { "name": "ease-chalk", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "The only easing curve in the world. Chalk arrives fast and settles long." },
+      { "name": "write", "value": "620ms", "purpose": "Section arrival: heads, titles, tallies, and the writes-across / writes-down leaves." },
+      { "name": "write-fast", "value": "360ms", "purpose": "The short end of the writing scale." },
+      { "name": "state", "value": "180-200ms", "purpose": "Link colour, nav border, box outline and icon-stroke state changes." },
+      { "name": "disclosure-open", "value": "420ms", "purpose": "grid-template-rows 0fr -> 1fr when a module opens." },
+      { "name": "disclosure-close", "value": "260ms", "purpose": "grid-template-rows 1fr -> 0fr when a module closes." },
+      { "name": "writes-across", "value": "clip-path: inset(-10% 100% -10% 0) -> inset(-10% 0% -10% 0)", "purpose": "Single-line arrival, left to right, the way a hand crosses the board." },
+      { "name": "writes-down", "value": "clip-path: inset(0 0 102% 0) -> inset(0 0 -2% 0)", "purpose": "Wrapped-prose arrival, line accumulating under line. A left-to-right wipe across wrapped text uncovers every line's left edge at once and reads like a curtain." },
+      { "name": "stagger-tier", "value": "70ms (cap 8 tiers), 150ms lead", "purpose": "Per-block stagger inside an arriving section." },
+      { "name": "stagger-leaf", "value": "42ms (cap 16 leaves)", "purpose": "Per-leaf stagger within a block. Containers carry no ink and arrive without ceremony." },
+      { "name": "reference-write", "value": "420ms, 55ms per item", "purpose": "References writing in when a disclosure opens — the same hand at the same speed as everything else." }
+    ],
+    "breakpoints": [
+      { "name": "wide", "value": "1080px", "note": "§4 module columns 3 -> 2." },
+      { "name": "lap", "value": "900px", "note": "Masthead collapses to one column; the index becomes a single horizontally scrolling line." },
+      { "name": "phone", "value": "700px", "note": "Body 1rem; all multi-column lists to 1; ledger leaders off; section tally to its own row; chalk plane to 1.15rem with wide equations removed." },
+      { "name": "narrow", "value": "420px", "note": "Social marks 36px; boxed links tighten." }
+    ],
+    "layout": {
+      "shell": "1040px",
+      "measure": "66ch",
+      "gutter": "clamp(1rem, 4vw, 2.5rem)",
+      "sectionGap": "clamp(5.5rem, 13vh, 10rem)",
+      "chalkPlaneWidth": "min(1840px, 99vw)",
+      "scrollPaddingTop": "6.5rem"
+    },
+    "performance": {
+      "constraint": "Scroll-linked offsets are measured once per layout; the scroll handler performs zero layout reads. A per-frame getBoundingClientRect() across ~50 chalk lines is ~50 forced reflows per frame.",
+      "measured": "median 16.7ms, p95 16.7ms, zero frames over 33ms"
+    },
+    "resilience": {
+      "armedEntrance": "The .js class is set synchronously in <head> so the armed state holds from first paint, with a 3s failsafe that removes it if chalkboard.js never boots. Without the failsafe a script failure leaves the page permanently blank."
+    },
+    "rasters": [
+      { "file": "bpzcalc.jpg", "origin": "pre-existing / user-supplied", "role": "The masthead board top; the user's own photographed chalkboard and BPZ calculation. Source of the slate colour sample.", "treatment": "brightness(1.34) contrast(1.16) saturate(0.66), dissolved into the slate through a single mask." },
+      { "file": "whiteboard.png", "origin": "pre-existing / user-supplied", "role": "The pinned print in the masthead: the user at a whiteboard.", "treatment": "grayscale(0.72) contrast(1.1) brightness(0.8) under a soft-light board-tinted overlay." }
+    ],
+    "review": {
+      "rounds": 2,
+      "round1": "six material findings, all scored resolved",
+      "round2": "two regressions plus three contrast failures, all scored resolved; disposition `ship` scoped to those eight fixes",
+      "mechanicalDetector": "returned [] but ran DEGRADED (regex fallback, no computed contrast). Its clean result is an undercount, not a guarantee."
+    },
+    "notCanonized": [
+      "Inline onclick=\"toggleModule(this)\" handlers and the global window.toggleModule they bind to — shipped implementation, not a system rule.",
+      "ul.project-list br { display: none; } — a stylesheet patch over authored markup, not a form rule."
+    ],
+    "contractGap": "The direction contract's OWN-WORLD block states \"no radius.\" The build ships three asymmetric hand-drawn corner values on boxed links and social marks. The build wins; the intent survives as \"no rounded container,\" which the build does honour."
+  },
+  "components": [
+    {
+      "name": "Chalk Box (primary link button)",
+      "kind": "button",
+      "refersTo": "boxed",
+      "description": "A result on a board is boxed: a rectangle drawn round it, corners never quite meeting. Hover traces it a second time, slightly off.",
+      "html": "<a href=\"#\" class=\"ds-boxed\">Auctiva</a>",
+      "css": ".ds-boxed { position: relative; display: inline-flex; align-items: center; padding: 0.62rem 1.35rem; font-family: 'Archivo', system-ui, sans-serif; font-size: 0.9rem; font-weight: 600; letter-spacing: 0.015em; color: var(--chalk, #EFEAD9); text-decoration: none; background: transparent; border: 1.5px solid var(--rule-strong, rgba(239,234,217,0.58)); border-radius: 2px 4px 2px 5px / 4px 2px 5px 2px; transition: color 200ms cubic-bezier(0.16,1,0.3,1), border-color 200ms cubic-bezier(0.16,1,0.3,1); } .ds-boxed::after { content: ''; position: absolute; inset: -3px -4px -4px -3px; border: 1.5px solid var(--chalk-ochre, #E0BE7A); border-radius: 5px 2px 4px 2px / 2px 5px 2px 4px; opacity: 0; transform: rotate(-0.35deg); transition: opacity 200ms cubic-bezier(0.16,1,0.3,1); pointer-events: none; } .ds-boxed:hover, .ds-boxed:focus-visible { color: var(--chalk, #EFEAD9); } .ds-boxed:hover::after, .ds-boxed:focus-visible::after { opacity: 0.85; } .ds-boxed:focus-visible { outline: 2px solid var(--chalk-ochre, #E0BE7A); outline-offset: 3px; }"
+    },
+    {
+      "name": "Chalk Box, Quiet",
+      "kind": "button",
+      "refersTo": "boxed-quiet",
+      "description": "The lower-emphasis drawn box: the nav CTA and the caption link under the pinned photograph.",
+      "html": "<a href=\"#\" class=\"ds-boxed-quiet\">Thinking in Measures</a>",
+      "css": ".ds-boxed-quiet { position: relative; display: inline-flex; align-items: center; padding: 0.4rem 0.9rem; font-family: 'Archivo', system-ui, sans-serif; font-size: 0.78rem; font-weight: 500; letter-spacing: 0.015em; color: var(--chalk-soft, #C0BEAF); text-decoration: none; background: transparent; border: 1.5px solid var(--rule-mid, rgba(239,234,217,0.34)); border-radius: 2px 4px 2px 5px / 4px 2px 5px 2px; transition: color 200ms cubic-bezier(0.16,1,0.3,1); } .ds-boxed-quiet::after { content: ''; position: absolute; inset: -3px -4px -4px -3px; border: 1.5px solid var(--chalk-ochre, #E0BE7A); border-radius: 5px 2px 4px 2px / 2px 5px 2px 4px; opacity: 0; transform: rotate(-0.35deg); transition: opacity 200ms cubic-bezier(0.16,1,0.3,1); pointer-events: none; } .ds-boxed-quiet:hover { color: var(--chalk, #EFEAD9); } .ds-boxed-quiet:hover::after, .ds-boxed-quiet:focus-visible::after { opacity: 0.85; }"
+    },
+    {
+      "name": "The Index (navigation)",
+      "kind": "nav",
+      "refersTo": "index-link",
+      "description": "The line of section addresses a lecturer writes across the top of the board. The § numbers are the addressing system the sections answer to.",
+      "html": "<nav class=\"ds-index\" aria-label=\"Sections\"><div class=\"ds-index-inner\"><a href=\"#home\" class=\"ds-index-mark\">alemoralv.</a><ul class=\"ds-index-list\"><li><a href=\"#about\" class=\"ds-index-link ds-is-here\"><span class=\"ds-index-num\">§1</span> About Me</a></li><li><a href=\"#projects\" class=\"ds-index-link\"><span class=\"ds-index-num\">§2</span> Projects</a></li><li><a href=\"#notes\" class=\"ds-index-link\"><span class=\"ds-index-num\">§3</span> Notes</a></li></ul></div></nav>",
+      "css": ".ds-index { background: var(--board-deep, #242A26); border-bottom: 1px solid var(--rule-mid, rgba(239,234,217,0.34)); font-family: 'Archivo', system-ui, sans-serif; } .ds-index-inner { display: flex; align-items: center; gap: 1.5rem; padding: 0.75rem 1.5rem; flex-wrap: wrap; } .ds-index-mark { font-size: 1.2rem; font-weight: 700; font-variation-settings: 'wdth' 112; letter-spacing: -0.02em; color: var(--chalk, #EFEAD9); text-decoration: none; } .ds-index-mark:hover { color: var(--chalk-ochre, #E0BE7A); } .ds-index-list { list-style: none; display: flex; align-items: baseline; gap: 1.4rem; margin: 0; padding: 0; } .ds-index-link { display: inline-flex; align-items: baseline; gap: 0.4em; padding-bottom: 3px; font-size: 0.82rem; font-weight: 500; letter-spacing: 0.01em; color: var(--chalk-soft, #C0BEAF); text-decoration: none; border-bottom: 1.5px solid transparent; transition: color 180ms cubic-bezier(0.16,1,0.3,1), border-color 180ms cubic-bezier(0.16,1,0.3,1); white-space: nowrap; } .ds-index-num { font-size: 0.74rem; font-weight: 600; color: var(--chalk-soft, #C0BEAF); transition: color 180ms cubic-bezier(0.16,1,0.3,1); } .ds-index-link:hover { color: var(--chalk, #EFEAD9); border-bottom-color: var(--rule-mid, rgba(239,234,217,0.34)); } .ds-index-link.ds-is-here { color: var(--chalk, #EFEAD9); border-bottom-color: var(--chalk-ochre, #E0BE7A); } .ds-index-link.ds-is-here .ds-index-num { color: var(--chalk-ochre, #E0BE7A); } .ds-index-link:focus-visible { outline: 2px solid var(--chalk-ochre, #E0BE7A); outline-offset: 3px; }"
+    },
+    {
+      "name": "Sheet Head (section header)",
+      "kind": "card",
+      "refersTo": null,
+      "description": "There is no card. A section is announced by a three-column baseline grid — ochre address, expanded uppercase title, right-aligned tally — over one hairline rule.",
+      "html": "<header class=\"ds-sheet-head\"><span class=\"ds-sheet-mark\">§2</span><h2 class=\"ds-sheet-title\">Projects: Essays, Seminars, and Theses</h2><span class=\"ds-sheet-tally\">11 entries · 18 documents</span></header>",
+      "css": ".ds-sheet-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: baseline; column-gap: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--rule-mid, rgba(239,234,217,0.34)); font-family: 'Archivo', system-ui, sans-serif; } .ds-sheet-mark { font-size: 1.1rem; font-weight: 700; letter-spacing: 0.02em; color: var(--chalk-ochre, #E0BE7A); } .ds-sheet-title { margin: 0; font-size: 1.8rem; font-weight: 700; font-variation-settings: 'wdth' 108; letter-spacing: 0.035em; line-height: 1.2; text-transform: uppercase; color: var(--chalk, #EFEAD9); text-wrap: balance; } .ds-sheet-tally { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--chalk-soft, #C0BEAF); white-space: nowrap; justify-self: end; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Ledger Line (project entry)",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "The work on the left, what you can open on the right, both sitting on the same rule, joined by a dotted chalk leader. Not a title with its documents orphaned on the row below.",
+      "html": "<ul class=\"ds-ledger\"><li><strong>Mean-Field Limits on Digraph Measures</strong><a href=\"#\">Thesis PDF</a><a href=\"#\">Slides</a></li><li><strong>Rough Paths and Signatures</strong><a href=\"#\">Essay</a></li></ul>",
+      "css": ".ds-ledger { list-style: none; margin: 0; padding: 0; font-family: 'Archivo', system-ui, sans-serif; } .ds-ledger li { position: relative; display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 1.5rem; row-gap: 0.15rem; line-height: 1.5; padding-left: 1.9rem; padding-bottom: 0.7rem; margin-bottom: 0.7rem; border-bottom: 1px solid var(--rule, rgba(239,234,217,0.20)); } .ds-ledger li:last-child { border-bottom: none; margin-bottom: 0; } .ds-ledger li::before { content: ''; position: absolute; left: 0; top: 0.82em; width: 1.05rem; height: 1.5px; background: var(--chalk-ochre, #E0BE7A); opacity: 0.85; } .ds-ledger strong { display: flex; align-items: baseline; gap: 0.8rem; flex: 1 1 22rem; font-size: 1.02rem; font-weight: 600; letter-spacing: -0.005em; color: var(--chalk, #EFEAD9); } .ds-ledger strong::after { content: ''; flex: 1 1 auto; min-width: 1.5rem; align-self: center; height: 1px; background: repeating-linear-gradient(90deg, var(--rule-mid, rgba(239,234,217,0.34)) 0 2px, transparent 2px 7px); } .ds-ledger li a { display: inline-block; font-size: 0.82rem; font-weight: 500; letter-spacing: 0.05em; color: var(--chalk-blue, #A3CBDB); text-decoration: underline; text-decoration-thickness: 1px; text-decoration-color: rgba(163,203,219,0.32); text-underline-offset: 0.28em; transition: color 180ms cubic-bezier(0.16,1,0.3,1), text-decoration-color 180ms cubic-bezier(0.16,1,0.3,1); } .ds-ledger li a:hover { color: var(--chalk, #EFEAD9); text-decoration-color: rgba(239,234,217,0.7); }"
+    },
+    {
+      "name": "Module Disclosure",
+      "kind": "custom",
+      "refersTo": "module-btn",
+      "description": "A borderless full-width button with a drawn +/- at the right. Opens with grid-template-rows 0fr -> 1fr, never a measured max-height, and writes its references in line by line.",
+      "html": "<div class=\"ds-module ds-expanded\"><button type=\"button\" class=\"ds-module-btn\" aria-expanded=\"true\">Stochastic Analysis II<span class=\"ds-toggle-icon\" aria-hidden=\"true\"></span></button><div class=\"ds-module-refs\"><ul><li>Da Prato &amp; Zabczyk, <em>Stochastic Equations in Infinite Dimensions</em></li><li>Karatzas &amp; Shreve, <em>Brownian Motion and Stochastic Calculus</em></li></ul></div></div>",
+      "css": ".ds-module { border-bottom: 1px solid var(--rule, rgba(239,234,217,0.20)); font-family: 'Archivo', system-ui, sans-serif; } .ds-module-btn { width: 100%; display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; padding: 0.85rem 0; background: transparent; border: none; font-family: inherit; font-size: 0.92rem; font-weight: 500; line-height: 1.45; text-align: left; color: var(--chalk-body, #D6D3C4); cursor: pointer; transition: color 180ms cubic-bezier(0.16,1,0.3,1), transform 240ms cubic-bezier(0.16,1,0.3,1); } .ds-module-btn:hover { color: var(--chalk, #EFEAD9); transform: translateX(0.45rem); } .ds-module-btn:focus-visible { outline: 2px solid var(--chalk-ochre, #E0BE7A); outline-offset: 3px; } .ds-module.ds-expanded .ds-module-btn { color: var(--chalk, #EFEAD9); } .ds-toggle-icon { position: relative; flex-shrink: 0; width: 13px; height: 13px; align-self: center; } .ds-toggle-icon::before, .ds-toggle-icon::after { content: ''; position: absolute; inset: 50% 0 auto 0; height: 1.5px; background: var(--chalk-ochre, #E0BE7A); transform-origin: center; transition: transform 280ms cubic-bezier(0.16,1,0.3,1), opacity 200ms cubic-bezier(0.16,1,0.3,1); } .ds-toggle-icon::after { transform: rotate(90deg); } .ds-module.ds-expanded .ds-toggle-icon::after { transform: rotate(0deg); opacity: 0; } .ds-module-refs { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 260ms cubic-bezier(0.16,1,0.3,1); } .ds-module.ds-expanded .ds-module-refs { grid-template-rows: 1fr; transition: grid-template-rows 420ms cubic-bezier(0.16,1,0.3,1); } .ds-module-refs ul { list-style: none; overflow: hidden; min-height: 0; margin: 0; padding: 0; } .ds-module-refs li { padding: 0.5rem 0 0.5rem 0.9rem; border-left: 1px solid var(--rule, rgba(239,234,217,0.20)); font-size: 0.8rem; line-height: 1.6; color: var(--chalk-soft, #C0BEAF); } .ds-module-refs li em { color: var(--chalk-body, #D6D3C4); font-style: italic; } .ds-module.ds-expanded .ds-module-refs li { animation: ds-write-across 420ms cubic-bezier(0.16,1,0.3,1) both; } @keyframes ds-write-across { from { clip-path: inset(-10% 100% -10% 0); } to { clip-path: inset(-10% 0% -10% 0); } }"
+    },
+    {
+      "name": "Wire Row (ruled email table)",
+      "kind": "custom",
+      "refersTo": "wire-row",
+      "description": "A ruled two-column table of addresses: an ochre uppercase key against the value, each row on its own hairline, travelling right on hover.",
+      "html": "<ul class=\"ds-wires\" aria-label=\"Email addresses\"><li><a href=\"#\"><span class=\"ds-wire-key\">TUM</span><span class=\"ds-wire-val\">alex.morera@tum.de</span></a></li><li><a href=\"#\"><span class=\"ds-wire-key\">EPFL</span><span class=\"ds-wire-val\">alejandro.moreraalvarez@epfl.ch</span></a></li></ul>",
+      "css": ".ds-wires { list-style: none; max-width: 34rem; margin: 0; padding: 0; border-top: 1px solid var(--rule, rgba(239,234,217,0.20)); font-family: 'Archivo', system-ui, sans-serif; } .ds-wires li { border-bottom: 1px solid var(--rule, rgba(239,234,217,0.20)); } .ds-wires a { display: grid; grid-template-columns: 5.5rem minmax(0, 1fr); align-items: baseline; gap: 1rem; padding: 0.55rem 0; text-decoration: none; color: var(--chalk-body, #D6D3C4); transition: color 180ms cubic-bezier(0.16,1,0.3,1), transform 220ms cubic-bezier(0.16,1,0.3,1); } .ds-wires a:hover { color: var(--chalk, #EFEAD9); transform: translateX(0.5rem); } .ds-wires a:focus-visible { outline: 2px solid var(--chalk-ochre, #E0BE7A); outline-offset: 3px; } .ds-wire-key { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.11em; text-transform: uppercase; color: var(--chalk-ochre, #E0BE7A); } .ds-wire-val { font-size: 0.92rem; overflow-wrap: anywhere; }"
+    },
+    {
+      "name": "Chalkmark (social mark)",
+      "kind": "chip",
+      "refersTo": "chalkmark",
+      "description": "A 40px drawn square with hand-drawn corners holding a real brand SVG. Drawn, never filled; where no platform mark exists one is drawn to match the set.",
+      "html": "<div class=\"ds-chalkmarks\"><a href=\"#\" class=\"ds-chalkmark\" aria-label=\"GitHub\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"M12 .5C5.649.5.5 5.649.5 12c0 5.084 3.292 9.388 7.86 10.91.574.105.785-.249.785-.555 0-.274-.01-1-.015-1.962-3.197.695-3.872-1.541-3.872-1.541-.523-1.329-1.277-1.683-1.277-1.683-1.043-.713.079-.699.079-.699 1.153.081 1.759 1.184 1.759 1.184 1.025 1.756 2.688 1.249 3.343.955.104-.743.401-1.249.729-1.536-2.553-.291-5.238-1.276-5.238-5.68 0-1.255.448-2.281 1.183-3.084-.119-.291-.513-1.464.112-3.052 0 0 .965-.309 3.162 1.178A10.971 10.971 0 0112 6.045c.978.005 1.964.132 2.884.388 2.195-1.487 3.158-1.178 3.158-1.178.627 1.588.233 2.761.114 3.052.737.803 1.181 1.829 1.181 3.084 0 4.415-2.689 5.385-5.251 5.671.413.356.781 1.058.781 2.134 0 1.541-.014 2.784-.014 3.164 0 .309.207.665.79.553C20.211 21.385 23.5 17.083 23.5 12 23.5 5.649 18.351.5 12 .5z\"/></svg></a><a href=\"#\" class=\"ds-chalkmark\" aria-label=\"Fun\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path fill-rule=\"evenodd\" d=\"M4.6 2h14.8A2.6 2.6 0 0 1 22 4.6v14.8a2.6 2.6 0 0 1-2.6 2.6H4.6A2.6 2.6 0 0 1 2 19.4V4.6A2.6 2.6 0 0 1 4.6 2Zm0 2.2a.4.4 0 0 0-.4.4v14.8c0 .22.18.4.4.4h14.8a.4.4 0 0 0 .4-.4V4.6a.4.4 0 0 0-.4-.4Z\"/><circle cx=\"7.7\" cy=\"7.7\" r=\"1.55\"/><circle cx=\"16.3\" cy=\"7.7\" r=\"1.55\"/><circle cx=\"12\" cy=\"12\" r=\"1.55\"/><circle cx=\"7.7\" cy=\"16.3\" r=\"1.55\"/><circle cx=\"16.3\" cy=\"16.3\" r=\"1.55\"/></svg></a></div>",
+      "css": ".ds-chalkmarks { display: flex; gap: 0.75rem; flex-wrap: wrap; } .ds-chalkmark { display: grid; place-items: center; width: 40px; height: 40px; color: var(--chalk-soft, #C0BEAF); border: 1.5px solid var(--rule, rgba(239,234,217,0.20)); border-radius: 3px 5px 3px 6px / 5px 3px 6px 3px; transition: color 200ms cubic-bezier(0.16,1,0.3,1), border-color 200ms cubic-bezier(0.16,1,0.3,1); } .ds-chalkmark svg { display: block; width: 18px; height: 18px; } .ds-chalkmark:hover { color: var(--chalk, #EFEAD9); border-color: var(--rule-strong, rgba(239,234,217,0.58)); } .ds-chalkmark:focus-visible { outline: 2px solid var(--chalk-ochre, #E0BE7A); outline-offset: 3px; }"
+    },
+    {
+      "name": "Chalk Line (background plane unit)",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "One line of the generated chalk plane: Caveat at low ink, its own tilt and size, written across by the scroll with a bright leading stroke and the dust that trails it.",
+      "html": "<div class=\"ds-chalk-row\"><span class=\"ds-chalk-line ds-chalk-lead\"><i>dX<sub>t</sub> = b(t, X<sub>t</sub>) dt + σ(t, X<sub>t</sub>) dW<sub>t</sub></i><b></b></span><span class=\"ds-chalk-line\"><i>μ<sup>N</sup><sub>t</sub> = 1/N Σ<sub>i=1</sub><sup>N</sup> δ<sub>u</sub></i><b></b></span></div>",
+      "css": ".ds-chalk-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.6rem 2.6vw; font-family: 'Caveat', 'Segoe Script', cursive; color: var(--chalk, #EFEAD9); user-select: none; } .ds-chalk-line { position: relative; display: inline-block; white-space: nowrap; opacity: 0.34; transform: rotate(-0.31deg); } .ds-chalk-line.ds-chalk-lead { opacity: 0.48; color: var(--chalk-ochre, #E0BE7A); transform: rotate(0.22deg); } .ds-chalk-line > i { display: inline-block; font-style: normal; font-size: 1.6rem; line-height: 1.35; clip-path: inset(-8% 22% -8% 0); } .ds-chalk-line.ds-chalk-lead > i { font-size: 2.5rem; clip-path: inset(-8% 34% -8% 0); } .ds-chalk-line > b { position: absolute; top: -10%; bottom: -10%; left: 78%; width: 12px; opacity: 0.9; background: linear-gradient(90deg, rgba(239,234,217,0) 0%, rgba(239,234,217,0.55) 88%); filter: blur(2.5px); pointer-events: none; } .ds-chalk-line.ds-chalk-lead > b { left: 66%; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Hörsaal",
+    "overview": "The page is not a site about a mathematician; it is his board. One continuous slate runs masthead to colophon, with yesterday's derivation ghosted behind today's argument. There is no card, no panel, no container and no shadow anywhere in this world. Hierarchy is built entirely from four devices: full-measure hairline rules, indentation, scale, and case. When something needs to be set apart, it gets a rule above it and a section address beside it — never a box around it.\n\nThe slate #333C36 is sampled from bpzcalc.jpg, Alejandro's own photographed chalkboard, whose darkest chalk-free patches read rgb(39,41,35) — a warm olive-grey where red ≈ green > blue. The shipped value is that measurement deliberately lifted in lightness: a board in a lit room, not a screen in a dark one. That lift is the load-bearing decision of the whole palette. Near-black ground plus a saturated accent is the terminal console, and the console is the confirmed anti-reference. Emissive or glowing text, saturated green, and monospace type are all out of this world by decision.\n\nDepth is material, not elevation. The slate carries a real dust grain, two eraser smudges, arcing wipe-bands, room light falling from the upper left, and the vignette of a surface that curves away at its edges — six fixed, cheap layers, none of them a gradient standing in for a material. Blur exists in this world, but only as chalk dust and as the soft edge of a scrim; it is never a drop shadow and never a glow. The one raster rule is that photographs are graded into the room's light before they are allowed on the board.",
+    "keyCharacteristics": [
+      "One continuous slate: no card, no panel, no container, no box-shadow, no text-shadow, no glass.",
+      "Hierarchy from rules, indentation, scale and case only.",
+      "Two type families total, no third: Archivo for every word of interface, Caveat for the board's residue.",
+      "One motion device for the entire page: clip-path, in two orientations. No opacity fade exists anywhere.",
+      "Chalk-tray palette: bone for text, blue for links, ochre for what is live — three sticks, nothing else.",
+      "Every radius in the world is an asymmetric hand-drawn corner; there is no rounded container."
+    ],
+    "rules": [
+      { "name": "The Three Sticks Rule", "body": "The tray holds bone, blue and ochre. Blue means you can open this; ochre means this is live or this is where you are; bone is everything else. A fourth hue never enters the world, and neither accent is ever used decoratively.", "section": "colors" },
+      { "name": "The No Border Colour Rule", "body": "Borders and rules are chalk at low alpha, never a colour of their own. If a divider needs drawing, it is --rule, --rule-mid or --rule-strong — a hairline of chalk dust on slate, not a stroke of grey.", "section": "colors" },
+      { "name": "The Measured-Render Rule", "body": "Contrast in this world is verified against the shipped render — glyph extents, pseudo-elements intact, worst background patch under each text run — never computed from token pairs. The ground is a photograph under a soft-edged scrim; a token-pair calculation does not describe it. Body text clears 7:1 measured; secondary interface text clears 5:1; --chalk-faint clears neither and is barred from text.", "section": "colors" },
+      { "name": "The Not-A-Console Rule", "body": "Never take the ground below the shipped slate toward black, never make chalk emissive (no text-shadow glow, no saturated green), and never set interface text in a monospace face. The lift from rgb(39,41,35) to the shipped slate is the entire difference between a lecture hall and a terminal.", "section": "colors" },
+      { "name": "The Two Families Rule", "body": "Archivo and Caveat. There is no third face, and Inter — the incumbent world's face — is deliberately absent from Hörsaal. If a new surface seems to need another family, it needs the width axis instead.", "section": "typography" },
+      { "name": "The Width-Before-Weight Rule", "body": "Emphasis at large sizes comes from the wdth axis and from case, not from stacking weight. Above ~1.25rem, expand and capitalise before reaching past 700.", "section": "typography" },
+      { "name": "The Tabular Rule", "body": "font-variant-numeric: tabular-nums is set globally. Counts, tallies and section numbers line up down the page because this is a document of quantities.", "section": "typography" },
+      { "name": "The Full-Bleed Scrim Rule", "body": "Every scrim spans the full viewport width using left: calc(50% - 50vw); width: 100vw with vw-based gradient stops, and fades out at both the left and right viewport edges as well as top and bottom via mask. A scrim drawn at shell width with a horizontal fade leaves a visible vertical seam down both sides of every section: a soft-edged panel is still a panel.", "section": "layout" },
+      { "name": "The Open Board Rule", "body": "The gaps between sections are open slate at full strength. Scrims belong to text runs, not to the page; scrim the whole column and you bury the board it sits on.", "section": "layout" },
+      { "name": "The Flat Board Rule", "body": "Nothing floats. If an element needs separation, give it a rule, a scrim, or more space — never a shadow, never a glow, never a translucent glass panel.", "section": "elevation" },
+      { "name": "The Graded Photograph Rule", "body": "A raster is admitted only after it is graded into the room's light. whiteboard.png runs grayscale(0.72) contrast(1.1) brightness(0.8) under a soft-light board-tinted overlay; bpzcalc.jpg runs brightness(1.34) contrast(1.16) saturate(0.66) and dissolves into the slate through a single mask, not a stack of gradient stops — stacked stops band visibly across a 500px ramp and read as two materials butted together instead of one board. An untreated daylight photograph at full saturation is a foreign object stuck to the slate.", "section": "elevation" },
+      { "name": "The Drawn Corner Rule", "body": "If something is boxed, its corners are asymmetric and never meet cleanly. A uniform border-radius on a container does not exist in this world at any value.", "section": "shapes" },
+      { "name": "The Hand Not The Glyph Rule", "body": "Bullets, markers and rules are drawn with pseudo-elements and borders. Brand marks are the platforms' own SVGs; where no platform mark exists, one is drawn to match the set rather than substituted with a stock glyph.", "section": "shapes" },
+      { "name": "The One Motion Device Rule", "body": "Everything on this page arrives by clip-path, in two orientations: .writes-across for single-line things, .writes-down for wrapped prose. A left-to-right wipe across wrapped text uncovers every line's left edge at once and reads like a curtain rather than a hand — so the orientation is chosen by the shape of the text, not by taste. No opacity fade exists anywhere on this page. Timing is --write 620ms / --write-fast 360ms on --ease-chalk cubic-bezier(0.16, 1, 0.3, 1): chalk arrives fast and settles long.", "section": "components" },
+      { "name": "The Armed Entrance Rule", "body": "Any first-paint-hidden state is keyed on a .js class set synchronously in <head>, paired with a 3s failsafe that removes it if the script never boots. Without both halves, a script failure leaves the page permanently blank.", "section": "components" },
+      { "name": "The Containers Carry No Ink Rule", "body": "Only leaves (p, li, h3, .module-item) are armed and staggered; wrappers arrive without ceremony. Stagger is 70ms per tier capped at 8 tiers and 42ms per leaf capped at 16 leaves, after a 150ms lead.", "section": "components" },
+      { "name": "The Reduce Don't Erase Rule", "body": "Under prefers-reduced-motion, travel, scroll-linked writing and staggered choreography go; colour, the chalk plane and the board itself stay. The formulas are simply already written — the way a board looks when you walk into the room after the class.", "section": "components" }
+    ],
+    "dos": [
+      "Do build hierarchy from full-measure hairline rules, indentation, scale and case.",
+      "Do draw every rule and border as bone chalk at low alpha (--rule / --rule-mid / --rule-strong).",
+      "Do reserve ochre for what is live or currently addressed, and blue for anything that opens.",
+      "Do verify contrast against the shipped render with pseudo-elements intact, using the worst background patch under each text run.",
+      "Do span scrims the full viewport width with vw-based stops and fade all four edges.",
+      "Do grade every photograph into the room's light before it goes on the board.",
+      "Do use clip-path for arrival, in whichever of the two orientations the text's shape calls for.",
+      "Do open disclosures with grid-template-rows: 0fr -> 1fr and keep the grid item's padding on its child.",
+      "Do measure scroll-linked offsets once per layout, so the scroll handler performs zero layout reads.",
+      "Do pair any first-paint-hidden state with a boot failsafe that reveals it if the script dies.",
+      "Do leave the incumbent light world in style.css and vectorfield.js exactly as it is when editing Hörsaal."
+    ],
+    "donts": [
+      "Don't add a box-shadow or a text-shadow — this world has neither, at any elevation.",
+      "Don't put a card, panel or glass surface on the board; a soft-edged panel is still a panel.",
+      "Don't apply a uniform border-radius to a container. The only radii are the three asymmetric drawn-corner values.",
+      "Don't use --chalk-faint for any text run; it is ~3.4:1 on the slate and is reserved for rules and nav chrome.",
+      "Don't take the ground toward black, make chalk emissive, introduce a saturated green, or set interface text in a monospace face — that is the terminal console, and the console is the anti-reference.",
+      "Don't introduce a third type family, and don't bring Inter (the incumbent world's face) into Hörsaal.",
+      "Don't animate anything with an opacity fade; there is not one on the page, and adding one breaks the single motion grammar.",
+      "Don't call getBoundingClientRect() inside a scroll or requestAnimationFrame handler.",
+      "Don't open a disclosure with a JS-measured max-height.",
+      "Don't use a • glyph or an icon font; bullets and markers are drawn strokes and brand marks are real SVG.",
+      "Don't apply Hörsaal tokens to thinking-in-measures.html, auctiva.html or tim-posts/*.html, and don't apply style.css's neumorphic tokens to index.html. The two worlds share nothing."
+    ]
+  }
+}

@@ -1,0 +1,1184 @@
+/* =============================================================
+   HÖRSAAL — index.html only.
+
+   The page is one continuous lecture-hall board. No card, no shadow,
+   no glow and no glass: hierarchy is built from full-measure rules,
+   indentation, scale and case. The only radii in this file are the
+   four asymmetric ones that make a drawn box's corners fail to meet
+   — never a rounded container.
+
+   style.css is untouched and still serves thinking-in-measures.html,
+   auctiva.html and tim-posts/. Nothing here is shared with them.
+   ============================================================= */
+
+/* -------------------------------------------------------------
+   TOKENS
+
+   The slate is sampled from bpzcalc.jpg — Alejandro's own board —
+   whose darkest chalk-free patches read rgb(39,41,35). That is a
+   warm olive-grey, red≈green>blue. It is deliberately lifted from
+   the photograph's value to #333C36: a board in a lit room, not a
+   screen in a dark one. Near-black plus a saturated accent is the
+   console, and the console is not this world.
+   ------------------------------------------------------------- */
+
+:root {
+    /* Slate */
+    --board:        #333C36;
+    --board-deep:   #242A26;
+    --board-lit:    #3E4842;
+
+    /* Chalk. Warm bone, never green-white, never emissive. */
+    --chalk:        #EFEAD9;   /*  9.5:1 on --board  */
+    --chalk-body:   #D6D3C4;   /*  7.6:1             */
+    --chalk-soft:   #C0BEAF;   /*  6.4:1             */
+    --chalk-faint:  #8A9086;   /* rules and nav chrome only */
+
+    /* The other two sticks in the tray. */
+    --chalk-blue:   #A3CBDB;   /*  6.9:1 — links     */
+    --chalk-ochre:  #E0BE7A;   /*  6.4:1 — live      */
+
+    /* Rules are chalk at low alpha, never a border colour. */
+    --rule:         rgba(239, 234, 217, 0.20);
+    --rule-mid:     rgba(239, 234, 217, 0.34);
+    --rule-strong:  rgba(239, 234, 217, 0.58);
+
+    /* Space: 4px base. */
+    --s-1: 0.25rem;  --s-2: 0.5rem;   --s-3: 0.75rem;  --s-4: 1rem;
+    --s-5: 1.5rem;   --s-6: 2rem;     --s-7: 3rem;     --s-8: 4rem;
+    --s-9: 6rem;
+
+    /* Chalk arrives fast and settles long. */
+    --ease-chalk: cubic-bezier(0.16, 1, 0.3, 1);
+    --write:      620ms;
+    --write-fast: 360ms;
+
+    --measure: 66ch;
+    --shell:   1040px;
+}
+
+/* -------------------------------------------------------------
+   RESET
+   ------------------------------------------------------------- */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+    background: var(--board);
+    scroll-behavior: smooth;
+    overflow-x: clip;
+    scroll-padding-top: 6.5rem;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    font-optical-sizing: auto;
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    color: var(--chalk-body);
+    background: transparent;
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+img, svg { display: block; max-width: 100%; height: auto; }
+
+/* -------------------------------------------------------------
+   THE SLATE
+
+   Four layers, all fixed, all cheap, none of them a gradient
+   standing in for a material: room light falling from the upper
+   left, two eraser smudges, the arcing wipe-bands a board keeps
+   for weeks, a chalk-dust grain, and the vignette of a surface
+   that curves away at its edges.
+   ------------------------------------------------------------- */
+
+.slate {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background:
+        /* dust grain */
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.86' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.42'/%3E%3C/svg%3E"),
+        /* wipe bands */
+        repeating-linear-gradient(96deg,
+            rgba(255, 255, 255, 0.016) 0 26px,
+            rgba(255, 255, 255, 0)    26px 74px),
+        repeating-linear-gradient(84deg,
+            rgba(0, 0, 0, 0.020) 0 40px,
+            rgba(0, 0, 0, 0)    40px 130px),
+        /* eraser smudges */
+        radial-gradient(58% 34% at 74% 22%, rgba(233, 229, 214, 0.045), transparent 70%),
+        radial-gradient(44% 26% at 18% 68%, rgba(233, 229, 214, 0.038), transparent 72%),
+        /* room light */
+        radial-gradient(95% 62% at 20% -6%, rgba(255, 255, 255, 0.055), transparent 62%),
+        var(--board);
+    background-size: 300px 300px, auto, auto, auto, auto, auto, auto;
+    opacity: 1;
+}
+
+/* The board curves away at the edges. Painted separately so it
+   stays above the chalk plane and unifies photo, chalk and slate. */
+.slate::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(126% 96% at 50% 34%,
+        transparent 42%,
+        rgba(16, 20, 18, 0.30) 82%,
+        rgba(16, 20, 18, 0.50) 100%);
+}
+
+/* -------------------------------------------------------------
+   BROWSER SURFACES
+
+   The parts nobody draws still carry the design.
+   ------------------------------------------------------------- */
+
+::selection { background: rgba(163, 203, 219, 0.30); color: var(--chalk); }
+
+:focus-visible {
+    outline: 2px solid var(--chalk-ochre);
+    outline-offset: 3px;
+    border-radius: 1px;
+}
+
+* { scrollbar-width: thin; scrollbar-color: rgba(239, 234, 217, 0.24) transparent; }
+::-webkit-scrollbar { width: 11px; height: 11px; }
+::-webkit-scrollbar-track { background: var(--board-deep); }
+::-webkit-scrollbar-thumb {
+    background: rgba(239, 234, 217, 0.22);
+    border: 3px solid var(--board-deep);
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(239, 234, 217, 0.38); }
+
+.skip {
+    position: absolute;
+    left: var(--s-4);
+    top: -6rem;
+    z-index: 200;
+    padding: var(--s-3) var(--s-5);
+    background: var(--board-deep);
+    color: var(--chalk);
+    border: 1px solid var(--rule-strong);
+    text-decoration: none;
+    font-weight: 600;
+    transition: top 180ms var(--ease-chalk);
+}
+.skip:focus { top: var(--s-4); }
+
+/* -------------------------------------------------------------
+   LINKS
+   ------------------------------------------------------------- */
+
+a {
+    color: var(--chalk-blue);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-decoration-color: rgba(163, 203, 219, 0.42);
+    text-underline-offset: 0.22em;
+    transition: color 180ms var(--ease-chalk), text-decoration-color 180ms var(--ease-chalk);
+}
+
+a:hover {
+    color: var(--chalk);
+    text-decoration-color: rgba(239, 234, 217, 0.7);
+}
+
+/* -------------------------------------------------------------
+   THE INDEX (navigation)
+
+   Not a nav bar sitting on the page — the line of section
+   addresses a lecturer writes across the top of the board. The §
+   numbers are the addressing system the sections answer to, which
+   is why they are numbered at all.
+   ------------------------------------------------------------- */
+
+.index {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.86' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.34'/%3E%3C/svg%3E"),
+        var(--board-deep);
+    border-bottom: 1px solid var(--rule-mid);
+}
+
+.index-inner {
+    max-width: var(--shell);
+    margin: 0 auto;
+    padding: var(--s-3) clamp(1rem, 4vw, 2.5rem);
+    display: flex;
+    align-items: center;
+    gap: var(--s-5);
+    flex-wrap: wrap;
+}
+
+.index-mark {
+    font-size: 1.2rem;
+    font-weight: 700;
+    font-variation-settings: 'wdth' 112;
+    letter-spacing: -0.02em;
+    color: var(--chalk);
+    text-decoration: none;
+    flex-shrink: 0;
+}
+.index-mark:hover { color: var(--chalk-ochre); }
+
+.index-list {
+    list-style: none;
+    display: flex;
+    align-items: baseline;
+    gap: clamp(0.5rem, 1.6vw, 1.4rem);
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+}
+
+.index-link {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.4em;
+    padding-bottom: 3px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--chalk-soft);
+    text-decoration: none;
+    border-bottom: 1.5px solid transparent;
+    transition: color 180ms var(--ease-chalk), border-color 180ms var(--ease-chalk);
+    white-space: nowrap;
+}
+
+.index-num {
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--chalk-soft);
+    transition: color 180ms var(--ease-chalk);
+}
+
+.index-link:hover { color: var(--chalk); border-bottom-color: var(--rule-mid); }
+.index-link:hover .index-num { color: var(--chalk-soft); }
+
+.index-link.is-here { color: var(--chalk); border-bottom-color: var(--chalk-ochre); }
+.index-link.is-here .index-num { color: var(--chalk-ochre); }
+
+.index-cta { flex-shrink: 0; font-size: 0.78rem; }
+
+/* -------------------------------------------------------------
+   BOXED
+
+   A result on a board is boxed: a rectangle drawn round it, the
+   corners never quite meeting. Hover traces it a second time,
+   slightly off — which is what a hand actually does.
+   ------------------------------------------------------------- */
+
+.boxed {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.62rem 1.35rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.015em;
+    color: var(--chalk);
+    text-decoration: none;
+    background: transparent;
+    border: 1.5px solid var(--rule-strong);
+    /* the corners of a hand-drawn box are never square */
+    border-radius: 2px 4px 2px 5px / 4px 2px 5px 2px;
+    transition: color 200ms var(--ease-chalk), border-color 200ms var(--ease-chalk);
+}
+
+.boxed::after {
+    content: '';
+    position: absolute;
+    inset: -3px -4px -4px -3px;
+    border: 1.5px solid var(--chalk-ochre);
+    border-radius: 5px 2px 4px 2px / 2px 5px 2px 4px;
+    opacity: 0;
+    transform: rotate(-0.35deg);
+    transition: opacity 200ms var(--ease-chalk);
+    pointer-events: none;
+}
+
+.boxed:hover,
+.boxed:focus-visible { color: var(--chalk); border-color: var(--rule-strong); }
+.boxed:hover::after,
+.boxed:focus-visible::after { opacity: 0.85; }
+
+.boxed--quiet {
+    padding: 0.4rem 0.9rem;
+    font-weight: 500;
+    color: var(--chalk-soft);
+    border-color: var(--rule-mid);
+}
+.boxed--quiet:hover { color: var(--chalk); }
+
+/* -------------------------------------------------------------
+   MASTHEAD
+
+   bpzcalc.jpg is 1400×350 of Alejandro's own BPZ calculation.
+   background-size: 100% auto keeps it at native scale at every
+   width instead of upscaling it 2.5× under `cover`, then it
+   dissolves downward into the slate so the board is continuous.
+   ------------------------------------------------------------- */
+
+.masthead {
+    position: relative;
+    padding-bottom: clamp(3rem, 7vh, 5.5rem);
+    overflow: hidden;
+}
+
+/* The photograph dissolves through a mask rather than under a stack
+   of gradient stops: stacked stops band visibly across a 500px
+   ramp, and the seam reads as two materials butted together
+   instead of one board. */
+.masthead-board {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: clamp(340px, 38vw, 660px);
+    z-index: -1;
+    background: url('bpzcalc.jpg') center 26% / cover no-repeat;
+    /* lift the chalk off the slate rather than flattening both */
+    filter: brightness(1.34) contrast(1.16) saturate(0.66);
+    -webkit-mask-image: linear-gradient(180deg,
+        #000 0%, #000 30%, rgba(0, 0, 0, 0.62) 60%,
+        rgba(0, 0, 0, 0.22) 84%, transparent 100%);
+    mask-image: linear-gradient(180deg,
+        #000 0%, #000 30%, rgba(0, 0, 0, 0.62) 60%,
+        rgba(0, 0, 0, 0.22) 84%, transparent 100%);
+}
+
+/* Keeps the index legible over the brightest part of the chalk. */
+.masthead-board::after {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 40%;
+    background: linear-gradient(180deg, rgba(26, 31, 28, 0.42), transparent);
+}
+
+.masthead-inner {
+    position: relative;
+    max-width: var(--shell);
+    margin: 0 auto;
+    /* The name sits low on the photographed board so his own BPZ
+       calculation runs behind and above it. */
+    padding: clamp(7rem, 26vh, 15rem) clamp(1rem, 4vw, 2.5rem) 0;
+}
+
+@media (max-height: 940px) {
+    .masthead-inner { padding-top: clamp(5rem, 19vh, 11rem); }
+}
+
+.masthead-name {
+    font-size: clamp(2.4rem, 5.6vw, 4.1rem);
+    font-weight: 700;
+    font-variation-settings: 'wdth' 104;
+    letter-spacing: -0.022em;
+    line-height: 0.95;
+    color: var(--chalk);
+    margin-bottom: clamp(1.5rem, 3.5vh, 2.4rem);
+    text-wrap: balance;
+    position: relative;
+    isolation: isolate;
+}
+
+.masthead-name::before {
+    content: '';
+    position: absolute;
+    inset: -0.42em -1.4em -0.34em -0.9em;
+    z-index: -1;
+    background: radial-gradient(70% 128% at 34% 52%,
+        rgba(27, 32, 29, 0.90) 0%,
+        rgba(27, 32, 29, 0.72) 52%,
+        rgba(27, 32, 29, 0.26) 76%,
+        transparent 88%);
+    filter: blur(7px);
+    pointer-events: none;
+}
+
+/* The bio's first lines land on the densest chalk in the photograph,
+   where measured contrast fell to 3.7:1. The same soft-edged scrim
+   the sheets use lifts it back to 7:1 without putting a panel on
+   the board. */
+.masthead-cols::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: -4rem;
+    left: calc(50% - 50vw);
+    width: 100vw;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(90deg,
+        transparent 0,
+        rgba(31, 37, 33, 0.72) 10vw,
+        rgba(31, 37, 33, 0.74) 50vw,
+        rgba(31, 37, 33, 0.72) 90vw,
+        transparent 100vw);
+    -webkit-mask-image: linear-gradient(180deg, #000 0, #000 calc(100% - 4rem), transparent 100%);
+    mask-image: linear-gradient(180deg, #000 0, #000 calc(100% - 4rem), transparent 100%);
+}
+
+.masthead-cols {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.9fr);
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: start;
+    padding-top: clamp(1.5rem, 4vh, 2.5rem);
+    border-top: 1px solid var(--rule-mid);
+}
+
+.masthead-bio {
+    max-width: 58ch;
+    font-size: 1.0625rem;
+    line-height: 1.72;
+    color: var(--chalk-body);
+    margin-bottom: var(--s-6);
+}
+
+/* --- the ruled email table --- */
+
+.wires {
+    list-style: none;
+    max-width: 34rem;
+    margin-bottom: var(--s-6);
+    border-top: 1px solid var(--rule);
+}
+
+.wires li { border-bottom: 1px solid var(--rule); }
+
+.wires a {
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    align-items: baseline;
+    gap: var(--s-4);
+    padding: 0.55rem 0;
+    text-decoration: none;
+    color: var(--chalk-body);
+    transition: color 180ms var(--ease-chalk), transform 220ms var(--ease-chalk);
+}
+
+.wires a:hover { color: var(--chalk); transform: translateX(0.5rem); }
+
+.wire-key {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--chalk-ochre);
+}
+
+.wire-val { font-size: 0.92rem; overflow-wrap: anywhere; }
+
+.masthead-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-4);
+    margin-bottom: var(--s-6);
+}
+
+/* --- socials, drawn not filled --- */
+
+.chalkmarks { display: flex; gap: var(--s-3); flex-wrap: wrap; }
+
+.chalkmark {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    color: var(--chalk-soft);
+    border: 1.5px solid var(--rule);
+    border-radius: 3px 5px 3px 6px / 5px 3px 6px 3px;
+    transition: color 200ms var(--ease-chalk), border-color 200ms var(--ease-chalk);
+}
+
+.chalkmark svg { width: 18px; height: 18px; }
+.chalkmark:hover { color: var(--chalk); border-color: var(--rule-strong); }
+
+/* --- the pinned photograph --- */
+
+/* A print pinned to the board, not a photo dropped onto a page.
+   An untreated daylight office shot at full saturation reads as a
+   foreign object stuck to the slate, so it is graded into the
+   room's light: desaturated, brought down, then tinted toward the
+   board's own temperature by an overlay in soft-light. */
+.masthead-plate {
+    position: relative;
+    isolation: isolate;
+}
+
+.masthead-plate img {
+    width: 100%;
+    filter: grayscale(0.72) contrast(1.1) brightness(0.8);
+    border: 1px solid var(--rule-mid);
+}
+
+.masthead-plate::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto 0;
+    aspect-ratio: 1;      /* whiteboard.png is 800×800; the caption stays clear */
+    z-index: 1;
+    pointer-events: none;
+    background:
+        linear-gradient(190deg, rgba(224, 190, 122, 0.10), rgba(36, 42, 38, 0.55)),
+        var(--board);
+    mix-blend-mode: soft-light;
+}
+
+.masthead-plate figcaption {
+    margin-top: var(--s-4);
+    display: flex;
+}
+
+.masthead-plate figcaption .boxed { width: 100%; justify-content: center; }
+
+/* -------------------------------------------------------------
+   THE CHALK REGION
+
+   Everything below the masthead sits inside one region whose full
+   height is backed by the chalk plane. The plane is generated by
+   chalkboard.js to exactly the measured height of this region, so
+   the writing covers the page rather than running out partway.
+   ------------------------------------------------------------- */
+
+.region { position: relative; }
+
+.chalk-plane {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: clamp(2rem, 6vh, 5rem) 0;
+    font-family: 'Caveat', 'Segoe Script', cursive;
+    color: var(--chalk);
+    pointer-events: none;
+    user-select: none;
+    contain: layout paint;
+    -webkit-mask-image: linear-gradient(180deg, #000 0, #000 calc(100% - 9rem), transparent 100%);
+    mask-image: linear-gradient(180deg, #000 0, #000 calc(100% - 9rem), transparent 100%);
+}
+
+/* Wider than the reading shell, so the writing runs into the true
+   margins and off the edges — which is what a board does. */
+.chalk-band {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.2rem, 3.2vh, 2.8rem);
+    width: min(1840px, 99vw);
+    margin: 0 auto;
+    padding: 0 clamp(0.25rem, 1vw, 1rem);
+}
+
+.chalk-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.6rem 2.6vw;
+}
+.chalk-row--right  { justify-content: flex-end; }
+.chalk-row--centre { justify-content: center; }
+
+.chalk-line {
+    position: relative;
+    display: inline-block;
+    white-space: nowrap;
+    /* Chalk is granular and never uniform: each line carries its own
+       weight and tilt so the plane reads as accumulated writing
+       rather than as rendered text. */
+    opacity: var(--ink, 0.34);
+    transform: rotate(var(--tilt, 0deg));
+}
+
+.chalk-line > i {
+    display: inline-block;
+    font-style: normal;
+    font-size: var(--size, 1.6rem);
+    line-height: 1.35;
+    clip-path: inset(-8% 100% -8% 0);
+}
+
+/* The advancing chalk edge. Not a glow — a bright leading stroke
+   with the dust that trails it. */
+.chalk-line > b {
+    position: absolute;
+    top: -10%;
+    bottom: -10%;
+    left: 0;
+    width: 12px;
+    opacity: 0;
+    background: linear-gradient(90deg,
+        rgba(239, 234, 217, 0) 0%,
+        rgba(239, 234, 217, 0.55) 88%);
+    filter: blur(2.5px);
+    pointer-events: none;
+}
+
+.chalk-line--lead { --ink: 0.48; }
+
+/* -------------------------------------------------------------
+   SHEETS (sections)
+
+   No card. A full-measure rule, the section address, the title,
+   the tally — then the work. The scrim behind each sheet is
+   soft-edged on all four sides so it never draws a box; the gaps
+   between sheets are open board at full strength.
+   ------------------------------------------------------------- */
+
+.work {
+    position: relative;
+    z-index: 1;
+    max-width: var(--shell);
+    margin: 0 auto;
+    padding: clamp(3rem, 9vh, 6.5rem) clamp(1rem, 4vw, 2.5rem) 0;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(5.5rem, 13vh, 10rem);
+}
+
+.sheet { position: relative; }
+
+/* At 0.8 alpha across the shell this covered 89% of the page width
+   and buried the board it is supposed to sit on. The formulas are
+   the page; the scrim only has to lift text off them. 0.62 keeps
+   body copy at 6.4:1 while the writing still reads through as the
+   residue of yesterday's lecture. */
+.sheet::before {
+    content: '';
+    position: absolute;
+    top: -5rem;
+    bottom: -5rem;
+    left: calc(50% - 50vw);
+    width: 100vw;
+    z-index: -1;
+    background: linear-gradient(90deg,
+        transparent 0,
+        rgba(31, 37, 33, 0.66) 10vw,
+        rgba(31, 37, 33, 0.68) 50vw,
+        rgba(31, 37, 33, 0.66) 90vw,
+        transparent 100vw);
+    -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 5rem, #000 calc(100% - 5rem), transparent 100%);
+    mask-image: linear-gradient(180deg, transparent 0, #000 5rem, #000 calc(100% - 5rem), transparent 100%);
+    pointer-events: none;
+}
+
+.sheet-head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: baseline;
+    column-gap: clamp(0.75rem, 2vw, 1.5rem);
+    padding-bottom: var(--s-4);
+    margin-bottom: var(--s-6);
+    border-bottom: 1px solid var(--rule-mid);
+}
+
+.sheet-mark {
+    font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+    font-weight: 700;
+    color: var(--chalk-ochre);
+    letter-spacing: 0.02em;
+}
+
+.sheet-title {
+    font-size: clamp(1.25rem, 2.1vw, 1.8rem);
+    font-weight: 700;
+    font-variation-settings: 'wdth' 108;
+    letter-spacing: 0.035em;
+    line-height: 1.2;
+    text-transform: uppercase;
+    color: var(--chalk);
+    text-wrap: balance;
+}
+
+.sheet-tally {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--chalk-soft);
+    white-space: nowrap;
+    justify-self: end;
+}
+
+/* The lede paragraph under a section title. */
+.sheet-head + p {
+    max-width: var(--measure);
+    color: var(--chalk-body);
+    margin-bottom: var(--s-6);
+}
+
+.sheet p { max-width: var(--measure); }
+.sheet p + p { margin-top: var(--s-5); }
+
+.about-layout { display: block; }
+.about-text-wrapper { max-width: var(--measure); }
+.about-text-wrapper p + p { margin-top: var(--s-5); }
+
+/* -------------------------------------------------------------
+   LISTS
+
+   The bullet is a short chalk stroke, drawn — not a • glyph.
+   ------------------------------------------------------------- */
+
+ul.links-list, ul.resource-list, ul.project-list { list-style: none; }
+
+ul.links-list li,
+ul.resource-list li,
+ul.project-list li {
+    position: relative;
+    padding-left: 1.9rem;
+    padding-bottom: 0.7rem;
+    margin-bottom: 0.7rem;
+    border-bottom: 1px solid var(--rule);
+}
+
+ul.links-list li:last-child,
+ul.resource-list li:last-child,
+ul.project-list li:last-child { border-bottom: none; margin-bottom: 0; }
+
+ul.links-list li::before,
+ul.resource-list li::before,
+ul.project-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.82em;
+    width: 1.05rem;
+    height: 1.5px;
+    background: var(--chalk-ochre);
+    opacity: 0.85;
+}
+
+/* A ledger line, not a title with its documents orphaned on the row
+   below: the work on the left, what you can open on the right, both
+   sitting on the same rule. */
+ul.project-list li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    column-gap: var(--s-5);
+    row-gap: 0.15rem;
+    line-height: 1.5;
+}
+
+ul.project-list strong,
+ul.resource-list strong {
+    display: flex;
+    align-items: baseline;
+    gap: 0.8rem;
+    flex: 1 1 22rem;
+    font-size: 1.02rem;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    color: var(--chalk);
+}
+
+/* The markup separates the title from its documents with a <br>,
+   which adds an empty line now that the title is a block. */
+ul.project-list br { display: none; }
+
+/* The leader that turns a title and two brackets into one ruled fact
+   line, running from the end of the entry to the documents it opens.
+   The bracketed words are authored content and are untouched. */
+ul.project-list strong::after {
+    content: '';
+    flex: 1 1 auto;
+    min-width: 1.5rem;
+    align-self: center;
+    height: 1px;
+    background: repeating-linear-gradient(90deg,
+        var(--rule-mid) 0 2px, transparent 2px 7px);
+}
+
+/* Every document gets a ruled fact line rather than a bare bracket. */
+ul.project-list li a,
+ul.resource-list li a {
+    display: inline-block;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: var(--chalk-blue);
+    text-decoration-color: rgba(163, 203, 219, 0.32);
+    text-underline-offset: 0.28em;
+}
+
+/* Eight short titles down one full-width column leaves a very long
+   rule under a very short link. Two columns give the ledger
+   something to hold. */
+ul.resource-list { column-count: 2; column-gap: var(--s-8); }
+
+ul.resource-list li {
+    padding-bottom: var(--s-3);
+    margin-bottom: var(--s-3);
+    break-inside: avoid;
+}
+
+ul.resource-list li:last-child { border-bottom: 1px solid var(--rule); }
+ul.resource-list li a { font-size: 0.98rem; margin-right: var(--s-4); }
+
+/* -------------------------------------------------------------
+   §4 — ACADEMIC BACKGROUND
+   ------------------------------------------------------------- */
+
+.academic-category { margin-bottom: var(--s-8); }
+.academic-category:last-child { margin-bottom: 0; }
+
+.academic-category h3 {
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--chalk-ochre);
+    padding-bottom: var(--s-2);
+    margin-bottom: var(--s-4);
+    border-bottom: 1px solid var(--rule);
+}
+
+.academic-list-container { column-count: 3; column-gap: var(--s-6); }
+
+.academic-list-container ul { list-style: none; }
+
+.academic-list-container li {
+    position: relative;
+    padding-left: 1.15rem;
+    margin-bottom: 0.42rem;
+    font-size: 0.86rem;
+    line-height: 1.5;
+    color: var(--chalk-body);
+    break-inside: avoid;
+}
+
+.academic-list-container li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.68em;
+    width: 0.6rem;
+    height: 1px;
+    background: var(--chalk-faint);
+}
+
+.university-tag {
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--chalk-soft);
+    font-style: normal;
+    margin-left: 0.35rem;
+    white-space: nowrap;
+}
+
+/* -------------------------------------------------------------
+   §5 — RECOMMENDED LITERATURE
+
+   Disclosures. Opening one writes the references in, line by
+   line, with the same advancing edge the background uses. One
+   motion grammar for the whole page.
+   ------------------------------------------------------------- */
+
+.modules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(272px, 1fr));
+    gap: 0 var(--s-6);
+}
+
+.module-item { border-bottom: 1px solid var(--rule); }
+
+.module-btn {
+    width: 100%;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-4);
+    padding: 0.85rem 0;
+    background: transparent;
+    border: none;
+    font: inherit;
+    font-size: 0.92rem;
+    font-weight: 500;
+    line-height: 1.45;
+    text-align: left;
+    color: var(--chalk-body);
+    cursor: pointer;
+    transition: color 180ms var(--ease-chalk), transform 240ms var(--ease-chalk);
+}
+
+.module-btn:hover { color: var(--chalk); transform: translateX(0.45rem); }
+.module-item.expanded .module-btn { color: var(--chalk); }
+
+/* The +/− is drawn: two chalk strokes, one of which is erased. */
+.toggle-icon {
+    position: relative;
+    flex-shrink: 0;
+    width: 13px;
+    height: 13px;
+    align-self: center;
+    font-size: 0;
+    color: transparent;
+}
+
+.toggle-icon::before,
+.toggle-icon::after {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto 0;
+    height: 1.5px;
+    background: var(--chalk-ochre);
+    transform-origin: center;
+    transition: transform 280ms var(--ease-chalk), opacity 200ms var(--ease-chalk);
+}
+.toggle-icon::after { transform: rotate(90deg); }
+.module-item.expanded .toggle-icon::after { transform: rotate(0deg); opacity: 0; }
+
+/* 0fr → 1fr rather than a measured max-height: nothing to measure,
+   nothing to get stale when the viewport reflows, and the disclosure
+   opens to its true height instead of a number JS guessed. */
+.module-references {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 260ms var(--ease-chalk);
+}
+.module-item.expanded .module-references {
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 420ms var(--ease-chalk);
+}
+
+/* No padding on the grid item itself: with border-box a 0fr row
+   still reserves the item's own padding, leaving a 16px seam under
+   every closed module. The spacing moves inside, where overflow
+   clips it. */
+.module-references ul {
+    list-style: none;
+    overflow: hidden;
+    min-height: 0;
+    padding: 0;
+}
+
+.module-references li {
+    padding: 0.5rem 0 0.5rem 0.9rem;
+    border-left: 1px solid var(--rule);
+    font-size: 0.8rem;
+    line-height: 1.6;
+    color: var(--chalk-soft);
+}
+
+.module-references li:last-child { padding-bottom: var(--s-4); }
+
+.module-references li em { color: var(--chalk-body); font-style: italic; }
+
+/* Each reference is written across, in order, when the module opens
+   — the same hand, at the same speed, as everything else. */
+.module-item.expanded .module-references li {
+    animation: write-across 420ms var(--ease-chalk) both;
+    animation-delay: calc(var(--i, 0) * 55ms);
+}
+
+@keyframes write-across {
+    from { clip-path: inset(-10% 100% -10% 0); }
+    to   { clip-path: inset(-10% 0% -10% 0); }
+}
+
+/* -------------------------------------------------------------
+   COLOPHON
+   ------------------------------------------------------------- */
+
+.colophon {
+    position: relative;
+    z-index: 1;
+    max-width: var(--shell);
+    margin: clamp(5rem, 12vh, 9rem) auto 0;
+    padding: var(--s-5) clamp(1rem, 4vw, 2.5rem) clamp(3rem, 8vh, 5rem);
+    border-top: 1px solid var(--rule);
+}
+
+/* The board has a foot. Without it the page does not end, it stops:
+   dust gathers on the ledge, the ledge catches the light, and the
+   tray falls away into shadow under it. */
+.colophon::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: calc(50% - 50vw);
+    width: 100vw;
+    height: 78px;
+    pointer-events: none;
+    background: linear-gradient(180deg,
+        transparent 0,
+        rgba(239, 234, 217, 0.028) 42%,
+        rgba(239, 234, 217, 0.085) 62%,
+        rgba(239, 234, 217, 0.15) 68%,
+        rgba(16, 20, 18, 0.52) 70%,
+        rgba(16, 20, 18, 0.78) 100%);
+}
+
+.colophon-line {
+    position: relative;
+    z-index: 1;
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    color: var(--chalk-soft);
+}
+
+/* -------------------------------------------------------------
+   ARRIVAL
+
+   One grammar, no exceptions: everything on this page is written
+   on with clip-path. A single-line thing is written across, left
+   to right, the way a hand crosses the board. A block of prose is
+   written down, line accumulating under line, because a left-to-
+   right wipe across wrapped text uncovers every line's left edge
+   at once and reads like a curtain rather than a hand. Same
+   device, two orientations, chosen by the shape of the text.
+
+   The armed state is keyed on a class set synchronously in <head>,
+   so it holds from the very first paint instead of flashing
+   content and then taking it away. Containers arrive instantly —
+   they carry no ink of their own — and the leaves do the writing.
+   ------------------------------------------------------------- */
+
+.js .sheet-head {
+    border-bottom-color: transparent;
+    background-image: linear-gradient(90deg, var(--rule-mid), var(--rule-mid));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 1px;
+    transition: background-size var(--write) var(--ease-chalk);
+}
+.js .sheet.is-written .sheet-head { background-size: 100% 1px; }
+
+.js .sheet-mark,
+.js .sheet-title,
+.js .sheet-tally {
+    clip-path: inset(-12% 100% -12% 0);
+    transition: clip-path var(--write) var(--ease-chalk) 90ms;
+}
+.js .sheet.is-written .sheet-mark,
+.js .sheet.is-written .sheet-title,
+.js .sheet.is-written .sheet-tally { clip-path: inset(-12% 0% -12% 0); }
+
+/* Containers: hidden from first paint, revealed without ceremony. */
+.js .sheet > *:not(.sheet-head) { clip-path: inset(0 0 102% 0); }
+.js .sheet.is-written > *:not(.sheet-head) { clip-path: inset(0 0 -2% 0); }
+
+.js .writes-across {
+    clip-path: inset(-10% 100% -10% 0);
+    transition: clip-path var(--write) var(--ease-chalk) var(--delay, 0ms);
+}
+.js .sheet.is-written .writes-across { clip-path: inset(-10% 0% -10% 0); }
+
+.js .writes-down {
+    clip-path: inset(0 0 102% 0);
+    transition: clip-path var(--write) var(--ease-chalk) var(--delay, 0ms);
+}
+.js .sheet.is-written .writes-down { clip-path: inset(0 0 -2% 0); }
+
+/* -------------------------------------------------------------
+   RESPONSIVE
+   ------------------------------------------------------------- */
+
+@media (max-width: 1080px) {
+    .academic-list-container { column-count: 2; }
+}
+
+@media (max-width: 900px) {
+    .masthead-cols { grid-template-columns: 1fr; gap: var(--s-7); }
+    .masthead-plate { max-width: 420px; }
+
+    /* Wrapped, the five addresses cost three stacked rows and ~150px
+       of a 844px viewport on every scroll. One scrolling line keeps
+       the wayfinding and gives the page its viewport back. */
+    .index-inner { gap: var(--s-4); padding-top: var(--s-2); padding-bottom: 0; }
+    .index-cta { margin-left: auto; }
+
+    .index-list {
+        order: 3;
+        width: 100%;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 1.1rem;
+        padding: 0.35rem 0 0.5rem;
+        scrollbar-width: none;
+        -webkit-mask-image: linear-gradient(90deg, #000 0, #000 92%, transparent 100%);
+        mask-image: linear-gradient(90deg, #000 0, #000 92%, transparent 100%);
+    }
+    .index-list::-webkit-scrollbar { display: none; }
+    .index-list li { flex: 0 0 auto; }
+}
+
+@media (max-width: 700px) {
+    body { font-size: 1rem; }
+
+    .masthead-board { height: clamp(200px, 46vw, 300px); }
+    .masthead-inner { padding-top: clamp(2.5rem, 9vh, 5rem); }
+    .masthead-name { letter-spacing: -0.028em; }
+
+    .academic-list-container { column-count: 1; }
+    ul.resource-list { column-count: 1; }
+
+    .modules-grid { grid-template-columns: 1fr; gap: 0; }
+
+    .wires a { grid-template-columns: 1fr; gap: 0.15rem; padding: 0.6rem 0; }
+
+    ul.project-list strong::after { display: none; }
+
+    .sheet-head {
+        grid-template-columns: auto minmax(0, 1fr);
+        row-gap: var(--s-2);
+    }
+    .sheet-tally { grid-column: 1 / -1; justify-self: start; }
+
+    /* Fewer, smaller formulas: a narrow column cannot carry a
+       display equation without it running off the board. */
+    .chalk-line { --size: 1.15rem; }
+    .chalk-row { gap: 0.4rem 1.5rem; }
+    .chalk-line--wide { display: none; }
+}
+
+@media (max-width: 420px) {
+    .chalkmark { width: 36px; height: 36px; }
+    .boxed { padding: 0.55rem 1.05rem; font-size: 0.85rem; }
+}
+
+/* -------------------------------------------------------------
+   REDUCED MOTION
+
+   Reduce, do not erase. What goes is travel, scroll-linked
+   writing, and staggered choreography. What stays is colour and
+   the board itself: the formulas are simply already written, the
+   way a board looks when you walk into the room after the class.
+   ------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+
+    *, *::before, *::after {
+        animation-duration: 1ms !important;
+        animation-delay: 0ms !important;
+        transition-duration: 1ms !important;
+        transition-delay: 0ms !important;
+    }
+
+    .chalk-line > i { clip-path: none !important; }
+    .chalk-line > b { display: none; }
+
+    .js .sheet-head { background-size: 100% 1px; }
+    .js .sheet-mark,
+    .js .sheet-title,
+    .js .sheet-tally,
+    .js .sheet > *:not(.sheet-head),
+    .js .writes-across,
+    .js .writes-down { clip-path: none !important; }
+
+    .wires a:hover,
+    .module-btn:hover { transform: none; }
+}

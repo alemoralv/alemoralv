@@ -1,213 +1,144 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
 
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Alejandro Morera Alvarez</title>
-
-    <link rel="stylesheet" href="style.css">
+    <meta name="description" content="Mathematician and engineer working in stochastic analysis, dynamical systems, and mathematical physics, and in applied AI at Profuturo and Novalan.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
-
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Caveat:wght@400;500;600&display=swap" rel="stylesheet">
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="board.css">
 
-    
-
-    <style>
-
-        .academic-category {
-
-            margin-bottom: 2rem;
-
-        }
-
-        .academic-category h3 {
-
-            margin-bottom: 0.5rem;
-
-            color: #333; /* Adjust based on your theme, assuming dark text */
-
-            border-bottom: 1px solid #eee;
-
-            padding-bottom: 5px;
-
-        }
-
-        /* Creates the requested 3-4 column compact layout */
-
-        .academic-list-container {
-
-            column-count: 3;
-
-            column-gap: 2rem;
-
-        }
-
-        /* Responsive: 2 columns on tablets, 1 on mobile */
-
-        @media (max-width: 900px) {
-
-            .academic-list-container {
-
-                column-count: 2;
-
-            }
-
-        }
-
-        @media (max-width: 600px) {
-
-            .academic-list-container {
-
-                column-count: 1;
-
-            }
-
-        }
-
-        .academic-list-container ul {
-
-            list-style-type: none;
-
-            padding: 0;
-
-            margin: 0;
-
-        }
-
-        .academic-list-container li {
-
-            margin-bottom: 0.3rem;
-
-            font-size: 0.9rem;
-
-            break-inside: avoid; /* Prevents splitting items across columns */
-
-            line-height: 1.4;
-
-        }
-
-        .academic-list-container li::before {
-
-            content: "•";
-
-            color: #666; /* Bullet color */
-
-            display: inline-block;
-
-            width: 1em;
-
-            margin-left: -1em;
-
-        }
-
-        .university-tag {
-
-            font-size: 0.75rem;
-
-            color: #666;
-
-            margin-left: 5px;
-
-            font-style: italic;
-
-        }
-
-    </style>
+    <script>
+        /* Set before first paint so the armed entrance never flashes
+           content and then removes it. If chalkboard.js fails to boot,
+           the class is dropped and the page is simply present. */
+        document.documentElement.classList.add('js');
+        setTimeout(function () {
+            if (!window.__chalkBooted) document.documentElement.classList.remove('js');
+        }, 3000);
+    </script>
 
 </head>
 
 <body>
 
-    <canvas id="vector-field-canvas"></canvas>
+<!--
+  THESIS: This page is not a site about a mathematician; it is his board. One
+  continuous slate, hero to footer, yesterday's derivation ghosted behind
+  today's argument. It refuses the arrangement this category always ships and
+  that this page used to be: white rounded cards on light grey, soft double
+  shadows, blue pill buttons.
+  OWN-WORLD: Lit green-grey slate (#333C36) with real dust, wipe-bands and
+  vignette — a material, never a screen. Warm bone chalk (#EFEAD9), blue chalk
+  for links, ochre chalk for what is live. Archivo for every word, Caveat for
+  the board's residue. No container, no radius, no shadow, no glow: hierarchy
+  is made of full-measure rules, indentation, scale and case.
+  STORY: A mathematician and an AI engineer are the same person. The visitor
+  reads the work in five numbered sections and leaves with a PDF open.
+  FIRST VIEWPORT: bpzcalc.jpg full-bleed as the actual board top, his own BPZ
+  calculation at native scale, dissolving into the slate. ALEJANDRO in expanded
+  chalk caps sits on it. Below a hairline rule: bio at 62ch left, ruled email
+  table, chalk-drawn socials, two chalk-boxed links; whiteboard.png pinned right.
+  FORM: Hörsaal — candidate 1 of my grounded list, pinned by the brief; the roll
+  assigned candidate 4 (Kariertes Papier) and the pin beats the roll. Raised by
+  five declined challengers. Seed key 32aa2e9a.
+  FINISH: unreviewed and undocumented is unfinished; this build ends with the
+  finish review, the verdict, DESIGN.md, and every shipping raster carrying its
+  provenance.
+-->
 
-    <section class="hero" id="home">
-        <div class="hero-decoration hero-decoration-1"></div>
-        <div class="hero-decoration hero-decoration-2"></div>
-        <div class="hero-decoration hero-decoration-3"></div>
+    <div class="slate" aria-hidden="true"></div>
 
-        <nav>
-            <div class="nav-inner">
-                <a href="#home" class="nav-logo">alemoralv.</a>
-                <a href="thinking-in-measures.html" class="nav-cta">Thinking in Measures</a>
-                <ul class="nav-links">
-                    <li><a href="#about" class="nav-link active">About Me</a></li>
+    <a class="skip" href="#work">Skip to the work</a>
 
-                    <li><a href="#projects" class="nav-link">Projects</a></li>
-                    <li><a href="#notes" class="nav-link">Notes</a></li>
-                    <li><a href="#academic-background" class="nav-link">Academic</a></li>
-                    <li><a href="#modules" class="nav-link">Recommended Literature</a></li>
-                </ul>
-            </div>
-        </nav>
+    <nav class="index" aria-label="Sections">
+        <div class="index-inner">
+            <a href="#home" class="index-mark">alemoralv.</a>
+            <ul class="index-list">
+                <li><a href="#about" class="index-link" data-index-for="about"><span class="index-num">§1</span> About Me</a></li>
+                <li><a href="#projects" class="index-link" data-index-for="projects"><span class="index-num">§2</span> Projects</a></li>
+                <li><a href="#notes" class="index-link" data-index-for="notes"><span class="index-num">§3</span> Notes</a></li>
+                <li><a href="#academic-background" class="index-link" data-index-for="academic-background"><span class="index-num">§4</span> Academic</a></li>
+                <li><a href="#modules" class="index-link" data-index-for="modules"><span class="index-num">§5</span> Recommended Literature</a></li>
+            </ul>
+            <a href="thinking-in-measures.html" class="boxed boxed--quiet index-cta">Thinking in Measures</a>
+        </div>
+    </nav>
 
-        <div class="hero-content">
-            <div class="hero-text">
-                <p class="hero-greeting">Hello, I'm</p>
-                <h1 class="hero-name">ALEJANDRO</h1>
-                <p class="hero-bio">Mathematician and engineer with a passion for stochastic analysis, dynamical systems, and mathematical physics. I am currently completing a joint Master's thesis at TUM &amp; EPFL titled "Mean-Field Limits for Stochastic Interacting Particles on Digraph Measures: Convergence and Regularity on Hilbert Spaces", while working in AI at Profuturo, specializing in large language models, retrieval-augmented generation, and automation. I also work at Novalan as an AI/ML Foresight Expert, applying statistical, machine learning, and forecasting techniques to anticipate the behavior of complex phenomena. I built my personal Claude Code agentic engineering framework to solve problems more efficiently, securely, and reproducibly.</p>
-                <div class="hero-contact">
-                    <div class="hero-emails">
-                        <a href="mailto:alexmorera.a@gmail.com" class="hero-email-item">
-                            <span class="email-label">General</span>
-                            <span class="email-addr">alexmorera.a@gmail.com</span>
+    <header class="masthead" id="home">
+
+        <div class="masthead-board" aria-hidden="true"></div>
+
+        <div class="masthead-inner">
+
+            <h1 class="masthead-name">ALEJANDRO</h1>
+
+            <div class="masthead-cols">
+
+                <div class="masthead-lead">
+                    <p class="masthead-bio">Mathematician and engineer with a passion for stochastic analysis, dynamical systems, and mathematical physics. I am currently completing a joint Master's thesis at TUM &amp; EPFL titled "Mean-Field Limits for Stochastic Interacting Particles on Digraph Measures: Convergence and Regularity on Hilbert Spaces", while working in AI at Profuturo, specializing in large language models, retrieval-augmented generation, and automation. I also work at Novalan as an AI/ML Foresight Expert, applying statistical, machine learning, and forecasting techniques to anticipate the behavior of complex phenomena. I built my personal Claude Code agentic engineering framework to solve problems more efficiently, securely, and reproducibly.</p>
+
+                    <ul class="wires" aria-label="Email addresses">
+                        <li><a href="mailto:alexmorera.a@gmail.com"><span class="wire-key">General</span><span class="wire-val">alexmorera.a@gmail.com</span></a></li>
+                        <li><a href="mailto:alex.morera@tum.de"><span class="wire-key">TUM</span><span class="wire-val">alex.morera@tum.de</span></a></li>
+                        <li><a href="mailto:alejandro.moreraalvarez@epfl.ch"><span class="wire-key">EPFL</span><span class="wire-val">alejandro.moreraalvarez@epfl.ch</span></a></li>
+                    </ul>
+
+                    <div class="masthead-actions">
+                        <a href="auctiva.html" class="boxed" target="_blank" rel="noopener noreferrer">Auctiva</a>
+                    </div>
+
+                    <div class="chalkmarks">
+                        <a href="https://www.linkedin.com/in/alemoralv-a59827194" target="_blank" rel="noopener noreferrer" class="chalkmark" aria-label="LinkedIn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
                         </a>
-                        <a href="mailto:alex.morera@tum.de" class="hero-email-item">
-                            <span class="email-label">TUM</span>
-                            <span class="email-addr">alex.morera@tum.de</span>
+                        <a href="https://open.spotify.com/artist/42vgX1N8atkhRbO7dpKWmV?si=42Bd5axSShuQA-RDKxilEg" target="_blank" rel="noopener noreferrer" class="chalkmark" aria-label="Spotify">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
                         </a>
-                        <a href="mailto:alejandro.moreraalvarez@epfl.ch" class="hero-email-item">
-                            <span class="email-label">EPFL</span>
-                            <span class="email-addr">alejandro.moreraalvarez@epfl.ch</span>
+                        <a href="https://strava.app.link/LxYvpGIk80b" target="_blank" rel="noopener noreferrer" class="chalkmark" aria-label="Strava">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M10.39 2l4.44 8.74h-2.9L10.39 7.6 8.84 10.74H5.96L10.39 2zm7.65 14.11L13.61 7.6l-1.46 3.14h-2.9L13.61 19l1.72-2.89h2.71zm-8.48-1.27l1.46 2.75h4.28L13.61 21H8.97l-1.71-3.43h2.3z"/></svg>
+                        </a>
+                        <a href="https://github.com/alemoralv" target="_blank" rel="noopener noreferrer" class="chalkmark" aria-label="GitHub">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.649.5.5 5.649.5 12c0 5.084 3.292 9.388 7.86 10.91.574.105.785-.249.785-.555 0-.274-.01-1-.015-1.962-3.197.695-3.872-1.541-3.872-1.541-.523-1.329-1.277-1.683-1.277-1.683-1.043-.713.079-.699.079-.699 1.153.081 1.759 1.184 1.759 1.184 1.025 1.756 2.688 1.249 3.343.955.104-.743.401-1.249.729-1.536-2.553-.291-5.238-1.276-5.238-5.68 0-1.255.448-2.281 1.183-3.084-.119-.291-.513-1.464.112-3.052 0 0 .965-.309 3.162 1.178A10.971 10.971 0 0112 6.045c.978.005 1.964.132 2.884.388 2.195-1.487 3.158-1.178 3.158-1.178.627 1.588.233 2.761.114 3.052.737.803 1.181 1.829 1.181 3.084 0 4.415-2.689 5.385-5.251 5.671.413.356.781 1.058.781 2.134 0 1.541-.014 2.784-.014 3.164 0 .309.207.665.79.553C20.211 21.385 23.5 17.083 23.5 12 23.5 5.649 18.351.5 12 .5z"/></svg>
+                        </a>
+                        <a href="https://utttalemoralv.tiiny.site/" target="_blank" rel="noopener noreferrer" class="chalkmark" aria-label="Fun">
+                            <!-- The other four marks are their platforms' own. This one is
+                                 drawn to match them: a die — the one object that is at once
+                                 play and probability. A stock checkmark meant nothing here. -->
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M4.6 2h14.8A2.6 2.6 0 0 1 22 4.6v14.8a2.6 2.6 0 0 1-2.6 2.6H4.6A2.6 2.6 0 0 1 2 19.4V4.6A2.6 2.6 0 0 1 4.6 2Zm0 2.2a.4.4 0 0 0-.4.4v14.8c0 .22.18.4.4.4h14.8a.4.4 0 0 0 .4-.4V4.6a.4.4 0 0 0-.4-.4Z"/><circle cx="7.7" cy="7.7" r="1.55"/><circle cx="16.3" cy="7.7" r="1.55"/><circle cx="12" cy="12" r="1.55"/><circle cx="7.7" cy="16.3" r="1.55"/><circle cx="16.3" cy="16.3" r="1.55"/></svg>
                         </a>
                     </div>
                 </div>
-                <div class="hero-socials">
-                    <a href="https://www.linkedin.com/in/alemoralv-a59827194" target="_blank" class="social-icon" aria-label="LinkedIn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-                    </a>
-                    <a href="https://open.spotify.com/artist/42vgX1N8atkhRbO7dpKWmV?si=42Bd5axSShuQA-RDKxilEg" target="_blank" class="social-icon" aria-label="Spotify">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
-                    </a>
-                    <a href="https://strava.app.link/LxYvpGIk80b" target="_blank" class="social-icon" aria-label="Strava">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10.39 2l4.44 8.74h-2.9L10.39 7.6 8.84 10.74H5.96L10.39 2zm7.65 14.11L13.61 7.6l-1.46 3.14h-2.9L13.61 19l1.72-2.89h2.71zm-8.48-1.27l1.46 2.75h4.28L13.61 21H8.97l-1.71-3.43h2.3z"/></svg>
-                    </a>
-                    <a href="https://github.com/alemoralv" target="_blank" class="social-icon" aria-label="GitHub">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.649.5.5 5.649.5 12c0 5.084 3.292 9.388 7.86 10.91.574.105.785-.249.785-.555 0-.274-.01-1-.015-1.962-3.197.695-3.872-1.541-3.872-1.541-.523-1.329-1.277-1.683-1.277-1.683-1.043-.713.079-.699.079-.699 1.153.081 1.759 1.184 1.759 1.184 1.025 1.756 2.688 1.249 3.343.955.104-.743.401-1.249.729-1.536-2.553-.291-5.238-1.276-5.238-5.68 0-1.255.448-2.281 1.183-3.084-.119-.291-.513-1.464.112-3.052 0 0 .965-.309 3.162 1.178A10.971 10.971 0 0112 6.045c.978.005 1.964.132 2.884.388 2.195-1.487 3.158-1.178 3.158-1.178.627 1.588.233 2.761.114 3.052.737.803 1.181 1.829 1.181 3.084 0 4.415-2.689 5.385-5.251 5.671.413.356.781 1.058.781 2.134 0 1.541-.014 2.784-.014 3.164 0 .309.207.665.79.553C20.211 21.385 23.5 17.083 23.5 12 23.5 5.649 18.351.5 12 .5z"/></svg>
-                    </a>
-                    <a href="https://utttalemoralv.tiiny.site/" target="_blank" class="social-icon" aria-label="Fun">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
-                    </a>
-                </div>
-                <div class="button-container">
-                    <a href="auctiva.html" class="btn-primary" style="background-color: #363636;" target="_blank" rel="noopener noreferrer">Auctiva</a>
-                </div>
-            </div>
 
-            <div class="hero-image">
-                <div class="hero-image-stack">
-                    <img src="whiteboard.png" alt="Alejandro Morera Alvarez teaching mathematics at a whiteboard">
-                    <a href="pdfs/MT_MoreraAlvarez.pdf" class="btn-primary btn-thesis" target="_blank" rel="noopener noreferrer">Master's Thesis</a>
-                </div>
-            </div>
+                <figure class="masthead-plate">
+                    <img src="whiteboard.png" alt="Alejandro Morera Alvarez teaching mathematics at a whiteboard" width="800" height="800" loading="eager" decoding="async">
+                    <figcaption>
+                        <a href="pdfs/MT_MoreraAlvarez.pdf" class="boxed" target="_blank" rel="noopener noreferrer">Master's Thesis</a>
+                    </figcaption>
+                </figure>
 
+            </div>
         </div>
-    </section>
+    </header>
 
+    <div class="region">
 
+        <div class="chalk-plane" data-chalk-plane aria-hidden="true"></div>
 
-    <main>
+    <main id="work" class="work">
 
-        <section id="about" class="card">
+        <section id="about" class="sheet" data-sheet="1">
 
-            <h2>About Me</h2>
+            <header class="sheet-head">
+                <span class="sheet-mark" aria-hidden="true">§1</span>
+                <h2 class="sheet-title">About Me</h2>
+            </header>
 
             <div class="about-layout">
                 <div class="about-text-wrapper">
@@ -226,14 +157,13 @@
 
         </section>
 
+        <section id="projects" class="sheet" data-sheet="2">
 
-
-
-
-
-        <section id="projects" class="card">
-
-            <h2>Projects: Essays, Seminars, and Theses</h2>
+            <header class="sheet-head">
+                <span class="sheet-mark" aria-hidden="true">§2</span>
+                <h2 class="sheet-title">Projects: Essays, Seminars, and Theses</h2>
+                <span class="sheet-tally" aria-hidden="true">11 entries · 18 documents</span>
+            </header>
 
             <ul class="project-list">
 
@@ -343,10 +273,13 @@
 
         </section>
 
+        <section id="notes" class="sheet" data-sheet="3">
 
-        <section id="notes" class="card">
-
-            <h2>Notes</h2>
+            <header class="sheet-head">
+                <span class="sheet-mark" aria-hidden="true">§3</span>
+                <h2 class="sheet-title">Notes</h2>
+                <span class="sheet-tally" aria-hidden="true">8 lecture sets</span>
+            </header>
 
             <p>Below is a collection of summaries of some lectures I have taken (beware of mistakes):</p>
 
@@ -372,11 +305,13 @@
 
         </section>
 
+        <section id="academic-background" class="sheet" data-sheet="4">
 
-
-        <section id="academic-background" class="card">
-
-            <h2>Academic Background</h2>
+            <header class="sheet-head">
+                <span class="sheet-mark" aria-hidden="true">§4</span>
+                <h2 class="sheet-title">Academic Background</h2>
+                <span class="sheet-tally" aria-hidden="true">74 modules · 3 degrees</span>
+            </header>
 
             <p>Below is a comprehensive record of modules completed during my Bachelor's and Master's studies at TUM and EPFL.</p>
 
@@ -435,8 +370,6 @@
                 </div>
 
             </div>
-
-
 
             <div class="academic-category">
 
@@ -503,8 +436,6 @@
                 </div>
 
             </div>
-
-
 
             <div class="academic-category">
 
@@ -578,18 +509,21 @@
 
         </section>
 
+        <section id="modules" class="sheet" data-sheet="5">
 
-
-        <section id="modules" class="card">
-    <h2>Recommended Literature</h2>
+            <header class="sheet-head">
+                <span class="sheet-mark" aria-hidden="true">§5</span>
+                <h2 class="sheet-title">Recommended Literature</h2>
+                <span class="sheet-tally" aria-hidden="true">42 modules · 128 references</span>
+            </header>
     <p>Below is a list of modules I have taken during my studies. Click on a module to see recommended references for self-study.</p>
     
     <div class="modules-grid">
         <!-- Abstract Algebra -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Abstract Algebra
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -602,9 +536,9 @@
 
         <!-- Advanced Seminar: Functional Analysis & Operator Theory -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Advanced Seminar: Functional Analysis &amp; Operator Theory
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -616,9 +550,9 @@
 
         <!-- Analysis 1, 2, 3 -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Analysis 1, 2, 3
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -635,9 +569,9 @@
 
         <!-- Biomimetics -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Biomimetics
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -650,9 +584,9 @@
 
         <!-- Complex Analysis 1, 2 -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Complex Analysis 1, 2
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -668,9 +602,9 @@
 
         <!-- Control Theory -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Control Theory
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -683,9 +617,9 @@
 
         <!-- Discrete Structures -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Discrete Structures
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -698,9 +632,9 @@
 
         <!-- Distribution Theory -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Distribution Theory
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -713,9 +647,9 @@
 
         <!-- Dynamical Systems -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Dynamical Systems
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -728,9 +662,9 @@
 
         <!-- Elliptic Curves -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Elliptic Curves
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -743,9 +677,9 @@
 
         <!-- Experimental Cognitive Psychology -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Experimental Cognitive Psychology
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -758,9 +692,9 @@
 
         <!-- Fluid Mechanics -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Fluid Mechanics
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -773,9 +707,9 @@
 
         <!-- Fractal Geometry -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Fractal Geometry
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -788,9 +722,9 @@
 
         <!-- Functional Analysis -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Functional Analysis
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -803,9 +737,9 @@
 
         <!-- Fundamentals of Mathematical Studies -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Fundamentals of Mathematical Studies
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -818,9 +752,9 @@
 
         <!-- Gaussian Processes -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Gaussian Processes
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -833,9 +767,9 @@
 
         <!-- Infinite-dimensional Vector Spaces -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Infinite-dimensional Vector Spaces
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -848,9 +782,9 @@
 
         <!-- Introduction to Optimization -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Introduction to Optimization
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -863,9 +797,9 @@
 
         <!-- Introduction to Probability and Statistics -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Introduction to Probability and Statistics
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -878,9 +812,9 @@
 
         <!-- Introduction to Programming -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Introduction to Programming
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -893,9 +827,9 @@
 
         <!-- Introduction to Stochastic PDEs -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Introduction to Stochastic PDEs
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -908,9 +842,9 @@
 
         <!-- Lattice Models -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Lattice Models
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -923,9 +857,9 @@
 
         <!-- Linear Algebra 1, 2 -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Linear Algebra 1, 2
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -938,9 +872,9 @@
 
         <!-- Markov Processes -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Markov Processes
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -953,9 +887,9 @@
 
         <!-- Martingales in Financial Mathematics -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Martingales in Financial Mathematics
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -968,9 +902,9 @@
 
         <!-- Material Science I -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Material Science I
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -983,9 +917,9 @@
 
         <!-- Mathematical Basics -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Mathematical Basics
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -998,9 +932,9 @@
 
         <!-- Nonlinear Dynamics: Introduction -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Nonlinear Dynamics: Introduction
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -1013,9 +947,9 @@
 
         <!-- Numerical Analysis -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Numerical Analysis
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -1028,9 +962,9 @@
 
         <!-- Operator Theory -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Operator Theory
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -1043,9 +977,9 @@
 
         <!-- Optimal Transport -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Optimal Transport
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -1058,9 +992,9 @@
 
         <!-- Partial Differential Equations -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Partial Differential Equations
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -1073,9 +1007,9 @@
 
         <!-- Probabilistic Models of Modern AI -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Probabilistic Models of Modern AI
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -1088,9 +1022,9 @@
 
         <!-- Probability Theory -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Probability Theory
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -1103,9 +1037,9 @@
 
         <!-- Project with Colloquium / Bachelor's Thesis -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Project with Colloquium / Bachelor's Thesis
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -1120,9 +1054,9 @@
 
         <!-- Random Dynamical Systems -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Random Dynamical Systems
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -1135,9 +1069,9 @@
 
         <!-- Spectral Theory -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Spectral Theory
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -1150,9 +1084,9 @@
 
         <!-- Stochastic Analysis -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Stochastic Analysis
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -1165,9 +1099,9 @@
 
         <!-- Structural Mechanics Modeling -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Structural Mechanics Modeling
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -1180,9 +1114,9 @@
 
         <!-- Topology -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Topology
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -1195,9 +1129,9 @@
 
         <!-- Topics in High-Dimensional Probability -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Topics in High-Dimensional Probability
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -1210,9 +1144,9 @@
 
         <!-- Topics in Stochastic Analysis -->
         <div class="module-item">
-            <button class="module-btn" onclick="toggleModule(this)">
+            <button type="button" class="module-btn" aria-expanded="false" onclick="toggleModule(this)">
                 Topics in Stochastic Analysis
-                <span class="toggle-icon">+</span>
+                <span class="toggle-icon" aria-hidden="true">+</span>
             </button>
             <div class="module-references">
                 <ul>
@@ -1225,40 +1159,17 @@
     </div>
 </section>
 
-<script>
-function toggleModule(btn) {
-    const moduleItem = btn.parentElement;
-    const references = moduleItem.querySelector('.module-references');
-    const icon = btn.querySelector('.toggle-icon');
-    
-    moduleItem.classList.toggle('expanded');
-    
-    if (moduleItem.classList.contains('expanded')) {
-        references.style.maxHeight = references.scrollHeight + 'px';
-        icon.textContent = '−';
-    } else {
-        references.style.maxHeight = '0';
-        icon.textContent = '+';
-    }
-}
-</script>
-
         
-
-
-
 
     </main>
 
-
-
-    <footer>
-
-        <p>&copy; 2026 Alejandro Morera Alvarez. All Rights Reserved.</p>
-
+    <footer class="colophon">
+        <p class="colophon-line">&copy; 2026 Alejandro Morera Alvarez. All Rights Reserved.</p>
     </footer>
 
-    <script src="vectorfield.js"></script>
+    </div><!-- /.region -->
+
+    <script src="chalkboard.js" defer></script>
 
 </body>
 
