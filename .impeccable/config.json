@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-color",
+        "value": "#000",
+        "createdAt": "2026-08-23T15:12:27.562Z",
+        "reason": "Claude, verified in source: all four occurrences are inside mask-image gradients (board.css 434/578/680/1122). A mask uses only the alpha channel, so #000 there means 'fully opaque mask', not a colour, and can never render. The palette contains no pure black."
+      },
+      {
+        "rule": "design-system-radius",
+        "value": "4px",
+        "createdAt": "2026-08-23T15:12:27.821Z",
+        "reason": "Claude, sanctioned by DESIGN.md's named Drawn Corner Rule: this is a sub-value of an 8-value asymmetric per-corner shorthand (rounded.drawn-box / drawn-box-trace / drawn-mark) that makes a hand-drawn box's corners fail to meet. The detector reads sub-values it cannot map to the token. No uniform container radius exists in this world."
+      },
+      {
+        "rule": "design-system-radius",
+        "value": "6px",
+        "createdAt": "2026-08-23T15:12:28.067Z",
+        "reason": "Claude, sanctioned by DESIGN.md's named Drawn Corner Rule: sub-value of the asymmetric rounded.drawn-mark shorthand on the 40px social marks. Same rationale as 4px."
+      }
+    ]
+  }
+}

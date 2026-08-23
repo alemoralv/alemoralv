@@ -53,6 +53,17 @@
     --write:      620ms;
     --write-fast: 360ms;
 
+    /* Type ramp. Every font-size in this file is one of these six steps
+       plus the display and headline clamps; the build previously carried
+       fourteen distinct small sizes, several of them a fraction of a pixel
+       apart, which is noise rather than a scale. */
+    --t-mark:  1.2rem;      /* the wordmark                        */
+    --t-body:  1.0625rem;   /* reading text                        */
+    --t-title: 1.02rem;     /* an entry you can open               */
+    --t-ui:    0.92rem;     /* interactive rows, dense list content */
+    --t-meta:  0.82rem;     /* secondary text, small links          */
+    --t-label: 0.72rem;     /* uppercase tracked labels             */
+
     --measure: 66ch;
     --shell:   1040px;
 }
@@ -74,7 +85,7 @@ html {
 body {
     font-family: 'Archivo', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
     font-optical-sizing: auto;
-    font-size: 1.0625rem;
+    font-size: var(--t-body);
     line-height: 1.75;
     color: var(--chalk-body);
     background: transparent;
@@ -218,7 +229,7 @@ a:hover {
 }
 
 .index-mark {
-    font-size: 1.2rem;
+    font-size: var(--t-mark);
     font-weight: 700;
     font-variation-settings: 'wdth' 112;
     letter-spacing: -0.02em;
@@ -242,7 +253,7 @@ a:hover {
     align-items: baseline;
     gap: 0.4em;
     padding-bottom: 3px;
-    font-size: 0.82rem;
+    font-size: var(--t-meta);
     font-weight: 500;
     letter-spacing: 0.01em;
     color: var(--chalk-soft);
@@ -253,7 +264,7 @@ a:hover {
 }
 
 .index-num {
-    font-size: 0.74rem;
+    font-size: var(--t-label);
     font-weight: 600;
     color: var(--chalk-soft);
     transition: color 180ms var(--ease-chalk);
@@ -265,7 +276,7 @@ a:hover {
 .index-link.is-here { color: var(--chalk); border-bottom-color: var(--chalk-ochre); }
 .index-link.is-here .index-num { color: var(--chalk-ochre); }
 
-.index-cta { flex-shrink: 0; font-size: 0.78rem; }
+.index-cta { flex-shrink: 0; font-size: var(--t-meta); }
 
 /* -------------------------------------------------------------
    BOXED
@@ -280,7 +291,7 @@ a:hover {
     display: inline-flex;
     align-items: center;
     padding: 0.62rem 1.35rem;
-    font-size: 0.9rem;
+    font-size: var(--t-ui);
     font-weight: 600;
     letter-spacing: 0.015em;
     color: var(--chalk);
@@ -436,7 +447,7 @@ a:hover {
 
 .masthead-bio {
     max-width: 58ch;
-    font-size: 1.0625rem;
+    font-size: var(--t-body);
     line-height: 1.72;
     color: var(--chalk-body);
     margin-bottom: var(--s-6);
@@ -467,14 +478,14 @@ a:hover {
 .wires a:hover { color: var(--chalk); transform: translateX(0.5rem); }
 
 .wire-key {
-    font-size: 0.7rem;
+    font-size: var(--t-label);
     font-weight: 600;
     letter-spacing: 0.11em;
     text-transform: uppercase;
     color: var(--chalk-ochre);
 }
 
-.wire-val { font-size: 0.92rem; overflow-wrap: anywhere; }
+.wire-val { font-size: var(--t-ui); overflow-wrap: anywhere; }
 
 .masthead-actions {
     display: flex;
@@ -682,7 +693,7 @@ a:hover {
 }
 
 .sheet-mark {
-    font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+    font-size: clamp(var(--t-ui), 1.5vw, var(--t-title));
     font-weight: 700;
     color: var(--chalk-ochre);
     letter-spacing: 0.02em;
@@ -700,7 +711,7 @@ a:hover {
 }
 
 .sheet-tally {
-    font-size: 0.72rem;
+    font-size: var(--t-label);
     font-weight: 500;
     letter-spacing: 0.1em;
     text-transform: uppercase;
@@ -776,7 +787,7 @@ ul.resource-list strong {
     align-items: baseline;
     gap: 0.8rem;
     flex: 1 1 22rem;
-    font-size: 1.02rem;
+    font-size: var(--t-title);
     font-weight: 600;
     letter-spacing: -0.005em;
     color: var(--chalk);
@@ -803,7 +814,7 @@ ul.project-list strong::after {
 ul.project-list li a,
 ul.resource-list li a {
     display: inline-block;
-    font-size: 0.82rem;
+    font-size: var(--t-meta);
     font-weight: 500;
     letter-spacing: 0.05em;
     color: var(--chalk-blue);
@@ -823,7 +834,7 @@ ul.resource-list li {
 }
 
 ul.resource-list li:last-child { border-bottom: 1px solid var(--rule); }
-ul.resource-list li a { font-size: 0.98rem; margin-right: var(--s-4); }
+ul.resource-list li a { font-size: var(--t-title); margin-right: var(--s-4); }
 
 /* -------------------------------------------------------------
    §4 — ACADEMIC BACKGROUND
@@ -833,7 +844,7 @@ ul.resource-list li a { font-size: 0.98rem; margin-right: var(--s-4); }
 .academic-category:last-child { margin-bottom: 0; }
 
 .academic-category h3 {
-    font-size: 0.78rem;
+    font-size: var(--t-meta);
     font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
@@ -851,7 +862,7 @@ ul.resource-list li a { font-size: 0.98rem; margin-right: var(--s-4); }
     position: relative;
     padding-left: 1.15rem;
     margin-bottom: 0.42rem;
-    font-size: 0.86rem;
+    font-size: var(--t-ui);
     line-height: 1.5;
     color: var(--chalk-body);
     break-inside: avoid;
@@ -868,7 +879,7 @@ ul.resource-list li a { font-size: 0.98rem; margin-right: var(--s-4); }
 }
 
 .university-tag {
-    font-size: 0.68rem;
+    font-size: var(--t-label);
     font-weight: 500;
     letter-spacing: 0.07em;
     text-transform: uppercase;
@@ -904,7 +915,7 @@ ul.resource-list li a { font-size: 0.98rem; margin-right: var(--s-4); }
     background: transparent;
     border: none;
     font: inherit;
-    font-size: 0.92rem;
+    font-size: var(--t-ui);
     font-weight: 500;
     line-height: 1.45;
     text-align: left;
@@ -967,7 +978,7 @@ ul.resource-list li a { font-size: 0.98rem; margin-right: var(--s-4); }
 .module-references li {
     padding: 0.5rem 0 0.5rem 0.9rem;
     border-left: 1px solid var(--rule);
-    font-size: 0.8rem;
+    font-size: var(--t-meta);
     line-height: 1.6;
     color: var(--chalk-soft);
 }
@@ -1024,7 +1035,7 @@ ul.resource-list li a { font-size: 0.98rem; margin-right: var(--s-4); }
 .colophon-line {
     position: relative;
     z-index: 1;
-    font-size: 0.78rem;
+    font-size: var(--t-meta);
     letter-spacing: 0.06em;
     color: var(--chalk-soft);
 }
@@ -1116,7 +1127,7 @@ ul.resource-list li a { font-size: 0.98rem; margin-right: var(--s-4); }
 }
 
 @media (max-width: 700px) {
-    body { font-size: 1rem; }
+    :root { --t-body: 1rem; }
 
     .masthead-board { height: clamp(200px, 46vw, 300px); }
     .masthead-inner { padding-top: clamp(2.5rem, 9vh, 5rem); }
@@ -1146,7 +1157,7 @@ ul.resource-list li a { font-size: 0.98rem; margin-right: var(--s-4); }
 
 @media (max-width: 420px) {
     .chalkmark { width: 36px; height: 36px; }
-    .boxed { padding: 0.55rem 1.05rem; font-size: 0.85rem; }
+    .boxed { padding: 0.55rem 1.05rem; font-size: var(--t-meta); }
 }
 
 /* -------------------------------------------------------------

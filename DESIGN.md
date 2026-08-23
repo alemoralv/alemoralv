@@ -33,6 +33,13 @@ typography:
     lineHeight: 1.2
     letterSpacing: "0.035em"
     fontVariation: "'wdth' 108"
+  mark:
+    fontFamily: "Archivo, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
+    fontSize: "1.2rem"
+    fontWeight: 700
+    lineHeight: 1.2
+    letterSpacing: "-0.02em"
+    fontVariation: "'wdth' 112"
   title:
     fontFamily: "Archivo, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
     fontSize: "1.02rem"
@@ -45,6 +52,18 @@ typography:
     fontWeight: 400
     lineHeight: 1.75
     letterSpacing: "normal"
+  ui:
+    fontFamily: "Archivo, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
+    fontSize: "0.92rem"
+    fontWeight: 500
+    lineHeight: 1.45
+    letterSpacing: "normal"
+  meta:
+    fontFamily: "Archivo, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
+    fontSize: "0.82rem"
+    fontWeight: 500
+    lineHeight: 1.5
+    letterSpacing: "0.05em"
   label:
     fontFamily: "Archivo, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
     fontSize: "0.72rem"
