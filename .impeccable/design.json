@@ -1,21 +1,44 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-23T00:00:00Z",
+  "generatedAt": "2026-08-23T18:00:00Z",
   "title": "Design System: Alejandro Morera Alvarez",
   "extensions": {
     "worlds": [
       {
         "name": "Hörsaal",
         "status": "current",
-        "files": ["index.html", "board.css", "chalkboard.js"],
-        "note": "The documented system. New surfaces inherit this."
+        "files": [
+          "board.css",
+          "chalkboard.js"
+        ],
+        "surfaces": [
+          {
+            "page": "index.html",
+            "mode": "Lecture",
+            "note": "The board a lecturer covers."
+          },
+          {
+            "page": "thinking-in-measures.html",
+            "mode": "Read",
+            "note": "The board you sit in front of. Loads the same stylesheet and the same engine; inherits every token, rule and motion unchanged and adds only the READ SURFACE component vocabulary."
+          },
+          {
+            "page": "tim-posts/*.html",
+            "mode": "Read (fragments)",
+            "note": "Head-less HTML fragments fetched and injected into the reading page. They inherit whatever stylesheet that page loads and never loaded one of their own. Their authored .blog-* classes are restyled by board.css, never rewritten."
+          }
+        ],
+        "note": "One system, two surfaces. A new page joins the world by loading board.css and chalkboard.js, not by forking them."
       },
       {
-        "name": "Neumorphic (incumbent)",
-        "status": "incumbent-untouched",
-        "files": ["style.css", "vectorfield.js"],
-        "serves": ["thinking-in-measures.html", "auctiva.html", "tim-posts/*.html"],
-        "note": "Not deprecated and not scheduled for migration. Recorded so Hörsaal tokens are never applied to these pages, and neumorphic tokens never to index.html."
+        "name": "Neumorphic (former incumbent)",
+        "status": "orphaned",
+        "files": [
+          "style.css",
+          "vectorfield.js"
+        ],
+        "serves": [],
+        "note": "No page loads either file. thinking-in-measures.html moved into the current world, auctiva.html was deleted from the site at the user's request, and tim-posts/*.html are head-less fragments that never loaded style.css themselves. Both files remain in the repository, untouched. Recorded as shipped state; this is not a deletion recommendation. Their tokens were carried in an earlier revision of this record and are dropped here because no surface uses them."
       }
     ],
     "colorMeta": {
@@ -24,40 +47,95 @@
         "displayName": "Lit Slate",
         "canonical": "#333C36",
         "provenance": "Sampled from bpzcalc.jpg (user's own photographed chalkboard); darkest chalk-free patches read rgb(39,41,35), warm olive-grey with red≈green>blue, then deliberately lifted in value so it reads as a board in a lit room rather than a screen in a dark one.",
-        "tonalRamp": ["#12150F", "#1B2019", "#242A26", "#2C342E", "#333C36", "#3E4842", "#5A6660", "#95A099"]
+        "tonalRamp": [
+          "#12150F",
+          "#1B2019",
+          "#242A26",
+          "#2C342E",
+          "#333C36",
+          "#3E4842",
+          "#5A6660",
+          "#95A099"
+        ]
       },
       "board-deep": {
         "role": "neutral",
         "displayName": "Deep Slate",
         "canonical": "#242A26",
-        "tonalRamp": ["#0D100E", "#151915", "#1D221E", "#242A26", "#2E3630", "#3E4842", "#69756E", "#A6B0AA"]
+        "tonalRamp": [
+          "#0D100E",
+          "#151915",
+          "#1D221E",
+          "#242A26",
+          "#2E3630",
+          "#3E4842",
+          "#69756E",
+          "#A6B0AA"
+        ]
       },
       "board-lit": {
         "role": "neutral",
         "displayName": "Board Lit",
         "canonical": "#3E4842",
-        "tonalRamp": ["#161A17", "#1F2420", "#282F2A", "#333C36", "#3E4842", "#4C574F", "#7A867E", "#B4BEB8"]
+        "tonalRamp": [
+          "#161A17",
+          "#1F2420",
+          "#282F2A",
+          "#333C36",
+          "#3E4842",
+          "#4C574F",
+          "#7A867E",
+          "#B4BEB8"
+        ]
       },
       "chalk": {
         "role": "neutral",
         "displayName": "Bone Chalk",
         "canonical": "#EFEAD9",
-        "contrastOnBoard": "9.5:1",
-        "tonalRamp": ["#2C2A22", "#4A4638", "#6B664F", "#8D8768", "#AFA985", "#CFC9AE", "#EFEAD9", "#F8F5EB"]
+        "contrastOnBoard": "9.5:1 on open board; measured on the shipped render: 9.32:1 ALEJANDRO, 8.11:1 reading-page title (3:1 large-text floor), 10.11:1 thesis line, 10.15:1 project title, 8.80:1 reading tagline.",
+        "tonalRamp": [
+          "#2C2A22",
+          "#4A4638",
+          "#6B664F",
+          "#8D8768",
+          "#AFA985",
+          "#CFC9AE",
+          "#EFEAD9",
+          "#F8F5EB"
+        ],
+        "usage": "Headings, the name, entry titles, rendered mathematics, hover destinations, and the .qed tombstone. Also the paper of the pinned diagram - the one light surface allowed on the board, allowed because it is paper and not a card."
       },
       "chalk-body": {
         "role": "neutral",
         "displayName": "Body Chalk",
         "canonical": "#D6D3C4",
-        "contrastOnBoard": "7.6:1",
-        "tonalRamp": ["#28271F", "#434134", "#605D4B", "#7E7A63", "#9D987D", "#BAB6A0", "#D6D3C4", "#EAE8DD"]
+        "contrastOnBoard": "7.6:1 on open board; measured: 8.10:1 thesis abstract, 7.90:1 note title, 8.12:1 section lede, 8.22:1 module row, 7.05:1 hero bio and reading hero sub.",
+        "tonalRamp": [
+          "#28271F",
+          "#434134",
+          "#605D4B",
+          "#7E7A63",
+          "#9D987D",
+          "#BAB6A0",
+          "#D6D3C4",
+          "#EAE8DD"
+        ]
       },
       "chalk-soft": {
         "role": "neutral",
         "displayName": "Soft Chalk",
         "canonical": "#C0BEAF",
-        "contrastOnBoard": "6.4:1",
-        "tonalRamp": ["#24231D", "#3C3B30", "#565446", "#716F5C", "#8D8B75", "#A7A592", "#C0BEAF", "#DAD9CF"]
+        "contrastOnBoard": "6.4:1 on open board; measured: 5.39:1 homepage nav link, 5.31:1 reading nav link, 6.63:1 note read-time and subject, 5.00:1 section tally.",
+        "tonalRamp": [
+          "#24231D",
+          "#3C3B30",
+          "#565446",
+          "#716F5C",
+          "#8D8B75",
+          "#A7A592",
+          "#C0BEAF",
+          "#DAD9CF"
+        ]
       },
       "chalk-faint": {
         "role": "neutral",
@@ -65,23 +143,50 @@
         "canonical": "#8A9086",
         "contrastOnBoard": "~3.4:1",
         "usage": "Non-text only: rules and nav chrome. Barred from text runs.",
-        "tonalRamp": ["#191B18", "#292C27", "#3C403A", "#51564E", "#686E64", "#787E74", "#8A9086", "#B3B8B0"]
+        "tonalRamp": [
+          "#191B18",
+          "#292C27",
+          "#3C403A",
+          "#51564E",
+          "#686E64",
+          "#787E74",
+          "#8A9086",
+          "#B3B8B0"
+        ]
       },
       "chalk-blue": {
         "role": "primary",
         "displayName": "Blue Chalk",
         "canonical": "#A3CBDB",
         "contrastOnBoard": "6.9:1; measured 7.03–7.05:1 on shipped links",
-        "usage": "Every link. The stick that means 'you can open this'.",
-        "tonalRamp": ["#16262D", "#1F3A46", "#2C5464", "#3E7185", "#5D93A8", "#80B0C4", "#A3CBDB", "#C8E1EC"]
+        "usage": "Every link on both surfaces, including in-note references. The stick that means 'you can open this'.",
+        "tonalRamp": [
+          "#16262D",
+          "#1F3A46",
+          "#2C5464",
+          "#3E7185",
+          "#5D93A8",
+          "#80B0C4",
+          "#A3CBDB",
+          "#C8E1EC"
+        ]
       },
       "chalk-ochre": {
         "role": "secondary",
         "displayName": "Ochre Chalk",
         "canonical": "#E0BE7A",
-        "contrastOnBoard": "6.4:1",
-        "usage": "The 'live' stick: section addresses, active nav state, drawn bullets, disclosure strokes, email keys, focus ring, hover box trace.",
-        "tonalRamp": ["#2B2211", "#43351B", "#5F4B26", "#7E6633", "#A08343", "#C2A25C", "#E0BE7A", "#EFD9AA"]
+        "contrastOnBoard": "6.4:1 on open board; measured 6.88:1 on the reading page's ABSTRACT label over its scrim.",
+        "usage": "The 'live' stick: active nav state, drawn bullets, disclosure strokes on both surfaces, email keys, ABSTRACT label, note subsection titles, module category headings, focus ring, hover box trace.",
+        "tonalRamp": [
+          "#2B2211",
+          "#43351B",
+          "#5F4B26",
+          "#7E6633",
+          "#A08343",
+          "#C2A25C",
+          "#E0BE7A",
+          "#EFD9AA"
+        ]
       },
       "rule": {
         "role": "neutral",
@@ -100,60 +205,159 @@
         "displayName": "Chalk Rule (strong)",
         "canonical": "rgba(239, 234, 217, 0.58)",
         "usage": "Bone chalk at 58% alpha. Drawn box outlines and the skip link."
-      },
-      "incumbent-bg": {
-        "role": "neutral",
-        "displayName": "Neumorphic Ground (incumbent)",
-        "canonical": "#f0f0f3",
-        "usage": "style.css only. Never on index.html."
-      },
-      "incumbent-surface": {
-        "role": "neutral",
-        "displayName": "White Surface (incumbent)",
-        "canonical": "#ffffff",
-        "usage": "style.css only. Never on index.html."
-      },
-      "incumbent-primary": {
-        "role": "primary",
-        "displayName": "Signal Blue (incumbent)",
-        "canonical": "#0073e6",
-        "usage": "style.css only. Never on index.html."
-      },
-      "incumbent-text": {
-        "role": "neutral",
-        "displayName": "Ink (incumbent)",
-        "canonical": "#1a1a2e",
-        "usage": "style.css only. Never on index.html."
       }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "ALEJANDRO, once, on the photographed board. Expanded chalk caps; the only display-scale text on the page." },
-      "headline": { "displayName": "Headline", "purpose": "Section titles. Expanded, tracked out and uppercased, because a board title is drawn large rather than weighted heavy." },
-      "title": { "displayName": "Title", "purpose": "Project and resource entry names in bone chalk, on the ledger line." },
-      "body": { "displayName": "Body", "purpose": "All running prose, capped at a 66ch measure (58ch for the hero bio)." },
-      "label": { "displayName": "Label", "purpose": "Uppercase micro-labels: ochre email keys, §4 category headings, section tallies, university tags." },
-      "chalk-hand": { "displayName": "Chalk Hand", "purpose": "Caveat, background chalk plane only. Never interface text, never information the visitor must read." }
+      "display": {
+        "displayName": "Display",
+        "purpose": "ALEJANDRO, once, on the photographed board. Expanded chalk caps; the only display-scale text on the page."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section titles, expanded uppercase. Reused sentence-case at 1.25 line-height for a note's title on the reading page: the thing you open is the largest text in its region."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Entry names in bone chalk on the ledger line, the reading tagline, the thesis line, note section titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "All running prose, capped at a 66ch measure (58ch for the hero bio)."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Uppercase micro-labels: ochre email keys, module category headings, section tallies, university tags, the ABSTRACT head."
+      },
+      "chalk-hand": {
+        "displayName": "Chalk Hand",
+        "purpose": "Caveat, background chalk plane only. Never interface text, never information the visitor must read."
+      },
+      "display-long": {
+        "displayName": "Display Long",
+        "purpose": "The masthead voice for a title that is a phrase rather than a name - the reading page's, capped at 16ch. A long title at full display size overruns the board top; the ramp gets a second step rather than the first being weakened."
+      },
+      "mark": {
+        "displayName": "Mark",
+        "purpose": "The wordmark in the index, identical on both surfaces."
+      },
+      "ui": {
+        "displayName": "UI",
+        "purpose": "Interactive rows and dense list content: module buttons, email values, note subsection titles."
+      },
+      "meta": {
+        "displayName": "Meta",
+        "purpose": "Secondary text and small links: document links, colophon lines, note read-time and subject, figure captions."
+      },
+      "scale": {
+        "displayName": "The six steps",
+        "purpose": "Below the two display clamps every font-size resolves to --t-mark 1.2rem, --t-body 1.0625rem, --t-title 1.02rem, --t-ui 0.92rem, --t-meta 0.82rem, --t-label 0.72rem. An earlier build carried fourteen small sizes, several a fraction of a pixel apart, which is noise rather than a scale."
+      }
     },
     "shadows": [],
-    "shadowPolicy": "This system has no shadows. No box-shadow and no text-shadow exists in board.css. Depth is material and tonal only: slate layers, vignette, scrims, the deep-slate index recess, and the colophon board foot. Blur appears only as chalk dust (2.5px on the advancing edge) and as a scrim softener (7px behind the display name) — never as elevation.",
+    "shadowPolicy": "This system has no shadows. No box-shadow and no text-shadow exists in board.css. Depth is material and tonal only: slate layers, vignette, scrims, the deep-slate index recess, and the colophon board foot. Blur appears only as chalk dust (2.5px on the advancing edge) and as the erased patch behind the display name (13px radial wipe in near-board rgba(27,32,29,...) under isolation: isolate) - never as elevation. The erased patch is not a plate and not a shadow: no edge, no offset, no colour of its own.",
     "motion": [
-      { "name": "ease-chalk", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "The only easing curve in the world. Chalk arrives fast and settles long." },
-      { "name": "write", "value": "620ms", "purpose": "Section arrival: heads, titles, tallies, and the writes-across / writes-down leaves." },
-      { "name": "write-fast", "value": "360ms", "purpose": "The short end of the writing scale." },
-      { "name": "state", "value": "180-200ms", "purpose": "Link colour, nav border, box outline and icon-stroke state changes." },
-      { "name": "disclosure-open", "value": "420ms", "purpose": "grid-template-rows 0fr -> 1fr when a module opens." },
-      { "name": "disclosure-close", "value": "260ms", "purpose": "grid-template-rows 1fr -> 0fr when a module closes." },
-      { "name": "writes-across", "value": "clip-path: inset(-10% 100% -10% 0) -> inset(-10% 0% -10% 0)", "purpose": "Single-line arrival, left to right, the way a hand crosses the board." },
-      { "name": "writes-down", "value": "clip-path: inset(0 0 102% 0) -> inset(0 0 -2% 0)", "purpose": "Wrapped-prose arrival, line accumulating under line. A left-to-right wipe across wrapped text uncovers every line's left edge at once and reads like a curtain." },
-      { "name": "stagger-tier", "value": "70ms (cap 8 tiers), 150ms lead", "purpose": "Per-block stagger inside an arriving section." },
-      { "name": "stagger-leaf", "value": "42ms (cap 16 leaves)", "purpose": "Per-leaf stagger within a block. Containers carry no ink and arrive without ceremony." },
-      { "name": "reference-write", "value": "420ms, 55ms per item", "purpose": "References writing in when a disclosure opens — the same hand at the same speed as everything else." }
+      {
+        "name": "ease-chalk",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The only easing curve in the world. Chalk arrives fast and settles long."
+      },
+      {
+        "name": "write",
+        "value": "620ms",
+        "purpose": "Section arrival: heads, titles, tallies, and the writes-across / writes-down leaves."
+      },
+      {
+        "name": "write-fast",
+        "value": "360ms",
+        "purpose": "The short end of the writing scale."
+      },
+      {
+        "name": "state",
+        "value": "180-200ms",
+        "purpose": "Link colour, nav border, box outline and icon-stroke state changes."
+      },
+      {
+        "name": "disclosure-open",
+        "value": "420ms",
+        "purpose": "grid-template-rows 0fr -> 1fr when a module opens."
+      },
+      {
+        "name": "disclosure-close",
+        "value": "260ms",
+        "purpose": "grid-template-rows 1fr -> 0fr when a module closes."
+      },
+      {
+        "name": "writes-across",
+        "value": "clip-path: inset(-10% 100% -10% 0) -> inset(-10% 0% -10% 0)",
+        "purpose": "Single-line arrival, left to right, the way a hand crosses the board."
+      },
+      {
+        "name": "writes-down",
+        "value": "clip-path: inset(0 0 102% 0) -> inset(0 0 -2% 0)",
+        "purpose": "Wrapped-prose arrival, line accumulating under line. A left-to-right wipe across wrapped text uncovers every line's left edge at once and reads like a curtain."
+      },
+      {
+        "name": "stagger-tier",
+        "value": "70ms (cap 8 tiers), 150ms lead",
+        "purpose": "Per-block stagger inside an arriving section."
+      },
+      {
+        "name": "stagger-leaf",
+        "value": "42ms (cap 16 leaves)",
+        "purpose": "Per-leaf stagger within a block. Containers carry no ink and arrive without ceremony."
+      },
+      {
+        "name": "reference-write",
+        "value": "420ms, 55ms per item",
+        "purpose": "References writing in when a disclosure opens — the same hand at the same speed as everything else."
+      },
+      {
+        "name": "note-disclosure-open",
+        "value": "480ms",
+        "purpose": "grid-template-rows 0fr -> 1fr when a note opens. Slower than a module because there is far more to arrive."
+      },
+      {
+        "name": "note-disclosure-close",
+        "value": "280ms",
+        "purpose": "grid-template-rows 1fr -> 0fr when a note closes."
+      },
+      {
+        "name": "note-body-write",
+        "value": "460ms, 46ms per child (cap 15)",
+        "purpose": "Each direct child of an opened note body writes across, the same hand at the same speed as everything else."
+      },
+      {
+        "name": "qed-write",
+        "value": "clip-path inset(0 100% 0 0) -> inset(0), 520ms, 260ms delay",
+        "purpose": "The end-of-proof tombstone drawing itself when the colophon comes into view."
+      },
+      {
+        "name": "plane-rebuild",
+        "value": "560ms after a note toggles",
+        "purpose": "An opened note changes the region's height by thousands of pixels, so the chalk plane is rebuilt and remeasured against it."
+      }
     ],
     "breakpoints": [
-      { "name": "wide", "value": "1080px", "note": "§4 module columns 3 -> 2." },
-      { "name": "lap", "value": "900px", "note": "Masthead collapses to one column; the index becomes a single horizontally scrolling line." },
-      { "name": "phone", "value": "700px", "note": "Body 1rem; all multi-column lists to 1; ledger leaders off; section tally to its own row; chalk plane to 1.15rem with wide equations removed." },
-      { "name": "narrow", "value": "420px", "note": "Social marks 36px; boxed links tighten." }
+      {
+        "name": "wide",
+        "value": "1080px",
+        "note": "§4 module columns 3 -> 2."
+      },
+      {
+        "name": "lap",
+        "value": "900px",
+        "note": "Masthead collapses to one column; the index becomes a single horizontally scrolling line."
+      },
+      {
+        "name": "phone",
+        "value": "700px",
+        "note": "Body 1rem; all multi-column lists to 1; ledger leaders off; section tally to its own row; chalk plane to 1.15rem with wide equations removed."
+      },
+      {
+        "name": "narrow",
+        "value": "420px",
+        "note": "Social marks 36px; boxed links tighten."
+      }
     ],
     "layout": {
       "shell": "1040px",
@@ -161,30 +365,50 @@
       "gutter": "clamp(1rem, 4vw, 2.5rem)",
       "sectionGap": "clamp(5.5rem, 13vh, 10rem)",
       "chalkPlaneWidth": "min(1840px, 99vw)",
-      "scrollPaddingTop": "6.5rem"
+      "scrollPaddingTop": "6.5rem",
+      "planeFoot": "The chalk plane's bottom is set to the colophon's measured height + 24px, so no formula runs through the page's last mark.",
+      "measureExemptions": "Every direct child of a note body is capped at --measure; only .blog-equation and .blog-diagram are exempt, and both scroll horizontally inside their own bounds rather than widening the page."
     },
     "performance": {
       "constraint": "Scroll-linked offsets are measured once per layout; the scroll handler performs zero layout reads. A per-frame getBoundingClientRect() across ~50 chalk lines is ~50 forced reflows per frame.",
-      "measured": "median 16.7ms, p95 16.7ms, zero frames over 33ms"
+      "measured": "median 16.7ms, p95 16.7ms, zero frames over 33ms",
+      "writeWindowClamp": "A line normally finishes when it has risen to 0.6vh from the viewport top. For lines near the foot that point sits past the furthest anyone can scroll, so the window is clamped to docMax (cached at measure time, never read in a frame). Without the clamp the final formulas stay half-written forever with the chalk edge frozen mid-stroke."
     },
     "resilience": {
       "armedEntrance": "The .js class is set synchronously in <head> so the armed state holds from first paint, with a 3s failsafe that removes it if chalkboard.js never boots. Without the failsafe a script failure leaves the page permanently blank."
     },
     "rasters": [
-      { "file": "bpzcalc.jpg", "origin": "pre-existing / user-supplied", "role": "The masthead board top; the user's own photographed chalkboard and BPZ calculation. Source of the slate colour sample.", "treatment": "brightness(1.34) contrast(1.16) saturate(0.66), dissolved into the slate through a single mask." },
-      { "file": "whiteboard.png", "origin": "pre-existing / user-supplied", "role": "The pinned print in the masthead: the user at a whiteboard.", "treatment": "grayscale(0.72) contrast(1.1) brightness(0.8) under a soft-light board-tinted overlay." }
+      {
+        "file": "bpzcalc.jpg",
+        "origin": "pre-existing / user-supplied",
+        "role": "The masthead board top on both surfaces; the user's own photographed chalkboard and BPZ calculation. Source of the slate colour sample.",
+        "treatment": "brightness(1.34) contrast(1.16) saturate(0.66), dissolved into the slate through a single mask.",
+        "framing": "background-position center 26% on index.html, 22% 34% on thinking-in-measures.html - a different panel of the same sliding board, so the two pages are one room and not one wall."
+      },
+      {
+        "file": "whiteboard.png",
+        "origin": "pre-existing / user-supplied",
+        "role": "The pinned print in the homepage masthead: the user at a whiteboard.",
+        "treatment": "grayscale(0.16) contrast(1.02) brightness(0.97) saturate(0.96) under a soft-light board-tinted overlay - enough to seat it in the slate and no more. The earlier grayscale(0.72) brightness(0.8) was a different photograph, not a graded one."
+      }
     ],
     "review": {
-      "rounds": 2,
-      "round1": "six material findings, all scored resolved",
-      "round2": "two regressions plus three contrast failures, all scored resolved; disposition `ship` scoped to those eight fixes",
-      "mechanicalDetector": "returned [] but ran DEGRADED (regex fallback, no computed contrast). Its clean result is an undercount, not a guarantee."
+      "mechanicalDetector": "Returns [] across board.css, index.html, chalkboard.js and thinking-in-measures.html, but runs DEGRADED (regex fallback, no computed contrast). Its clean result is an undercount, not a guarantee.",
+      "suppressions": [
+        "design-system-color #000 - mask alpha inside mask-image gradients, not a colour. The palette contains no pure black.",
+        "design-system-radius 4px - sub-value of the asymmetric per-corner drawn-box shorthands.",
+        "design-system-radius 6px - sub-value of the asymmetric drawn-mark shorthand."
+      ],
+      "history": "Homepage: two finish-review rounds - round 1, six material findings all resolved; round 2, two regressions plus three contrast failures all resolved, disposition ship scoped to those eight fixes."
     },
     "notCanonized": [
-      "Inline onclick=\"toggleModule(this)\" handlers and the global window.toggleModule they bind to — shipped implementation, not a system rule.",
-      "ul.project-list br { display: none; } — a stylesheet patch over authored markup, not a form rule."
+      "Inline onclick=\"toggleModule(this)\" / onclick=\"toggleBlog(this)\" handlers and the globals window.toggleModule / window.toggleBlog they bind to - shipped implementation, not a system rule.",
+      "ul.project-list br { display: none; } - a stylesheet patch over authored markup, not a form rule."
     ],
-    "contractGap": "The direction contract's OWN-WORLD block states \"no radius.\" The build ships three asymmetric hand-drawn corner values on boxed links and social marks. The build wins; the intent survives as \"no rounded container,\" which the build does honour."
+    "contractGap": "The homepage's OWN-WORLD block states 'no radius.' The build ships four asymmetric hand-drawn corner values (boxed links, hover trace, social marks, boxed theorem). The build wins; the intent survives as 'no rounded container,' which the build does honour. The reading page's OWN-WORLD block states inheritance 'without exception' and the build honours it exactly.",
+    "rastersGenerated": "None. No raster was generated in any session that produced this system; both images are pre-existing, user-supplied assets.",
+    "captureCaveat": "thinking-in-measures.html fetches its notes and typesets 144 MathJax containers, so it paints late. A screenshot taken on the homepage's timing shows the hero photograph as flat slate and reads as a broken background. It is not: with roughly 2.5s more the band renders correctly. Anyone verifying this page needs the longer wait.",
+    "staleRulesRemoved": "The section addresses (§1-§5) were removed from both the section heads and the index at the user's request. Any earlier rule treating § numbering as load-bearing wayfinding is void: sections are held by their rule and their title alone. The right-aligned tallies remain."
   },
   "components": [
     {
@@ -207,17 +431,17 @@
       "name": "The Index (navigation)",
       "kind": "nav",
       "refersTo": "index-link",
-      "description": "The line of section addresses a lecturer writes across the top of the board. The § numbers are the addressing system the sections answer to.",
-      "html": "<nav class=\"ds-index\" aria-label=\"Sections\"><div class=\"ds-index-inner\"><a href=\"#home\" class=\"ds-index-mark\">alemoralv.</a><ul class=\"ds-index-list\"><li><a href=\"#about\" class=\"ds-index-link ds-is-here\"><span class=\"ds-index-num\">§1</span> About Me</a></li><li><a href=\"#projects\" class=\"ds-index-link\"><span class=\"ds-index-num\">§2</span> Projects</a></li><li><a href=\"#notes\" class=\"ds-index-link\"><span class=\"ds-index-num\">§3</span> Notes</a></li></ul></div></nav>",
-      "css": ".ds-index { background: var(--board-deep, #242A26); border-bottom: 1px solid var(--rule-mid, rgba(239,234,217,0.34)); font-family: 'Archivo', system-ui, sans-serif; } .ds-index-inner { display: flex; align-items: center; gap: 1.5rem; padding: 0.75rem 1.5rem; flex-wrap: wrap; } .ds-index-mark { font-size: 1.2rem; font-weight: 700; font-variation-settings: 'wdth' 112; letter-spacing: -0.02em; color: var(--chalk, #EFEAD9); text-decoration: none; } .ds-index-mark:hover { color: var(--chalk-ochre, #E0BE7A); } .ds-index-list { list-style: none; display: flex; align-items: baseline; gap: 1.4rem; margin: 0; padding: 0; } .ds-index-link { display: inline-flex; align-items: baseline; gap: 0.4em; padding-bottom: 3px; font-size: 0.82rem; font-weight: 500; letter-spacing: 0.01em; color: var(--chalk-soft, #C0BEAF); text-decoration: none; border-bottom: 1.5px solid transparent; transition: color 180ms cubic-bezier(0.16,1,0.3,1), border-color 180ms cubic-bezier(0.16,1,0.3,1); white-space: nowrap; } .ds-index-num { font-size: 0.74rem; font-weight: 600; color: var(--chalk-soft, #C0BEAF); transition: color 180ms cubic-bezier(0.16,1,0.3,1); } .ds-index-link:hover { color: var(--chalk, #EFEAD9); border-bottom-color: var(--rule-mid, rgba(239,234,217,0.34)); } .ds-index-link.ds-is-here { color: var(--chalk, #EFEAD9); border-bottom-color: var(--chalk-ochre, #E0BE7A); } .ds-index-link.ds-is-here .ds-index-num { color: var(--chalk-ochre, #E0BE7A); } .ds-index-link:focus-visible { outline: 2px solid var(--chalk-ochre, #E0BE7A); outline-offset: 3px; }"
+      "description": "The line of section titles a lecturer writes across the top of the board. One nav for the world: the reading page carries the same index, its links pointing back into the homepage's anchors.",
+      "html": "<nav class=\"ds-index\" aria-label=\"Sections\"><div class=\"ds-index-inner\"><a href=\"#home\" class=\"ds-index-mark\">alemoralv.</a><ul class=\"ds-index-list\"><li><a href=\"#about\" class=\"ds-index-link ds-is-here\">About Me</a></li><li><a href=\"#projects\" class=\"ds-index-link\">Projects</a></li><li><a href=\"#notes\" class=\"ds-index-link\">Notes</a></li></ul></div></nav>",
+      "css": ".ds-index { background: var(--board-deep, #242A26); border-bottom: 1px solid var(--rule-mid, rgba(239,234,217,0.34)); font-family: 'Archivo', system-ui, sans-serif; } .ds-index-inner { display: flex; align-items: center; gap: 1.5rem; padding: 0.75rem 1.5rem; flex-wrap: wrap; } .ds-index-mark { font-size: 1.2rem; font-weight: 700; font-variation-settings: 'wdth' 112; letter-spacing: -0.02em; color: var(--chalk, #EFEAD9); text-decoration: none; } .ds-index-mark:hover { color: var(--chalk-ochre, #E0BE7A); } .ds-index-list { list-style: none; display: flex; align-items: baseline; gap: 1.4rem; margin: 0; padding: 0; } .ds-index-link { display: inline-flex; align-items: baseline; padding-bottom: 3px; font-size: 0.82rem; font-weight: 500; letter-spacing: 0.01em; color: var(--chalk-soft, #C0BEAF); text-decoration: none; border-bottom: 1.5px solid transparent; transition: color 180ms cubic-bezier(0.16,1,0.3,1), border-color 180ms cubic-bezier(0.16,1,0.3,1); white-space: nowrap; } .ds-index-link:hover { color: var(--chalk, #EFEAD9); border-bottom-color: var(--rule-mid, rgba(239,234,217,0.34)); } .ds-index-link.ds-is-here { color: var(--chalk, #EFEAD9); border-bottom-color: var(--chalk-ochre, #E0BE7A); } .ds-index-link:focus-visible { outline: 2px solid var(--chalk-ochre, #E0BE7A); outline-offset: 3px; }"
     },
     {
       "name": "Sheet Head (section header)",
       "kind": "card",
       "refersTo": null,
-      "description": "There is no card. A section is announced by a three-column baseline grid — ochre address, expanded uppercase title, right-aligned tally — over one hairline rule.",
-      "html": "<header class=\"ds-sheet-head\"><span class=\"ds-sheet-mark\">§2</span><h2 class=\"ds-sheet-title\">Projects: Essays, Seminars, and Theses</h2><span class=\"ds-sheet-tally\">11 entries · 18 documents</span></header>",
-      "css": ".ds-sheet-head { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: baseline; column-gap: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--rule-mid, rgba(239,234,217,0.34)); font-family: 'Archivo', system-ui, sans-serif; } .ds-sheet-mark { font-size: 1.1rem; font-weight: 700; letter-spacing: 0.02em; color: var(--chalk-ochre, #E0BE7A); } .ds-sheet-title { margin: 0; font-size: 1.8rem; font-weight: 700; font-variation-settings: 'wdth' 108; letter-spacing: 0.035em; line-height: 1.2; text-transform: uppercase; color: var(--chalk, #EFEAD9); text-wrap: balance; } .ds-sheet-tally { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--chalk-soft, #C0BEAF); white-space: nowrap; justify-self: end; font-variant-numeric: tabular-nums; }"
+      "description": "There is no card. A section is announced by a baseline grid - expanded uppercase title and right-aligned tally - over one hairline rule. The section addresses were removed from the build; the title over its rule is the whole wayfinding device.",
+      "html": "<header class=\"ds-sheet-head\"><h2 class=\"ds-sheet-title\">Projects: Essays, Seminars, and Theses</h2><span class=\"ds-sheet-tally\">11 entries &middot; 18 documents</span></header>",
+      "css": ".ds-sheet-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; column-gap: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--rule-mid, rgba(239,234,217,0.34)); font-family: 'Archivo', system-ui, sans-serif; } .ds-sheet-title { margin: 0; font-size: 1.8rem; font-weight: 700; font-variation-settings: 'wdth' 108; letter-spacing: 0.035em; line-height: 1.2; text-transform: uppercase; color: var(--chalk, #EFEAD9); text-wrap: balance; } .ds-sheet-tally { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--chalk-soft, #C0BEAF); white-space: nowrap; justify-self: end; font-variant-numeric: tabular-nums; }"
     },
     {
       "name": "Ledger Line (project entry)",
@@ -258,63 +482,215 @@
       "description": "One line of the generated chalk plane: Caveat at low ink, its own tilt and size, written across by the scroll with a bright leading stroke and the dust that trails it.",
       "html": "<div class=\"ds-chalk-row\"><span class=\"ds-chalk-line ds-chalk-lead\"><i>dX<sub>t</sub> = b(t, X<sub>t</sub>) dt + σ(t, X<sub>t</sub>) dW<sub>t</sub></i><b></b></span><span class=\"ds-chalk-line\"><i>μ<sup>N</sup><sub>t</sub> = 1/N Σ<sub>i=1</sub><sup>N</sup> δ<sub>u</sub></i><b></b></span></div>",
       "css": ".ds-chalk-row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.6rem 2.6vw; font-family: 'Caveat', 'Segoe Script', cursive; color: var(--chalk, #EFEAD9); user-select: none; } .ds-chalk-line { position: relative; display: inline-block; white-space: nowrap; opacity: 0.34; transform: rotate(-0.31deg); } .ds-chalk-line.ds-chalk-lead { opacity: 0.48; color: var(--chalk-ochre, #E0BE7A); transform: rotate(0.22deg); } .ds-chalk-line > i { display: inline-block; font-style: normal; font-size: 1.6rem; line-height: 1.35; clip-path: inset(-8% 22% -8% 0); } .ds-chalk-line.ds-chalk-lead > i { font-size: 2.5rem; clip-path: inset(-8% 34% -8% 0); } .ds-chalk-line > b { position: absolute; top: -10%; bottom: -10%; left: 78%; width: 12px; opacity: 0.9; background: linear-gradient(90deg, rgba(239,234,217,0) 0%, rgba(239,234,217,0.55) 88%); filter: blur(2.5px); pointer-events: none; } .ds-chalk-line.ds-chalk-lead > b { left: 66%; }"
+    },
+    {
+      "name": "Note Disclosure (Read surface)",
+      "kind": "custom",
+      "refersTo": "note-entry",
+      "description": "A note is a ruled entry you open, not a card: no background, no border, no radius. The read time and subject are lifted into the header at load so a reader can choose a note without opening it.",
+      "html": "<section class=\"ds-note ds-expanded\"><header class=\"ds-note-header\"><button type=\"button\" class=\"ds-note-btn\" aria-expanded=\"true\">The Fyodorov-Bouchaud Formula<span class=\"ds-note-icon\" aria-hidden=\"true\"></span></button><p class=\"ds-note-meta\">9 min read &middot; Random matrices</p></header><div class=\"ds-note-content\"><div class=\"ds-note-body\"><p>The formula gives the law of the total mass of the Gaussian multiplicative chaos measure on the circle.</p><p>What follows is the argument in the order it is usually given on a board.</p></div></div></section>",
+      "css": ".ds-note { display: block; border-bottom: 1px solid var(--rule, rgba(239,234,217,0.20)); border-top: 1px solid var(--rule, rgba(239,234,217,0.20)); font-family: 'Archivo', system-ui, sans-serif; } .ds-note-header { display: block; } .ds-note-btn { width: 100%; display: flex; align-items: baseline; justify-content: space-between; gap: 1.5rem; padding: 1.5rem 0; background: transparent; border: none; font: inherit; font-size: clamp(1.25rem, 2.1vw, 1.8rem); font-weight: 700; letter-spacing: -0.012em; line-height: 1.25; text-align: left; color: var(--chalk-body, #D6D3C4); cursor: pointer; transition: color 180ms cubic-bezier(0.16,1,0.3,1), transform 240ms cubic-bezier(0.16,1,0.3,1); } .ds-note-btn:hover { color: var(--chalk, #EFEAD9); transform: translateX(0.45rem); } .ds-note-btn:focus-visible { outline: 2px solid var(--chalk-ochre, #E0BE7A); outline-offset: 3px; } .ds-note.ds-expanded .ds-note-btn { color: var(--chalk, #EFEAD9); } .ds-note-icon { position: relative; flex-shrink: 0; width: 18px; height: 18px; align-self: center; font-size: 0; color: transparent; } .ds-note-icon::before, .ds-note-icon::after { content: ''; position: absolute; inset: 50% 0 auto 0; height: 1.5px; background: var(--chalk-ochre, #E0BE7A); transform-origin: center; transition: transform 280ms cubic-bezier(0.16,1,0.3,1), opacity 200ms cubic-bezier(0.16,1,0.3,1); } .ds-note-icon::after { transform: rotate(90deg); } .ds-note.ds-expanded .ds-note-icon::after { transform: rotate(0deg); opacity: 0; } .ds-note-meta { margin: -0.9rem 0 1.5rem 0; max-width: 66ch; font-size: 0.82rem; font-weight: 500; letter-spacing: 0.09em; text-transform: uppercase; color: var(--chalk-soft, #C0BEAF); } .ds-note-content { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 280ms cubic-bezier(0.16,1,0.3,1); } .ds-note.ds-expanded .ds-note-content { grid-template-rows: 1fr; transition: grid-template-rows 480ms cubic-bezier(0.16,1,0.3,1); } .ds-note-body { overflow: hidden; min-height: 0; } .ds-note-body > * { max-width: 66ch; } .ds-note-body p { margin-bottom: 1.5rem; line-height: 1.75; color: var(--chalk-body, #D6D3C4); } .ds-note-body > :last-child { padding-bottom: 2rem; } .ds-note.ds-expanded .ds-note-body > * { animation: ds-note-write 460ms cubic-bezier(0.16,1,0.3,1) both; } .ds-note.ds-expanded .ds-note-body > *:nth-child(2) { animation-delay: 46ms; } @keyframes ds-note-write { from { clip-path: inset(-10% 100% -10% 0); } to { clip-path: inset(-10% 0% -10% 0); } }"
+    },
+    {
+      "name": "Display Equation (Read surface)",
+      "kind": "custom",
+      "refersTo": "equation",
+      "description": "A displayed equation is set off by space and one chalk hairline at the left, ranged left with its rule, and scrolls inside its own bounds rather than pushing the page sideways.",
+      "html": "<div class=\"ds-equation\"><span class=\"ds-eq\">d&mu;<sub>t</sub> = &minus;&nabla;&middot;(&mu;<sub>t</sub> b<sub>t</sub>) dt + &sigma;&sup2;/2 &Delta;&mu;<sub>t</sub> dt</span></div>",
+      "css": ".ds-equation { margin: 2rem 0; padding: 0.5rem 0 0.5rem 1.5rem; border-left: 1px solid var(--rule-mid, rgba(239,234,217,0.34)); color: var(--chalk, #EFEAD9); overflow-x: auto; overflow-y: hidden; font-family: 'Archivo', system-ui, sans-serif; } .ds-equation .ds-eq { display: block; text-align: left; margin-left: 0; font-size: 1.15rem; line-height: 1.6; white-space: nowrap; } /* MathJax centres a display container by default; against a left-ranged measure and a left hairline that reads as a detached float, so it is forced back to the left. */ .ds-equation mjx-container[display=\"true\"] { text-align: left; margin-left: 0 !important; color: inherit; }"
+    },
+    {
+      "name": "Theorem Box (Read surface)",
+      "kind": "custom",
+      "refersTo": "equation-theorem",
+      "description": "The one thing in this world that gets a box drawn round it, because a theorem is boxed on a board. Not a card: no shadow, no fill colour of its own, no uniform radius.",
+      "html": "<div class=\"ds-theorem\"><span class=\"ds-eq\">&#8741;&mu;<sub>t</sub><sup>N</sup> &minus; &mu;<sub>t</sub>&#8741;<sub>BL</sub> &rarr; 0 &nbsp;&nbsp; as N &rarr; &infin;</span></div>",
+      "css": ".ds-theorem { margin: 2rem 0; padding: 1.5rem 1.5rem 1.5rem 2rem; border: 1.5px solid var(--rule-mid, rgba(239,234,217,0.34)); border-radius: 2px 5px 3px 6px / 5px 2px 6px 3px; background: rgba(31, 37, 33, 0.34); color: var(--chalk, #EFEAD9); overflow-x: auto; overflow-y: hidden; font-family: 'Archivo', system-ui, sans-serif; } .ds-theorem .ds-eq { display: block; text-align: left; font-size: 1.15rem; line-height: 1.6; white-space: nowrap; }"
+    },
+    {
+      "name": "Pinned Diagram (Read surface)",
+      "kind": "custom",
+      "refersTo": "diagram-print",
+      "description": "A figure authored for a white page (its inks are #111827 and #1f4db8) would be invisible on slate. It is pinned up as the print it is - bone paper, hairline frame - so the drawing survives exactly and the note file is never touched. The only light surface allowed on the board, and it is allowed because it is paper.",
+      "html": "<figure class=\"ds-diagram-wrap\"><div class=\"ds-diagram\"><svg viewBox=\"0 0 220 70\" width=\"220\" height=\"70\" aria-hidden=\"true\"><line x1=\"12\" y1=\"56\" x2=\"208\" y2=\"56\" stroke=\"#111827\" stroke-width=\"1.5\"/><line x1=\"12\" y1=\"56\" x2=\"12\" y2=\"10\" stroke=\"#111827\" stroke-width=\"1.5\"/><path d=\"M12 52 C 70 50, 110 20, 208 14\" fill=\"none\" stroke=\"#1f4db8\" stroke-width=\"2\"/><circle cx=\"120\" cy=\"31\" r=\"3\" fill=\"#1f4db8\"/></svg></div><figcaption class=\"ds-diagram-caption\">Empirical measure converging to the mean-field limit.</figcaption></figure>",
+      "css": ".ds-diagram-wrap { margin: 0; } .ds-diagram { margin: 2rem 0; padding: 1.5rem; background: #EFEAD9; border: 1px solid var(--rule-mid, rgba(239,234,217,0.34)); overflow-x: auto; } .ds-diagram svg { display: block; } .ds-diagram-caption { margin-top: calc(0.75rem - 2rem); margin-bottom: 2rem; font-family: 'Archivo', system-ui, sans-serif; font-size: 0.82rem; line-height: 1.5; color: var(--chalk-soft, #C0BEAF); }"
+    },
+    {
+      "name": "QED Mark",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "The end of a proof, drawn rather than set: a filled chalk tombstone at the page's bottom-right, because the hand font carries no tombstone glyph. It writes itself in when the colophon comes into view, and the chalk plane is stopped above the colophon so nothing runs through it.",
+      "html": "<footer class=\"ds-colophon ds-is-written\"><span class=\"ds-colophon-line\">Written on a board, Munich &middot; 2026</span><span class=\"ds-qed\" aria-hidden=\"true\"></span></footer>",
+      "css": ".ds-colophon { position: relative; display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--rule, rgba(239,234,217,0.20)); font-family: 'Archivo', system-ui, sans-serif; } .ds-colophon-line { font-size: 0.82rem; letter-spacing: 0.06em; color: var(--chalk-soft, #C0BEAF); } .ds-qed { flex-shrink: 0; width: 0.66rem; height: 0.82rem; background: var(--chalk, #EFEAD9); opacity: 0.8; transform: rotate(-1.4deg); clip-path: inset(0 100% 0 0); transition: clip-path 520ms cubic-bezier(0.16,1,0.3,1) 260ms; } .ds-colophon.ds-is-written .ds-qed { clip-path: inset(0); } @media (prefers-reduced-motion: reduce) { .ds-qed { clip-path: none; transition: none; } }"
     }
   ],
   "narrative": {
     "northStar": "Hörsaal",
-    "overview": "The page is not a site about a mathematician; it is his board. One continuous slate runs masthead to colophon, with yesterday's derivation ghosted behind today's argument. There is no card, no panel, no container and no shadow anywhere in this world. Hierarchy is built entirely from four devices: full-measure hairline rules, indentation, scale, and case. When something needs to be set apart, it gets a rule above it and a section address beside it — never a box around it.\n\nThe slate #333C36 is sampled from bpzcalc.jpg, Alejandro's own photographed chalkboard, whose darkest chalk-free patches read rgb(39,41,35) — a warm olive-grey where red ≈ green > blue. The shipped value is that measurement deliberately lifted in lightness: a board in a lit room, not a screen in a dark one. That lift is the load-bearing decision of the whole palette. Near-black ground plus a saturated accent is the terminal console, and the console is the confirmed anti-reference. Emissive or glowing text, saturated green, and monospace type are all out of this world by decision.\n\nDepth is material, not elevation. The slate carries a real dust grain, two eraser smudges, arcing wipe-bands, room light falling from the upper left, and the vignette of a surface that curves away at its edges — six fixed, cheap layers, none of them a gradient standing in for a material. Blur exists in this world, but only as chalk dust and as the soft edge of a scrim; it is never a drop shadow and never a glow. The one raster rule is that photographs are graded into the room's light before they are allowed on the board.",
+    "overview": "The page is not a site about a mathematician; it is his board. One continuous slate runs masthead to colophon, with yesterday's derivation ghosted behind today's argument. There is no card, no panel, no container and no shadow anywhere in this world. Hierarchy is built entirely from four devices: full-measure hairline rules, indentation, scale, and case. When something needs to be set apart, it gets a rule and a title — never a box around it. The one exception the build makes is a theorem, which is boxed because a theorem is boxed on a board.\n\nThe slate `#333C36` is sampled from `bpzcalc.jpg`, Alejandro's own photographed chalkboard, whose darkest chalk-free patches read `rgb(39,41,35)` — a warm olive-grey where red ≈ green > blue. The shipped value is that measurement deliberately lifted in lightness: a board in a lit room, not a screen in a dark one. That lift is the load-bearing decision of the whole palette. Near-black ground plus a saturated accent is the terminal console, and the console is the confirmed anti-reference. Emissive or glowing text, saturated green, and monospace type are all out of this world by decision.\n\nDepth is material, not elevation. The slate carries a real dust grain, two eraser smudges, arcing wipe-bands, room light falling from the upper left, and the vignette of a surface that curves away at its edges — six fixed, cheap layers, none of them a gradient standing in for a material. Blur exists in this world, but only as chalk dust, as the soft edge of a scrim, and as an erased patch of board behind the display name; it is never a drop shadow and never a glow. The one raster rule is that photographs are graded into the room's light before they are allowed on the board.\n\nThe two surfaces are the same board seen twice. The homepage is the board a lecturer covers; the reading page is the board you sit in front of, where the writing steps back and the argument takes the measure. They frame different panels of the same photograph (`center 26%` on the homepage, `22% 34%` on the reading page) so the two pages read as one room rather than one wall.",
     "keyCharacteristics": [
-      "One continuous slate: no card, no panel, no container, no box-shadow, no text-shadow, no glass.",
+      "One continuous slate: no card, no panel, no container, no `box-shadow`, no `text-shadow`, no glass.",
       "Hierarchy from rules, indentation, scale and case only.",
       "Two type families total, no third: Archivo for every word of interface, Caveat for the board's residue.",
-      "One motion device for the entire page: clip-path, in two orientations. No opacity fade exists anywhere.",
+      "One motion device for the entire system: `clip-path`, in two orientations. No opacity fade exists anywhere.",
       "Chalk-tray palette: bone for text, blue for links, ochre for what is live — three sticks, nothing else.",
-      "Every radius in the world is an asymmetric hand-drawn corner; there is no rounded container."
+      "Every radius in the world is an asymmetric hand-drawn corner; there is no rounded container.",
+      "One stylesheet and one engine serve every surface; a new page joins the world by loading them, not by forking them."
     ],
     "rules": [
-      { "name": "The Three Sticks Rule", "body": "The tray holds bone, blue and ochre. Blue means you can open this; ochre means this is live or this is where you are; bone is everything else. A fourth hue never enters the world, and neither accent is ever used decoratively.", "section": "colors" },
-      { "name": "The No Border Colour Rule", "body": "Borders and rules are chalk at low alpha, never a colour of their own. If a divider needs drawing, it is --rule, --rule-mid or --rule-strong — a hairline of chalk dust on slate, not a stroke of grey.", "section": "colors" },
-      { "name": "The Measured-Render Rule", "body": "Contrast in this world is verified against the shipped render — glyph extents, pseudo-elements intact, worst background patch under each text run — never computed from token pairs. The ground is a photograph under a soft-edged scrim; a token-pair calculation does not describe it. Body text clears 7:1 measured; secondary interface text clears 5:1; --chalk-faint clears neither and is barred from text.", "section": "colors" },
-      { "name": "The Not-A-Console Rule", "body": "Never take the ground below the shipped slate toward black, never make chalk emissive (no text-shadow glow, no saturated green), and never set interface text in a monospace face. The lift from rgb(39,41,35) to the shipped slate is the entire difference between a lecture hall and a terminal.", "section": "colors" },
-      { "name": "The Two Families Rule", "body": "Archivo and Caveat. There is no third face, and Inter — the incumbent world's face — is deliberately absent from Hörsaal. If a new surface seems to need another family, it needs the width axis instead.", "section": "typography" },
-      { "name": "The Width-Before-Weight Rule", "body": "Emphasis at large sizes comes from the wdth axis and from case, not from stacking weight. Above ~1.25rem, expand and capitalise before reaching past 700.", "section": "typography" },
-      { "name": "The Tabular Rule", "body": "font-variant-numeric: tabular-nums is set globally. Counts, tallies and section numbers line up down the page because this is a document of quantities.", "section": "typography" },
-      { "name": "The Full-Bleed Scrim Rule", "body": "Every scrim spans the full viewport width using left: calc(50% - 50vw); width: 100vw with vw-based gradient stops, and fades out at both the left and right viewport edges as well as top and bottom via mask. A scrim drawn at shell width with a horizontal fade leaves a visible vertical seam down both sides of every section: a soft-edged panel is still a panel.", "section": "layout" },
-      { "name": "The Open Board Rule", "body": "The gaps between sections are open slate at full strength. Scrims belong to text runs, not to the page; scrim the whole column and you bury the board it sits on.", "section": "layout" },
-      { "name": "The Flat Board Rule", "body": "Nothing floats. If an element needs separation, give it a rule, a scrim, or more space — never a shadow, never a glow, never a translucent glass panel.", "section": "elevation" },
-      { "name": "The Graded Photograph Rule", "body": "A raster is admitted only after it is graded into the room's light. whiteboard.png runs grayscale(0.72) contrast(1.1) brightness(0.8) under a soft-light board-tinted overlay; bpzcalc.jpg runs brightness(1.34) contrast(1.16) saturate(0.66) and dissolves into the slate through a single mask, not a stack of gradient stops — stacked stops band visibly across a 500px ramp and read as two materials butted together instead of one board. An untreated daylight photograph at full saturation is a foreign object stuck to the slate.", "section": "elevation" },
-      { "name": "The Drawn Corner Rule", "body": "If something is boxed, its corners are asymmetric and never meet cleanly. A uniform border-radius on a container does not exist in this world at any value.", "section": "shapes" },
-      { "name": "The Hand Not The Glyph Rule", "body": "Bullets, markers and rules are drawn with pseudo-elements and borders. Brand marks are the platforms' own SVGs; where no platform mark exists, one is drawn to match the set rather than substituted with a stock glyph.", "section": "shapes" },
-      { "name": "The One Motion Device Rule", "body": "Everything on this page arrives by clip-path, in two orientations: .writes-across for single-line things, .writes-down for wrapped prose. A left-to-right wipe across wrapped text uncovers every line's left edge at once and reads like a curtain rather than a hand — so the orientation is chosen by the shape of the text, not by taste. No opacity fade exists anywhere on this page. Timing is --write 620ms / --write-fast 360ms on --ease-chalk cubic-bezier(0.16, 1, 0.3, 1): chalk arrives fast and settles long.", "section": "components" },
-      { "name": "The Armed Entrance Rule", "body": "Any first-paint-hidden state is keyed on a .js class set synchronously in <head>, paired with a 3s failsafe that removes it if the script never boots. Without both halves, a script failure leaves the page permanently blank.", "section": "components" },
-      { "name": "The Containers Carry No Ink Rule", "body": "Only leaves (p, li, h3, .module-item) are armed and staggered; wrappers arrive without ceremony. Stagger is 70ms per tier capped at 8 tiers and 42ms per leaf capped at 16 leaves, after a 150ms lead.", "section": "components" },
-      { "name": "The Reduce Don't Erase Rule", "body": "Under prefers-reduced-motion, travel, scroll-linked writing and staggered choreography go; colour, the chalk plane and the board itself stay. The formulas are simply already written — the way a board looks when you walk into the room after the class.", "section": "components" }
+      {
+        "name": "The Three Sticks Rule",
+        "body": "The tray holds bone, blue and ochre. Blue means *you can open this*; ochre means *this is live or this is where you are*; bone is everything else. A fourth hue never enters the world, and neither accent is ever used decoratively.",
+        "section": "colors"
+      },
+      {
+        "name": "The No Border Colour Rule",
+        "body": "Borders and rules are chalk at low alpha, never a colour of their own. If a divider needs drawing, it is --rule, --rule-mid or --rule-strong — a hairline of chalk dust on slate, not a stroke of grey.",
+        "section": "colors"
+      },
+      {
+        "name": "The Measured-Render Rule",
+        "body": "Contrast in this world is verified against the shipped render — glyph extents, pseudo-elements intact, worst background patch under each text run — never computed from token pairs. The ground is a photograph under a soft-edged scrim; a token-pair calculation does not describe it. Body text clears 7:1 measured on both surfaces; secondary interface text clears 5:1; --chalk-faint clears neither and is barred from text. The reading page's ABSTRACT label measures 6.88:1 — the ochre stick is legible at label size, but only over its own scrim.",
+        "section": "colors"
+      },
+      {
+        "name": "The Not-A-Console Rule",
+        "body": "Never take the ground below the shipped slate toward black, never make chalk emissive (no text-shadow glow, no saturated green), and never set interface text in a monospace face. The lift from rgb(39,41,35) to the shipped slate is the entire difference between a lecture hall and a terminal.",
+        "section": "colors"
+      },
+      {
+        "name": "The Inherited Ink Rule",
+        "body": "Rendered mathematics takes its colour from the page rather than declaring its own: mjx-container is set to color: inherit, so an equation is chalk because everything around it is chalk. A typesetting engine that ships its own palette is a second voice on the board.",
+        "section": "colors"
+      },
+      {
+        "name": "The Two Families Rule",
+        "body": "Archivo and Caveat. There is no third face. If a new surface seems to need another family, it needs the width axis instead.",
+        "section": "typography"
+      },
+      {
+        "name": "The Width-Before-Weight Rule",
+        "body": "Emphasis at large sizes comes from the wdth axis and from case, not from stacking weight. Above ~1.25rem, expand and capitalise before reaching past 700.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Rule",
+        "body": "font-variant-numeric: tabular-nums is set globally. Counts, tallies and section numbers line up down the page because this is a document of quantities.",
+        "section": "typography"
+      },
+      {
+        "name": "The Six Steps Rule",
+        "body": "Every size below the display clamps is one of the six named steps. A new component picks the nearest step; it does not introduce a seventh.",
+        "section": "typography"
+      },
+      {
+        "name": "The Full-Bleed Scrim Rule",
+        "body": "Every scrim spans the full viewport width using left: calc(50% - 50vw); width: 100vw with vw-based gradient stops, and fades out at both the left and right viewport edges as well as top and bottom via mask. A scrim drawn at shell width with a horizontal fade leaves a visible vertical seam down both sides of every section: a soft-edged panel is still a panel.",
+        "section": "layout"
+      },
+      {
+        "name": "The Open Board Rule",
+        "body": "The gaps between sections are open slate at full strength. Scrims belong to text runs, not to the page; scrim the whole column and you bury the board it sits on.",
+        "section": "layout"
+      },
+      {
+        "name": "The Overflows Inside Its Rule Rule",
+        "body": "A block wider than the measure — an equation, a diagram — scrolls within its own bounds (overflow-x: auto) and never widens the page. The rule or the paper that marks the block is what the reader scrolls inside.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat Board Rule",
+        "body": "Nothing floats. If an element needs separation, give it a rule, a scrim, or more space — never a shadow, never a glow, never a translucent glass panel.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Erased Patch Rule",
+        "body": "Where a heading lands on the densest chalk in the photograph, the board is wiped rather than plated: a radial ellipse of near-board rgba(27, 32, 29, …) inset beyond the glyphs and blurred 13px, behind the text with isolation: isolate. It is the gesture a lecturer makes before writing, and it exists because the display name measured 2.07:1 against bright chalk. It is not a plate and not a shadow: it has no edge, no offset and no colour of its own, and it reads as board.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Graded Photograph Rule",
+        "body": "A raster is admitted only after it is graded into the room's light. whiteboard.png runs grayscale(0.16) contrast(1.02) brightness(0.97) saturate(0.96) under a soft-light board-tinted overlay — enough to seat it in the slate, and no more; an earlier grayscale(0.72) brightness(0.8) was a different photograph, not a graded one. bpzcalc.jpg runs brightness(1.34) contrast(1.16) saturate(0.66) and dissolves into the slate through a single mask, not a stack of gradient stops — stacked stops band visibly across a 500px ramp and read as two materials butted together instead of one board. An untreated daylight photograph at full saturation is a foreign object stuck to the slate; a photograph graded to grey is no longer the photograph.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Drawn Corner Rule",
+        "body": "If something is boxed, its corners are asymmetric and never meet cleanly. A uniform border-radius on a container does not exist in this world at any value.",
+        "section": "shapes"
+      },
+      {
+        "name": "The Hand Not The Glyph Rule",
+        "body": "Bullets, markers, rules and the end-of-proof tombstone are drawn with pseudo-elements, borders and boxes. Brand marks are the platforms' own SVGs; where no platform mark exists, one is drawn to match the set rather than substituted with a stock glyph.",
+        "section": "shapes"
+      },
+      {
+        "name": "The Boxed Theorem Rule",
+        "body": "The one thing in this world that gets a box drawn round it is a theorem, at 1.5px --rule-mid over a rgba(31, 37, 33, 0.34) wash. It is not a card and it does not generalise: no other content type earns a box, and the box carries no shadow, no fill colour of its own and no uniform radius.",
+        "section": "shapes"
+      },
+      {
+        "name": "The One Motion Device Rule",
+        "body": "Everything in this world arrives by clip-path, in two orientations: .writes-across (inset(-10% 100% -10% 0) → inset(-10% 0 -10% 0)) for single-line things, .writes-down (inset(0 0 102% 0) → inset(0 0 -2% 0)) for wrapped prose. A left-to-right wipe across wrapped text uncovers every line's left edge at once and reads like a curtain rather than a hand — so the orientation is chosen by the shape of the text, not by taste. No opacity fade exists anywhere. Timing is --write 620ms / --write-fast 360ms on --ease-chalk cubic-bezier(0.16, 1, 0.3, 1): chalk arrives fast and settles long.",
+        "section": "components"
+      },
+      {
+        "name": "The Every Line Finishes Rule",
+        "body": "A scroll-written line normally completes when it has risen to 0.6vh from the top of the viewport. For lines near the foot that point sits past the furthest anyone can scroll, so the window is clamped to the last reachable scroll position (docMax, cached at measure time, never read in a frame). Without the clamp the final formulas stay half-written forever with the chalk edge frozen mid-stroke.",
+        "section": "components"
+      },
+      {
+        "name": "The Armed Entrance Rule",
+        "body": "Any first-paint-hidden state is keyed on a .js class set synchronously in <head>, paired with a 3s failsafe that removes it if the script never boots. Both surfaces carry both halves; without them, a script failure leaves the page permanently blank.",
+        "section": "components"
+      },
+      {
+        "name": "The Containers Carry No Ink Rule",
+        "body": "Only leaves (p, li, h3, .module-item, a note body's direct children) are armed and staggered; wrappers arrive without ceremony. Stagger is 70ms per tier capped at 8 tiers and 42ms per leaf capped at 16 leaves, after a 150ms lead; inside an opened note it is 46ms per child capped at 15.",
+        "section": "components"
+      },
+      {
+        "name": "The Note Is Restyled, Not Rewritten Rule",
+        "body": "Injected note fragments keep their authored .blog-* class names; board.css restyles them. Two DOM moves happen at load in prepareNotes() and neither edits a note's words: the body is wrapped in a generated .blog-body so the 0fr row has exactly one child to clip and the note's own spacing can never prop the collapsed row open, and .blog-meta is lifted out of the body into the header so it can be read while the note is closed. A note author writes plain sectioned HTML and never needs to know board.css exists.",
+        "section": "components"
+      },
+      {
+        "name": "The Reduce Don't Erase Rule",
+        "body": "Under prefers-reduced-motion, travel, scroll-linked writing and staggered choreography go; colour, the chalk plane, the .qed and the board itself stay. The formulas are simply already written — the way a board looks when you walk into the room after the class.",
+        "section": "components"
+      }
     ],
     "dos": [
+      "Do join the world by loading board.css and chalkboard.js; a new surface is a new mode of the same board, not a new stylesheet.",
       "Do build hierarchy from full-measure hairline rules, indentation, scale and case.",
       "Do draw every rule and border as bone chalk at low alpha (--rule / --rule-mid / --rule-strong).",
       "Do reserve ochre for what is live or currently addressed, and blue for anything that opens.",
+      "Do size everything below the display clamps from the six named type steps.",
       "Do verify contrast against the shipped render with pseudo-elements intact, using the worst background patch under each text run.",
       "Do span scrims the full viewport width with vw-based stops and fade all four edges.",
-      "Do grade every photograph into the room's light before it goes on the board.",
+      "Do wipe the board behind a heading that lands on bright chalk, rather than plating it.",
+      "Do grade every photograph into the room's light before it goes on the board, and frame a shared photograph on a different panel per surface so two pages read as one room.",
+      "Do let rendered mathematics inherit its colour, and range display equations left with their rule.",
       "Do use clip-path for arrival, in whichever of the two orientations the text's shape calls for.",
-      "Do open disclosures with grid-template-rows: 0fr -> 1fr and keep the grid item's padding on its child.",
+      "Do open disclosures with grid-template-rows: 0fr → 1fr and keep the grid item's padding on a single generated child.",
+      "Do restyle authored content classes rather than rewriting the content.",
       "Do measure scroll-linked offsets once per layout, so the scroll handler performs zero layout reads.",
-      "Do pair any first-paint-hidden state with a boot failsafe that reveals it if the script dies.",
-      "Do leave the incumbent light world in style.css and vectorfield.js exactly as it is when editing Hörsaal."
+      "Do clamp any scroll-linked animation window to the last reachable scroll position.",
+      "Do pair any first-paint-hidden state with a boot failsafe that reveals it if the script dies."
     ],
     "donts": [
       "Don't add a box-shadow or a text-shadow — this world has neither, at any elevation.",
-      "Don't put a card, panel or glass surface on the board; a soft-edged panel is still a panel.",
-      "Don't apply a uniform border-radius to a container. The only radii are the three asymmetric drawn-corner values.",
+      "Don't put a card, panel or glass surface on the board; a soft-edged panel is still a panel. A theorem's drawn box and a pinned paper print are the two shipped exceptions and neither generalises.",
+      "Don't apply a uniform border-radius to a container. The only radii are the four asymmetric drawn-corner values.",
       "Don't use --chalk-faint for any text run; it is ~3.4:1 on the slate and is reserved for rules and nav chrome.",
       "Don't take the ground toward black, make chalk emissive, introduce a saturated green, or set interface text in a monospace face — that is the terminal console, and the console is the anti-reference.",
-      "Don't introduce a third type family, and don't bring Inter (the incumbent world's face) into Hörsaal.",
-      "Don't animate anything with an opacity fade; there is not one on the page, and adding one breaks the single motion grammar.",
+      "Don't introduce a third type family, or a seventh small type step.",
+      "Don't set a label, kicker or eyebrow above a title. A tagline goes beneath the thing it describes.",
+      "Don't animate anything with an opacity fade; there is not one in this world, and adding one breaks the single motion grammar.",
+      "Don't let a wide block widen the page; scroll it inside its own rule.",
       "Don't call getBoundingClientRect() inside a scroll or requestAnimationFrame handler.",
       "Don't open a disclosure with a JS-measured max-height.",
-      "Don't use a • glyph or an icon font; bullets and markers are drawn strokes and brand marks are real SVG.",
-      "Don't apply Hörsaal tokens to thinking-in-measures.html, auctiva.html or tim-posts/*.html, and don't apply style.css's neumorphic tokens to index.html. The two worlds share nothing."
+      "Don't use a • or ∎ glyph or an icon font; bullets, markers and the tombstone are drawn, and brand marks are real SVG.",
+      "Don't recolour or edit an authored note fragment to make it fit the board; pin it, wrap it, or restyle its classes.",
+      "Don't re-activate style.css or vectorfield.js on any page. They are orphaned, not a second world to borrow from."
     ]
   }
 }
