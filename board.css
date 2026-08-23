@@ -1,5 +1,5 @@
 /* =============================================================
-   HÖRSAAL — index.html only.
+   HÖRSAAL — index.html and thinking-in-measures.html.
 
    The page is one continuous lecture-hall board. No card, no shadow,
    no glow and no glass: hierarchy is built from full-measure rules,
@@ -7,8 +7,7 @@
    four asymmetric ones that make a drawn box's corners fail to meet
    — never a rounded container.
 
-   style.css is untouched and still serves thinking-in-measures.html
-   and tim-posts/. Nothing here is shared with them.
+   style.css is untouched. Nothing here is shared with it.
    ============================================================= */
 
 /* -------------------------------------------------------------
@@ -391,12 +390,13 @@ a:hover {
     position: absolute;
     inset: -0.42em -1.4em -0.34em -0.9em;
     z-index: -1;
-    background: radial-gradient(70% 128% at 34% 52%,
-        rgba(27, 32, 29, 0.90) 0%,
-        rgba(27, 32, 29, 0.72) 52%,
-        rgba(27, 32, 29, 0.26) 76%,
-        transparent 88%);
-    filter: blur(7px);
+    background: radial-gradient(74% 132% at 34% 52%,
+        rgba(27, 32, 29, 0.86) 0%,
+        rgba(27, 32, 29, 0.66) 46%,
+        rgba(27, 32, 29, 0.30) 68%,
+        rgba(27, 32, 29, 0.10) 84%,
+        transparent 96%);
+    filter: blur(13px);
     pointer-events: none;
 }
 
@@ -1188,4 +1188,290 @@ ul.resource-list li a { font-size: var(--t-title); margin-right: var(--s-4); }
 
     .wires a:hover,
     .module-btn:hover { transform: none; }
+}
+
+/* =============================================================
+   READ SURFACE — thinking-in-measures.html
+
+   The same board, sat in front of rather than lectured at. The
+   writing steps back so the argument can take the measure; every
+   token, rule and motion is inherited unchanged from above.
+
+   The note fragments in tim-posts/ are untouched. Their authored
+   classes (.blog-*) are restyled here rather than rewritten, so a
+   note can be edited without knowing this file exists.
+   ============================================================= */
+
+/* A different panel of the same sliding board than the homepage
+   frames, so the two pages are one room and not one wall. The band
+   has to stay deep enough that the mask's fade does not eat the
+   chalk before it is read: at 30vw it averaged rgb(77,82,80)
+   against the homepage's rgb(95,96,89), which is a dimmer board,
+   not a different one. */
+.masthead--reading .masthead-board {
+    background-position: 22% 34%;
+}
+
+.masthead--reading .masthead-name {
+    font-size: clamp(1.9rem, 4.4vw, 3.3rem);
+    letter-spacing: -0.012em;
+    max-width: 16ch;
+}
+
+/* The tagline lands on the brightest chalk in the photograph, so it
+   gets the same full-viewport scrim the homepage's lead column uses:
+   soft on every edge, no panel, no seam. */
+.reading-lead {
+    position: relative;
+    max-width: var(--measure);
+    padding-top: clamp(1.25rem, 3vh, 2rem);
+    border-top: 1px solid var(--rule-mid);
+}
+
+.reading-lead::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: -4rem;
+    left: calc(50% - 50vw);
+    width: 100vw;
+    z-index: -1;
+    pointer-events: none;
+    background: linear-gradient(90deg,
+        transparent 0,
+        rgba(31, 37, 33, 0.72) 10vw,
+        rgba(31, 37, 33, 0.74) 50vw,
+        rgba(31, 37, 33, 0.72) 90vw,
+        transparent 100vw);
+    -webkit-mask-image: linear-gradient(180deg, #000 0, #000 calc(100% - 4rem), transparent 100%);
+    mask-image: linear-gradient(180deg, #000 0, #000 calc(100% - 4rem), transparent 100%);
+}
+
+/* Beneath the title, never above it. */
+.reading-tagline {
+    font-size: var(--t-title);
+    font-weight: 500;
+    color: var(--chalk);
+    margin-bottom: var(--s-4);
+}
+
+.reading-sub { color: var(--chalk-body); }
+
+/* --- the thesis ---------------------------------------------- */
+
+.thesis-line {
+    font-size: var(--t-title);
+    font-weight: 600;
+    color: var(--chalk);
+    max-width: var(--measure);
+    margin-bottom: var(--s-5);
+}
+
+.thesis-abstract-head {
+    font-size: var(--t-label);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--chalk-ochre);
+    padding-bottom: var(--s-2);
+    margin-bottom: var(--s-4);
+    border-bottom: 1px solid var(--rule);
+}
+
+/* --- mathematics on the board -------------------------------- */
+
+/* A displayed equation is set off by space and a single chalk
+   hairline, and scrolls inside its own rule rather than pushing the
+   page sideways. MathJax inherits colour, so the chalk on a
+   rendered equation is the chalk everywhere else. */
+.blog-equation {
+    margin: var(--s-6) 0;
+    padding: var(--s-2) 0 var(--s-2) var(--s-5);
+    border-left: 1px solid var(--rule-mid);
+    color: var(--chalk);
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.blog-equation mjx-container { margin: 0.25rem 0 !important; color: inherit; }
+
+/* MathJax centres a display equation in its container. Against a
+   left-ranged reading measure and a left hairline that reads as a
+   detached float, so it is ranged left with its rule. */
+.blog-equation mjx-container[display="true"] {
+    text-align: left;
+    margin-left: 0 !important;
+}
+
+/* A theorem is boxed on a board, and the box is drawn. */
+.blog-equation--theorem {
+    padding: var(--s-5) var(--s-5) var(--s-5) var(--s-6);
+    border: 1.5px solid var(--rule-mid);
+    border-radius: 2px 5px 3px 6px / 5px 2px 6px 3px;
+    background: rgba(31, 37, 33, 0.34);
+}
+
+/* --- the notes ------------------------------------------------ */
+
+.reading-error { color: var(--chalk-soft); }
+
+/* No card. A note is a ruled entry you open, exactly like a module
+   in the homepage's literature list, at reading scale. */
+.blog-card { border-bottom: 1px solid var(--rule); }
+.blog-card:first-child { border-top: 1px solid var(--rule); }
+
+.blog-header { display: block; }
+
+.blog-toggle-btn {
+    width: 100%;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-5);
+    padding: var(--s-5) 0;
+    background: transparent;
+    border: none;
+    font: inherit;
+    font-size: clamp(1.25rem, 2.1vw, 1.8rem);
+    font-weight: 700;
+    letter-spacing: -0.012em;
+    line-height: 1.25;
+    text-align: left;
+    color: var(--chalk-body);
+    cursor: pointer;
+    transition: color 180ms var(--ease-chalk), transform 240ms var(--ease-chalk);
+}
+
+.blog-toggle-btn:hover { color: var(--chalk); transform: translateX(0.45rem); }
+.blog-card.expanded .blog-toggle-btn { color: var(--chalk); }
+
+/* The same drawn plus-minus the literature list uses, one size up. */
+.blog-toggle-icon {
+    position: relative;
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    align-self: center;
+    font-size: 0;
+    color: transparent;
+}
+
+.blog-toggle-icon::before,
+.blog-toggle-icon::after {
+    content: '';
+    position: absolute;
+    inset: 50% 0 auto 0;
+    height: 1.5px;
+    background: var(--chalk-ochre);
+    transform-origin: center;
+    transition: transform 280ms var(--ease-chalk), opacity 200ms var(--ease-chalk);
+}
+.blog-toggle-icon::after { transform: rotate(90deg); }
+.blog-card.expanded .blog-toggle-icon::after { transform: rotate(0deg); opacity: 0; }
+
+.blog-content {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 280ms var(--ease-chalk);
+}
+.blog-card.expanded .blog-content {
+    grid-template-rows: 1fr;
+    transition: grid-template-rows 480ms var(--ease-chalk);
+}
+
+/* One wrapper is generated around the note body at load, so the 0fr
+   row has a single child to clip and the note's own spacing never
+   props the collapsed row open. */
+.blog-body {
+    overflow: hidden;
+    min-height: 0;
+}
+
+.blog-body > * { max-width: var(--measure); }
+.blog-body > .blog-equation,
+.blog-body > .blog-diagram { max-width: none; }
+
+.blog-body p { margin-bottom: var(--s-5); }
+.blog-body > :last-child { padding-bottom: var(--s-6); }
+
+/* Read time and subject, lifted out of the body at load so a reader
+   can choose a note without opening it first. */
+.blog-meta {
+    font-size: var(--t-meta);
+    font-weight: 500;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--chalk-soft);
+    margin: 0 0 var(--s-5) 0;
+}
+
+.blog-header .blog-meta {
+    margin: -0.9rem 0 var(--s-5) 0;
+    max-width: var(--measure);
+}
+
+.blog-section-title {
+    font-size: var(--t-title);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--chalk);
+    margin: var(--s-8) 0 var(--s-4);
+    padding-bottom: var(--s-2);
+    border-bottom: 1px solid var(--rule);
+}
+
+.blog-subsection-title {
+    font-size: var(--t-ui);
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--chalk-ochre);
+    margin: var(--s-6) 0 var(--s-3);
+}
+
+.blog-impact {
+    margin-top: var(--s-6);
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--rule-mid);
+    color: var(--chalk);
+    font-weight: 500;
+}
+
+/* A figure drawn for a white page cannot survive on slate: its inks
+   are #111827 and #1f4db8. It is pinned up as the print it is,
+   rather than recoloured — the note file stays untouched and the
+   drawing stays exactly as authored. */
+.blog-diagram {
+    margin: var(--s-6) 0;
+    padding: var(--s-5);
+    background: #EFEAD9;
+    border: 1px solid var(--rule-mid);
+    overflow-x: auto;
+}
+
+.blog-caption {
+    font-size: var(--t-meta);
+    color: var(--chalk-soft);
+    margin-top: calc(var(--s-3) - var(--s-6));
+    margin-bottom: var(--s-6);
+}
+
+/* Arrival: the notes inherit the page's one motion device. */
+.js .blog-card.expanded .blog-body > * {
+    animation: write-across 460ms var(--ease-chalk) both;
+    animation-delay: calc(var(--i, 0) * 46ms);
+}
+
+@media (max-width: 700px) {
+    .masthead--reading .masthead-name { max-width: none; }
+    .blog-toggle-btn { padding: var(--s-4) 0; gap: var(--s-4); }
+    .blog-header .blog-meta { margin-top: -0.5rem; }
+    .blog-equation { padding-left: var(--s-4); }
+    .blog-equation--theorem { padding: var(--s-4); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .blog-toggle-btn:hover { transform: none; }
+    .js .blog-card.expanded .blog-body > * { animation: none; }
 }

@@ -1,12 +1,13 @@
 /* =============================================================
-   HÖRSAAL — index.html only.
+   HÖRSAAL — index.html and thinking-in-measures.html.
 
    One motion grammar: everything on this page arrives the way
    chalk arrives. The background plane is written by the scroll
    itself; section heads are written once on entry; references are
    written when their module is opened.
 
-   vectorfield.js is untouched and still serves the other pages.
+   vectorfield.js is untouched and no page loads it any more;
+   it is kept because the tim-posts fragments predate this build.
    ============================================================= */
 
 (function () {
@@ -467,6 +468,72 @@
     }
   }
 
+
+  /* -----------------------------------------------------------
+     READ SURFACE — thinking-in-measures.html
+
+     The notes in tim-posts/ are fetched after first paint and
+     injected whole. Nothing here edits a note: the body is wrapped
+     so a 0fr row has one child to clip, and the read-time line is
+     moved up into the header so a reader can choose a note without
+     opening it. Both are DOM moves; not a word changes.
+     ----------------------------------------------------------- */
+
+  function prepareNotes() {
+    var cards = document.querySelectorAll('.blog-card');
+    for (var i = 0; i < cards.length; i++) {
+      var card = cards[i];
+      var content = card.querySelector('.blog-content');
+      if (!content || content.querySelector(':scope > .blog-body')) continue;
+
+      var body = document.createElement('div');
+      body.className = 'blog-body';
+      while (content.firstChild) body.appendChild(content.firstChild);
+      content.appendChild(body);
+
+      /* The subject line belongs where it can be read while closed. */
+      var meta = body.querySelector('.blog-meta');
+      var header = card.querySelector('.blog-header');
+      if (meta && header) header.appendChild(meta);
+
+      var kids = body.children;
+      for (var q = 0; q < kids.length; q++) {
+        kids[q].style.setProperty('--i', Math.min(q, 14));
+      }
+    }
+  }
+
+  window.toggleBlog = function (btn) {
+    var card = btn.closest('.blog-card');
+    if (!card) return;
+    var open = !card.classList.contains('expanded');
+
+    card.classList.toggle('expanded', open);
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+
+    /* An opened note is long enough to change the region's height by
+       thousands of pixels, so the board is rebuilt against it. */
+    clearTimeout(window.__chalkRemeasure);
+    window.__chalkRemeasure = setTimeout(function () {
+      builtFor = 0;
+      buildPlane();
+      measure();
+      schedule();
+    }, 560);
+  };
+
+  /* Called by the page once the notes have landed and again once
+     MathJax has typeset them, since both change every offset. */
+  window.__chalkRefresh = function () {
+    prepareNotes();
+    var notes = document.getElementById('notes');
+    if (notes && notes.classList.contains('sheet')) arm(notes);
+    builtFor = 0;
+    buildPlane();
+    measure();
+    schedule();
+  };
+
   /* -----------------------------------------------------------
      Boot
      ----------------------------------------------------------- */
@@ -485,6 +552,7 @@
   function init() {
     window.__chalkBooted = true;
     numberReferences();
+    prepareNotes();
     armSheets();
     armQed();
     spy();

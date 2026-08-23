@@ -1,180 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thinking in Measures | Alejandro Morera Alvarez</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="description" content="Brief notes on papers and core insights from measure theory, random dynamics and mathematical physics.">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Caveat:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="board.css">
+
+    <script>
+        /* Set before first paint so the armed entrance never flashes
+           content and then removes it. If chalkboard.js fails to boot,
+           the class is dropped and the page is simply present. */
+        document.documentElement.classList.add('js');
+        setTimeout(function () {
+            if (!window.__chalkBooted) document.documentElement.classList.remove('js');
+        }, 3000);
+    </script>
+
 </head>
-<body>
-    <canvas id="vector-field-canvas"></canvas>
 
-    <section class="hero" id="home">
-        <div class="hero-decoration hero-decoration-1"></div>
-        <div class="hero-decoration hero-decoration-2"></div>
-        <div class="hero-decoration hero-decoration-3"></div>
+<body class="reading">
 
-        <nav>
-            <div class="nav-inner">
-                <a href="index.html#home" class="nav-logo">alemoralv.</a>
-                <a href="thinking-in-measures.html" class="nav-cta" aria-current="page">Thinking in Measures</a>
-                <ul class="nav-links">
-                    <li><a href="index.html#about" class="nav-link">About Me</a></li>
-                    <li><a href="index.html#projects" class="nav-link">Projects</a></li>
-                    <li><a href="index.html#notes" class="nav-link">Notes</a></li>
-                    <li><a href="index.html#academic-background" class="nav-link">Academic</a></li>
-                    <li><a href="index.html#modules" class="nav-link">Recommended Literature</a></li>
-                </ul>
-            </div>
-        </nav>
+<!--
+  THESIS: The reading room of the same board. Where the homepage is the board
+  a lecturer covers, this is the board you sit in front of and read: same
+  slate, same chalk, but the writing steps back and the argument takes the
+  measure. It refuses the arrangement a personal blog always ships — a feed
+  of white cards with cover images and read-time badges on light grey.
+  OWN-WORLD: Inherited from index.html without exception. Lit green-grey
+  slate, warm bone chalk, blue chalk for links, ochre for what is live,
+  Archivo for every word and Caveat for the board's residue behind it.
+  STORY: A reader arrives from a CV or a link, opens one note, and reads real
+  mathematics without the interface asking for attention.
+  FIRST VIEWPORT: bpzcalc.jpg as the board top, framed on a different panel
+  than the homepage uses. The title in chalk caps, the tagline beneath it —
+  never above it, which would be an eyebrow — then the thesis in full.
+  FORM: Hörsaal, Read mode. Same world, same seed key 32aa2e9a.
+  FINISH: unreviewed and undocumented is unfinished; this build ends with the
+  finish review, the verdict, DESIGN.md, and every shipping raster carrying its
+  provenance.
+-->
 
-        <div class="hero-content thinking-hero-content">
-            <div class="hero-text thinking-hero-text">
-                <p class="hero-greeting">Measure theory, random dynamics, and mathematical physics in a cup of coffee.</p>
-                <h1 class="hero-name thinking-title">Thinking in Measures</h1>
-                <p class="hero-bio thinking-subtitle">
+    <div class="slate" aria-hidden="true"></div>
+
+    <a class="skip" href="#reading">Skip to the notes</a>
+
+    <nav class="index" aria-label="Sections">
+        <div class="index-inner">
+            <a href="index.html#home" class="index-mark">alemoralv.</a>
+            <ul class="index-list">
+                <li><a href="index.html#about" class="index-link">About Me</a></li>
+                <li><a href="index.html#projects" class="index-link">Projects</a></li>
+                <li><a href="index.html#notes" class="index-link">Notes</a></li>
+                <li><a href="index.html#academic-background" class="index-link">Academic</a></li>
+                <li><a href="index.html#modules" class="index-link">Recommended Literature</a></li>
+            </ul>
+            <a href="thinking-in-measures.html" class="boxed boxed--quiet index-cta" aria-current="page">Thinking in Measures</a>
+        </div>
+    </nav>
+
+    <header class="masthead masthead--reading" id="home">
+
+        <div class="masthead-board" aria-hidden="true"></div>
+
+        <div class="masthead-inner">
+
+            <h1 class="masthead-name">THINKING IN MEASURES</h1>
+
+            <div class="reading-lead">
+                <p class="reading-tagline">Measure theory, random dynamics, and mathematical physics in a cup of coffee.</p>
+                <p class="reading-sub">
                     Brief notes on papers and core insights gathered throughout my studies:
                     the central idea, why it matters, and where it can be applied.
                     Posts on this page stay readable while keeping mathematical precision.
                 </p>
-        
-                <div class="thinking-spoiler" style="margin: 1.25rem 0 1rem 0;">
-                    <p style="font-weight: 600; margin-bottom: 0.75rem;">
-                        Master Thesis: Mean-Field Limits for Stochastic Interacting Particle Systems: Convergence and Regularity on Hilbert Spaces.
-                    </p>
-                    <h2 style="font-size: 1.05rem; margin: 0 0 0.75rem 0;">Abstract</h2>
-                    <p style="margin-bottom: 0.9rem;">
-                        This master thesis studies mean-field limits for stochastic interacting particle systems whose states take values in separable Hilbert spaces and whose heterogeneous interaction structure is encoded by digraph measures. Starting from Gaussian and Wiener measure theory on Hilbert spaces, stochastic integration, the Burkholder--Davis--Gundy inequality, and \(C_0\)-semigroup methods, we formulate the finite particle system in mild form and establish its well-posedness.
-                    </p>
-                    <p style="margin-bottom: 0.9rem;">
-                        The main part of the thesis extends the digraph-measure approach to heterogeneous mean-field limits to the Hilbert-space setting. The limiting object is not a single exchangeable McKean--Vlasov law, but a label-dependent family of path-space laws \((\mu_\alpha)_{\alpha\in I}\), referred to as the independent process. We construct the corresponding independent process, prove existence and uniqueness of the law-valued solution, and show that the empirical path measure of the particle system converges weakly in probability to the averaged limiting law \(\bar\mu=\int_I \mu_\alpha\,d\alpha\). A central additional result is a quantitative label-regularity theorem: under Lipschitz assumptions on the initial laws and on the fibers of the digraph measures, this regularity propagates to the limiting family \(\alpha\mapsto\mu_\alpha\). We also derive a weak nonlinear Kolmogorov equation for the time marginals of the limiting process.
-                    </p>
-                    <p style="margin-bottom: 0.9rem;">
-                        The thesis then analyses the assumptions behind this result. In particular, it discusses the continuity frontier of the theory by separating operator-analytic regularity, state-space regularity, and label-space regularity, and it gives explicit examples showing in what sense the Lipschitz assumptions are essential for the strong labelled conclusion. Finally, we study the case of analytic semigroups. In this parabolic setting, the independent process and the particle system gain additional spatial regularity in fractional-domain spaces \(H_\gamma\), and the mean-field convergence can be upgraded from \(C([0,T];H)\) to stronger path topologies \(C([\tau,T];H_\gamma)\), \(\tau>0\).
-                    </p>
-                    <p style="margin-bottom: 0.9rem;">
-                        One of the main results is the Label Regularity Theorem, which states that the regularity of the initial conditions and that of the limit system's interactions propagate in time to yield a time-uniform Lipschitz estimate in the label variable:
-                    </p>
-                    <div class="thinking-equation-preview">
-                        \[
-                        \begin{aligned}
-                        &\textbf{Theorem 2.4.1 (Label Regularity)}\\
-                        &\text{Let } \mu=(\mu_\alpha)_{\alpha\in I}\in\widetilde{\mathcal N}_{\infty}
-                        \text{ be a law-valued solution of the independent process.}\\
-                        &\text{Then, there exists a constant}\\[0.75em]
-                        &\qquad C_L=C_L(M,\omega,T,L_g,L_h,B_g,B_h,m_\eta,m_{\hat\eta},L_0,L_\eta,L_{\hat\eta})<\infty\\[0.75em]
-                        &\text{such that for all } t\in[0,T]\\[0.75em]
-                        &\qquad W_{2,t}(\mu_{\alpha_1},\mu_{\alpha_2})\le C_L|\alpha_1-\alpha_2|,
-                        \qquad \alpha_1,\alpha_2\in I.\\[0.75em]
-                        &\text{In particular, } W_{2,T}(\mu_{\alpha_1},\mu_{\alpha_2})\le C_L|\alpha_1-\alpha_2|
-                        \text{ for all } \alpha_1,\alpha_2\in I.
-                        \end{aligned}
-                        \]
-                    </div>
-                </div>
             </div>
         </div>
-    </section>
+    </header>
 
+    <div class="region">
 
+        <div class="chalk-plane" data-chalk-plane aria-hidden="true"></div>
 
+    <main id="reading" class="work">
 
-   
+        <section id="thesis" class="sheet">
 
-
-
-
-
-
-
-
-
-
-
-
-    <main class="thinking-main" id="tim-posts-container"></main>
-
-<!--
-
-    <main class="thinking-main">
-        <section class="card blog-card">
-            <header class="blog-header">
-                <button class="blog-toggle-btn" type="button" onclick="toggleBlog(this)" aria-expanded="false">
-                    <span>How Wasserstein Geometry Shapes Learning Dynamics</span>
-                    <span class="blog-toggle-icon" aria-hidden="true">+</span>
-                </button>
+            <header class="sheet-head">
+                <h2 class="sheet-title">Master's Thesis</h2>
+                <span class="sheet-tally" aria-hidden="true">TUM &amp; EPFL</span>
             </header>
-            <div class="blog-content">
-                <p class="blog-meta">Brief read - Measure theory, optimization, machine learning</p>
-                <p>
-                    This note explains how moving probability mass can be used to study optimization paths.
-                    The key idea is to compare distributions through transport maps rather than pointwise errors.
-                </p>
-                <p>
-                    In practice, this viewpoint helps interpret convergence behavior in stochastic systems and
-                    clarifies why some dynamics remain stable under perturbations.
-                </p>
-                <div class="blog-equation">
-                    \[
-                    W_2^2(\mu,\nu) = \inf_{\gamma \in \Pi(\mu,\nu)} \int_{\mathbb{R}^d \times \mathbb{R}^d} \|x-y\|^2 \, d\gamma(x,y)
-                    \]
-                </div>
-                <p class="blog-impact">
-                    Impact: gives a geometric language for model behavior and bridges probability, PDE, and optimization.
-                </p>
-            </div>
+
+        <p class="thesis-line">
+        Master Thesis: Mean-Field Limits for Stochastic Interacting Particle Systems: Convergence and Regularity on Hilbert Spaces.
+        </p>
+        <h3 class="thesis-abstract-head">Abstract</h3>
+        <p>
+        This master thesis studies mean-field limits for stochastic interacting particle systems whose states take values in separable Hilbert spaces and whose heterogeneous interaction structure is encoded by digraph measures. Starting from Gaussian and Wiener measure theory on Hilbert spaces, stochastic integration, the Burkholder--Davis--Gundy inequality, and \(C_0\)-semigroup methods, we formulate the finite particle system in mild form and establish its well-posedness.
+        </p>
+        <p>
+        The main part of the thesis extends the digraph-measure approach to heterogeneous mean-field limits to the Hilbert-space setting. The limiting object is not a single exchangeable McKean--Vlasov law, but a label-dependent family of path-space laws \((\mu_\alpha)_{\alpha\in I}\), referred to as the independent process. We construct the corresponding independent process, prove existence and uniqueness of the law-valued solution, and show that the empirical path measure of the particle system converges weakly in probability to the averaged limiting law \(\bar\mu=\int_I \mu_\alpha\,d\alpha\). A central additional result is a quantitative label-regularity theorem: under Lipschitz assumptions on the initial laws and on the fibers of the digraph measures, this regularity propagates to the limiting family \(\alpha\mapsto\mu_\alpha\). We also derive a weak nonlinear Kolmogorov equation for the time marginals of the limiting process.
+        </p>
+        <p>
+        The thesis then analyses the assumptions behind this result. In particular, it discusses the continuity frontier of the theory by separating operator-analytic regularity, state-space regularity, and label-space regularity, and it gives explicit examples showing in what sense the Lipschitz assumptions are essential for the strong labelled conclusion. Finally, we study the case of analytic semigroups. In this parabolic setting, the independent process and the particle system gain additional spatial regularity in fractional-domain spaces \(H_\gamma\), and the mean-field convergence can be upgraded from \(C([0,T];H)\) to stronger path topologies \(C([\tau,T];H_\gamma)\), \(\tau>0\).
+        </p>
+        <p>
+        One of the main results is the Label Regularity Theorem, which states that the regularity of the initial conditions and that of the limit system's interactions propagate in time to yield a time-uniform Lipschitz estimate in the label variable:
+        </p>
+        <div class="blog-equation blog-equation--theorem">
+        \[
+        \begin{aligned}
+        &\textbf{Theorem 2.4.1 (Label Regularity)}\\
+        &\text{Let } \mu=(\mu_\alpha)_{\alpha\in I}\in\widetilde{\mathcal N}_{\infty}
+        \text{ be a law-valued solution of the independent process.}\\
+        &\text{Then, there exists a constant}\\[0.75em]
+        &\qquad C_L=C_L(M,\omega,T,L_g,L_h,B_g,B_h,m_\eta,m_{\hat\eta},L_0,L_\eta,L_{\hat\eta})<\infty\\[0.75em]
+        &\text{such that for all } t\in[0,T]\\[0.75em]
+        &\qquad W_{2,t}(\mu_{\alpha_1},\mu_{\alpha_2})\le C_L|\alpha_1-\alpha_2|,
+        \qquad \alpha_1,\alpha_2\in I.\\[0.75em]
+        &\text{In particular, } W_{2,T}(\mu_{\alpha_1},\mu_{\alpha_2})\le C_L|\alpha_1-\alpha_2|
+        \text{ for all } \alpha_1,\alpha_2\in I.
+        \end{aligned}
+        \]
+        </div>
         </section>
 
-    -->
+        <section id="notes" class="sheet">
 
-
-
-
-
-
-
-
-    <!--
-
-        <section class="card blog-card">
-            <header class="blog-header">
-                <button class="blog-toggle-btn" type="button" onclick="toggleBlog(this)" aria-expanded="false">
-                    <span>Concentration Inequalities in High Dimensions</span>
-                    <span class="blog-toggle-icon" aria-hidden="true">+</span>
-                </button>
+            <header class="sheet-head">
+                <h2 class="sheet-title">Notes</h2>
+                <span class="sheet-tally" aria-hidden="true">3 notes</span>
             </header>
-            <div class="blog-content">
-                <p class="blog-meta">Brief read - Probability, random structures, data science</p>
-                <p>
-                    This note summarizes why high-dimensional random objects often stay close to their expected value.
-                    The result is a practical toolkit for proving reliability of randomized algorithms.
-                </p>
-                <p>
-                    The main lesson is that tail bounds become a design principle: they translate uncertainty
-                    into explicit confidence guarantees.
-                </p>
-                <div class="blog-equation">
-                    \[
-                    \mathbb{P}\!\left(|X - \mathbb{E}X| \ge t\right) \le 2\exp\!\left(-\frac{2t^2}{\sum_{i=1}^n c_i^2}\right)
-                    \]
-                </div>
-                <p class="blog-impact">
-                    Impact: supports robust reasoning in modern AI pipelines where randomness is unavoidable.
-                </p>
-            </div>
+
+            <div id="tim-posts-container" class="reading-notes"></div>
+
         </section>
+
     </main>
--->
 
-
-
-
-    <footer>
-        <p>&copy; 2026 Alejandro Morera Alvarez. All Rights Reserved.</p>
+    <footer class="colophon">
+        <div class="colophon-inner">
+            <p class="colophon-line">&copy; 2026 Alejandro Morera Alvarez. All Rights Reserved.</p>
+            <span class="qed" aria-hidden="true"></span>
+        </div>
     </footer>
+
+    </div><!-- /.region -->
 
     <script>
         async function loadTimPosts() {
@@ -197,37 +175,18 @@
                     await window.MathJax.typesetPromise([container]);
                 }
             } catch (error) {
-                container.innerHTML = '<p>Unable to load posts right now.</p>';
+                container.innerHTML = '<p class="reading-error">Unable to load posts right now.</p>';
                 console.error('Failed to load Thinking in Measures posts:', error);
+            } finally {
+                /* The notes arrive after first paint, so the board has to be
+                   re-measured against them and the new rows armed. */
+                if (window.__chalkRefresh) window.__chalkRefresh();
             }
         }
 
         document.addEventListener('DOMContentLoaded', loadTimPosts);
     </script>
-    <script>
-        function toggleBlog(btn) {
-            const blogCard = btn.closest('.blog-card');
-            const content = blogCard.querySelector('.blog-content');
-            const icon = btn.querySelector('.blog-toggle-icon');
-            const isExpanded = blogCard.classList.toggle('expanded');
 
-            btn.setAttribute('aria-expanded', String(isExpanded));
-
-            if (isExpanded) {
-                content.style.maxHeight = content.scrollHeight + 'px';
-                icon.textContent = '−';
-            } else {
-                content.style.maxHeight = '0';
-                icon.textContent = '+';
-            }
-        }
-
-        window.addEventListener('resize', () => {
-            document.querySelectorAll('.blog-card.expanded .blog-content').forEach((content) => {
-                content.style.maxHeight = content.scrollHeight + 'px';
-            });
-        });
-    </script>
     <script>
         window.MathJax = {
             tex: {
@@ -236,10 +195,16 @@
             },
             options: {
                 skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+            },
+            startup: {
+                pageReady: () => window.MathJax.startup.defaultPageReady()
+                    .then(() => { if (window.__chalkRefresh) window.__chalkRefresh(); })
             }
         };
     </script>
     <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="vectorfield.js"></script>
+    <script src="chalkboard.js" defer></script>
+
 </body>
+
 </html>
