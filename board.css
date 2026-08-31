@@ -526,6 +526,8 @@ a:hover {
 .masthead-plate figcaption {
     margin-top: var(--s-4);
     display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
 }
 
 .masthead-plate figcaption .boxed { width: 100%; justify-content: center; }
