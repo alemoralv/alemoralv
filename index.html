@@ -12,7 +12,19 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Caveat:wght@400;500;600&display=swap" rel="stylesheet">
 
+    <meta name="theme-color" content="#f8faf6">
+    <meta name="color-scheme" content="light">
+    <link rel="icon" type="image/svg+xml" href="assets/daylight/favicon.svg">
+    <link rel="stylesheet" href="assets/scrollcraft/scrollcraft.css">
     <link rel="stylesheet" href="board.css">
+    <link rel="stylesheet" href="daylight.css">
+    <noscript>
+        <style>
+            body.daylight .module-references { grid-template-rows: 1fr; }
+            body.daylight .module-btn { cursor: default; }
+            body.daylight .toggle-icon { display: none; }
+        </style>
+    </noscript>
 
     <script>
         /* Set before first paint so the armed entrance never flashes
@@ -26,31 +38,13 @@
 
 </head>
 
-<body>
+<body class="daylight">
 
 <!--
-  THESIS: This page is not a site about a mathematician; it is his board. One
-  continuous slate, hero to footer, yesterday's derivation ghosted behind
-  today's argument. It refuses the arrangement this category always ships and
-  that this page used to be: white rounded cards on light grey, soft double
-  shadows, blue pill buttons.
-  OWN-WORLD: Lit green-grey slate (#333C36) with real dust, wipe-bands and
-  vignette — a material, never a screen. Warm bone chalk (#EFEAD9), blue chalk
-  for links, ochre chalk for what is live. Archivo for every word, Caveat for
-  the board's residue. No container, no radius, no shadow, no glow: hierarchy
-  is made of full-measure rules, indentation, scale and case.
-  STORY: A mathematician and an AI engineer are the same person. The visitor
-  reads the work in five ruled sections and leaves with a PDF open.
-  FIRST VIEWPORT: bpzcalc.jpg full-bleed as the actual board top, his own BPZ
-  calculation at native scale, dissolving into the slate. ALEJANDRO in expanded
-  chalk caps sits on it. Below a hairline rule: bio at 62ch left, ruled email
-  table, chalk-drawn socials, two chalk-boxed links; whiteboard.png pinned right.
-  FORM: Hörsaal — candidate 1 of my grounded list, pinned by the brief; the roll
-  assigned candidate 4 (Kariertes Papier) and the pin beats the roll. Raised by
-  five declined challengers. Seed key 32aa2e9a.
-  FINISH: unreviewed and undocumented is unfinished; this build ends with the
-  finish review, the verdict, DESIGN.md, and every shipping raster carrying its
-  provenance.
+  DAYLIGHT: a bright mathematical notebook. Original content, links, portrait
+  and notation are preserved. Independent daylight, portrait and sketch planes
+  add depth; all copy stays in natural reading flow. See
+  scrollcraft/builds/daylight/BRIEF.md for design and asset provenance.
 -->
 
     <div class="slate" aria-hidden="true"></div>
@@ -71,17 +65,28 @@
         </div>
     </nav>
 
-    <header class="masthead" id="home">
+    <header class="masthead" id="home" data-sc-act="flow">
 
-        <div class="masthead-board" aria-hidden="true"></div>
+        <div class="daylight-backdrop" data-sc-parallax="-0.045" aria-hidden="true">
+            <picture>
+                <source media="(max-width: 700px)" srcset="assets/daylight/atelier-mobile.webp">
+                <img src="assets/daylight/atelier-desktop.webp" alt="" width="1920" height="1067" fetchpriority="high" decoding="async">
+            </picture>
+        </div>
+        <svg class="hero-orbit" viewBox="0 0 600 600" fill="none" aria-hidden="true">
+            <ellipse cx="300" cy="300" rx="258" ry="178" transform="rotate(-28 300 300)" stroke="currentColor" stroke-width="1.2" />
+            <ellipse cx="300" cy="300" rx="180" ry="260" transform="rotate(-28 300 300)" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 8" />
+            <circle cx="516" cy="159" r="9" fill="currentColor" />
+            <path d="M113 400v22m-11-11h22" stroke="currentColor" stroke-width="2" />
+        </svg>
 
         <div class="masthead-inner">
-
-            <h1 class="masthead-name">ALEJANDRO</h1>
 
             <div class="masthead-cols">
 
                 <div class="masthead-lead">
+                    <p class="hero-kicker">Mathematics, with curiosity.</p>
+                    <h1 class="masthead-name">ALEJANDRO</h1>
                     <p class="masthead-bio">Mathematician and engineer with a passion for stochastic analysis, dynamical systems, and mathematical physics. I am currently completing a joint Master's thesis at TUM &amp; EPFL titled "Mean-Field Limits for Stochastic Interacting Particles on Digraph Measures: Convergence and Regularity on Hilbert Spaces", while working in AI at Profuturo, specializing in large language models, retrieval-augmented generation, and automation. I also work at Novalan as an AI/ML Foresight Expert, applying statistical, machine learning, and forecasting techniques to anticipate the behavior of complex phenomena. I built my personal Claude Code agentic engineering framework to solve problems more efficiently, securely, and reproducibly.</p>
 
                     <ul class="wires" aria-label="Email addresses">
@@ -113,10 +118,23 @@
                 </div>
 
                 <figure class="masthead-plate">
+                    <div class="portrait-mat">
                     <img src="whiteboard.png" alt="Alejandro Morera Alvarez teaching mathematics at a whiteboard" width="800" height="800" loading="eager" decoding="async">
+                        <p class="portrait-note">A little curiosity goes a long way.</p>
+                    </div>
                     <figcaption>
                         <a href="pdfs/MT_MoreraAlvarez.pdf" class="boxed" target="_blank" rel="noopener noreferrer">Master's Thesis</a>
                         <a href="pdfs/CV-MoreraAlvarez-Alejandro-05092026.pdf" class="boxed" target="_blank" rel="noopener noreferrer">CV</a>
+                    <div class="path-experiment">
+                        <p class="path-label">A small experiment in chance</p>
+                        <svg data-chance-path viewBox="0 0 340 110" fill="none" aria-hidden="true">
+                            <path d="M12 98H328M12 12V98" stroke="currentColor" stroke-opacity=".22" />
+                            <path data-path-line d="M12 57L27 51L43 61L59 44L75 47L91 32L107 42L123 37L139 48L155 28L171 35L187 25L203 43L219 38L235 57L251 49L267 56L283 37L299 29L328 34" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" pathLength="1" />
+                            <circle data-path-end cx="328" cy="34" r="4" fill="currentColor" />
+                        </svg>
+                        <button type="button" class="path-reset" hidden>New path <span aria-hidden="true">↗</span></button>
+                        <span class="path-status" role="status" aria-live="polite"></span>
+                    </div>
                     </figcaption>
                 </figure>
 
@@ -130,7 +148,7 @@
 
     <main id="work" class="work">
 
-        <section id="about" class="sheet" data-sheet="1">
+        <section id="about" class="sheet" data-sheet="1" data-sc-act="flow">
 
             <header class="sheet-head">
                 <h2 class="sheet-title">About Me</h2>
@@ -153,7 +171,7 @@
 
         </section>
 
-        <section id="projects" class="sheet" data-sheet="2">
+        <section id="projects" class="sheet" data-sheet="2" data-sc-act="flow">
 
             <header class="sheet-head">
                 <h2 class="sheet-title">Projects: Essays, Seminars, and Theses</h2>
@@ -268,7 +286,7 @@
 
         </section>
 
-        <section id="notes" class="sheet" data-sheet="3">
+        <section id="notes" class="sheet" data-sheet="3" data-sc-act="flow">
 
             <header class="sheet-head">
                 <h2 class="sheet-title">Notes</h2>
@@ -299,7 +317,7 @@
 
         </section>
 
-        <section id="academic-background" class="sheet" data-sheet="4">
+        <section id="academic-background" class="sheet" data-sheet="4" data-sc-act="flow">
 
             <header class="sheet-head">
                 <h2 class="sheet-title">Academic Background</h2>
@@ -502,7 +520,7 @@
 
         </section>
 
-        <section id="modules" class="sheet" data-sheet="5">
+        <section id="modules" class="sheet" data-sheet="5" data-sc-act="flow">
 
             <header class="sheet-head">
                 <h2 class="sheet-title">Recommended Literature</h2>
@@ -1157,6 +1175,7 @@
 
     <footer class="colophon">
         <div class="colophon-inner">
+            <p class="colophon-invite">There’s always more to explore. <a href="mailto:alexmorera.a@gmail.com">Say hello <span aria-hidden="true">↗</span></a></p>
             <p class="colophon-line">&copy; 2026 Alejandro Morera Alvarez. All Rights Reserved.</p>
             <span class="qed" aria-hidden="true"></span>
         </div>
@@ -1165,6 +1184,8 @@
     </div><!-- /.region -->
 
     <script src="chalkboard.js" defer></script>
+    <script src="assets/scrollcraft/scrollcraft.js" defer></script>
+    <script src="daylight.js" defer></script>
 
 </body>
 

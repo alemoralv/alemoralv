@@ -1,0 +1,432 @@
+/* DAYLIGHT. A bright studio for mathematics and the work around it.
+   Homepage-only layer: the shared board and reading surface stay independent. */
+
+html:has(body.daylight) {
+    --sc-canvas: #f8faf6;
+    --sc-surface: #edf3ee;
+    --sc-ink: #20363e;
+    --sc-ink-soft: #516872;
+    --sc-accent: #285ec7;
+    --sc-accent-ink: #ffffff;
+    background: #f8faf6;
+    color-scheme: light;
+    scroll-padding-top: 7rem;
+}
+
+body.daylight {
+    --board: #f8faf6;
+    --board-deep: #edf3ee;
+    --board-lit: #ffffff;
+    --chalk: #20363e;
+    --chalk-body: #334b55;
+    --chalk-soft: #516872;
+    --chalk-faint: #9daeb0;
+    --chalk-blue: #285ec7;
+    --chalk-ochre: #a34935;
+    --rule: rgba(37, 70, 80, 0.17);
+    --rule-mid: rgba(37, 70, 80, 0.26);
+    --rule-strong: rgba(37, 70, 80, 0.46);
+    --shell: 1240px;
+    --t-body: 1.0625rem;
+    --sc-canvas: #f8faf6;
+    --sc-surface: #edf3ee;
+    --sc-ink: #20363e;
+    --sc-ink-soft: #516872;
+    --sc-accent: #285ec7;
+    --sc-accent-ink: #ffffff;
+    --sc-font-display: 'Archivo', system-ui, sans-serif;
+    --sc-font-text: 'Archivo', system-ui, sans-serif;
+    --day-gutter: clamp(1.25rem, 4.4vw, 4rem);
+    color: var(--chalk-body);
+    background: var(--board);
+    line-height: 1.7;
+    caret-color: var(--chalk-blue);
+}
+
+body.daylight .slate,
+body.daylight .slate::after,
+body.daylight .masthead-board,
+body.daylight .masthead-board::after,
+body.daylight .masthead-name::before,
+body.daylight .masthead-cols::before,
+body.daylight .masthead-plate::before,
+body.daylight .sheet::before,
+body.daylight .colophon::after { display: none; }
+
+body.daylight ::selection { background: #d6e6ff; color: #20363e; }
+body.daylight * { scrollbar-color: #9cafb9 #edf3ee; }
+body.daylight ::-webkit-scrollbar-track { background: #edf3ee; }
+body.daylight ::-webkit-scrollbar-thumb { background: #9cafb9; border-color: #edf3ee; }
+body.daylight :focus-visible { outline: 3px solid var(--chalk-blue); outline-offset: 4px; }
+body.daylight a { text-decoration-color: rgba(40, 94, 199, 0.4); }
+body.daylight a:hover { color: #19489f; text-decoration-color: currentColor; }
+body.daylight p { text-wrap: pretty; }
+
+/* A useful, quiet index. The full wordmark is the first visual anchor. */
+body.daylight .index {
+    background: rgba(248, 250, 246, 0.97);
+    border-bottom: 1px solid var(--rule);
+}
+body.daylight .index-inner {
+    max-width: 1360px;
+    padding: 0.75rem var(--day-gutter);
+    gap: clamp(1rem, 2.5vw, 2.5rem);
+    flex-wrap: nowrap;
+}
+body.daylight .index-mark {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-size: 1.4rem;
+    letter-spacing: -0.055em;
+    color: var(--chalk);
+}
+body.daylight .index-mark:hover { color: var(--chalk-blue); }
+body.daylight .index-list {
+    justify-content: center;
+    gap: clamp(0.7rem, 1.4vw, 1.35rem);
+}
+body.daylight .index-link {
+    min-height: 44px;
+    align-items: center;
+    font-size: 0.8rem;
+    letter-spacing: 0;
+    color: var(--chalk-soft);
+    border-bottom-width: 2px;
+    padding: 0.2rem 0;
+}
+body.daylight .index-link:hover,
+body.daylight .index-link.is-here { color: var(--chalk-blue); border-bottom-color: var(--chalk-blue); }
+
+body.daylight .boxed {
+    justify-content: center;
+    min-height: 46px;
+    padding: 0.7rem 1.15rem;
+    background: var(--chalk-blue);
+    border: 1px solid var(--chalk-blue);
+    border-radius: 6px;
+    color: #fff;
+    font-size: 0.9rem;
+    line-height: 1.35;
+    font-weight: 600;
+    letter-spacing: 0;
+    white-space: nowrap;
+    transition: background-color 160ms ease-out, border-color 160ms ease-out, transform 160ms ease-out;
+}
+body.daylight .boxed::after { display: none; }
+body.daylight .boxed:hover { background: #1d4fae; border-color: #1d4fae; color: #fff; }
+body.daylight .boxed:active,
+body.daylight .path-reset:active,
+body.daylight .chalkmark:active { transform: translateY(1px); }
+body.daylight .boxed--quiet,
+body.daylight .masthead-plate figcaption .boxed + .boxed {
+    background: rgba(255, 255, 255, 0.75);
+    border-color: #b1c5d2;
+    color: var(--chalk-blue);
+}
+body.daylight .boxed--quiet:hover,
+body.daylight .masthead-plate figcaption .boxed + .boxed:hover { background: #e8effc; border-color: var(--chalk-blue); }
+body.daylight .index-cta { min-height: 44px; font-size: 0.79rem; padding: 0.55rem 0.9rem; }
+
+/* Four physical planes: distant studio, drawn orbit, raised print, near path.
+   The type does not travel. Every plane also has a complete static state. */
+body.daylight .masthead {
+    isolation: isolate;
+    padding-bottom: clamp(4rem, 7vw, 7rem);
+    overflow: clip;
+    background: #f8faf6;
+}
+body.daylight .daylight-backdrop {
+    position: absolute;
+    z-index: 0;
+    inset: -2% -2% 0 22%;
+    pointer-events: none;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 40%), linear-gradient(180deg, #000 65%, transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0%, #000 40%), linear-gradient(180deg, #000 65%, transparent 100%);
+    -webkit-mask-composite: source-in;
+    mask-composite: intersect;
+    opacity: 0.64;
+}
+body.daylight .daylight-backdrop picture { display: block; width: 100%; height: 100%; transform: translate3d(calc(var(--pointer-x, 0) * -7px), calc(var(--pointer-y, 0) * -5px), 0) scale(1.025); }
+body.daylight .daylight-backdrop img { width: 100%; height: 100%; object-fit: cover; object-position: 66% 35%; }
+body.daylight .masthead-inner { z-index: 3; padding: clamp(3.5rem, 6vw, 6rem) var(--day-gutter) 0; }
+body.daylight .masthead-cols {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.84fr);
+    align-items: start;
+    gap: clamp(3rem, 6vw, 6.5rem);
+    border: 0;
+    padding-top: 0;
+}
+body.daylight .masthead-lead { min-width: 0; }
+body.daylight .hero-kicker {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 1.1rem;
+    color: var(--chalk-soft);
+    font-size: 0.87rem;
+    font-weight: 500;
+    letter-spacing: 0.025em;
+}
+body.daylight .hero-kicker::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: #cc6951;
+    border-radius: 50%;
+}
+body.daylight .masthead-name,
+body.daylight .masthead-title {
+    margin: 0 0 1.65rem;
+    color: var(--chalk);
+    font-size: clamp(3.1rem, 5.75vw, 5.15rem);
+    font-weight: 650;
+    font-variation-settings: 'wdth' 94;
+    line-height: 0.99;
+    letter-spacing: -0.06em;
+    text-wrap: balance;
+}
+body.daylight .masthead-name > span,
+body.daylight .masthead-title > span { display: block; }
+body.daylight .masthead-name > span:last-child,
+body.daylight .masthead-title > span:last-child { color: var(--chalk-blue); }
+body.daylight .masthead-bio { max-width: 62ch; font-size: 1rem; line-height: 1.76; margin-bottom: 1.75rem; }
+body.daylight .wires { margin-bottom: 1.45rem; border-top: 1px solid var(--rule); }
+body.daylight .wires a { min-height: 44px; padding: 0.6rem 0; grid-template-columns: 4.4rem minmax(0, 1fr); gap: 1rem; }
+body.daylight .wire-key { font-size: 0.64rem; letter-spacing: 0.09em; color: var(--chalk-soft); }
+body.daylight .wire-val { font-size: 0.87rem; color: #19489f; }
+body.daylight .wires a:hover { transform: none; }
+body.daylight .chalkmarks,
+body.daylight .social-row { gap: 0.65rem; }
+body.daylight .chalkmark { width: 44px; height: 44px; color: var(--chalk); background: rgba(255, 255, 255, 0.72); border: 1px solid #c8d7d7; border-radius: 6px; }
+body.daylight .chalkmark:hover { color: var(--chalk-blue); border-color: var(--chalk-blue); background: #e8effc; }
+
+body.daylight .masthead-plate {
+    width: 100%;
+    max-width: 430px;
+    margin: clamp(2rem, 4vw, 4rem) 0 0;
+    justify-self: end;
+}
+body.daylight .portrait-mat {
+    position: relative;
+    padding: 0.75rem 0.75rem 0.5rem;
+    background: #fff;
+    border: 1px solid #dce4dc;
+    box-shadow: 0 15px 35px rgba(54, 78, 70, 0.12), 0 3px 7px rgba(54, 78, 70, 0.06);
+    transform: translate3d(calc(var(--pointer-x, 0) * 8px), calc(var(--hero-p, 0) * -18px + var(--pointer-y, 0) * 6px), 0) rotate(2.3deg);
+}
+body.daylight .portrait-mat::after {
+    content: '';
+    position: absolute;
+    z-index: 2;
+    width: 82px;
+    height: 27px;
+    left: 39%;
+    top: -13px;
+    background: rgba(197, 219, 235, 0.78);
+    border-left: 1px solid rgba(164, 193, 212, 0.28);
+    border-right: 1px solid rgba(164, 193, 212, 0.28);
+    transform: rotate(-7deg);
+}
+body.daylight .masthead-plate img { width: 100%; height: auto; border: 0; filter: none; }
+body.daylight .portrait-note {
+    display: block;
+    padding: 0.65rem 0.15rem 0.3rem;
+    margin: 0;
+    font-family: 'Caveat', 'Segoe Script', cursive;
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+    line-height: 1.2;
+    text-align: center;
+    color: #36566a;
+}
+body.daylight .masthead-plate figcaption { margin-top: 1.8rem; display: grid; grid-template-columns: 1.45fr 0.8fr; gap: 0.75rem; }
+body.daylight .masthead-plate figcaption .boxed { width: auto; }
+body.daylight .hero-orbit {
+    position: absolute;
+    z-index: 1;
+    width: min(630px, 48vw);
+    height: auto;
+    right: -2%;
+    top: 3%;
+    color: #588eb0;
+    opacity: 0.4;
+    pointer-events: none;
+    transform: translate3d(calc(var(--pointer-x, 0) * -15px), calc(var(--hero-p, 0) * -35px + var(--pointer-y, 0) * -11px), 0) rotate(-8deg);
+}
+body.daylight .path-experiment { display: grid; grid-column: 1 / -1; grid-template-columns: 1fr auto; align-items: center; gap: 0 0.7rem; padding-top: 0.85rem; margin-top: 0.65rem; border-top: 1px dashed var(--rule-mid); }
+body.daylight [data-chance-path] {
+    position: relative;
+    display: block;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    width: 100%;
+    max-width: none;
+    height: 90px;
+    margin: 0.25rem 0 0;
+    overflow: visible;
+    color: #cc6951;
+    pointer-events: none;
+    transform: translate3d(calc(var(--pointer-x, 0) * 11px), calc(var(--hero-p, 0) * -10px), 0);
+}
+body.daylight .path-label { grid-column: 1; grid-row: 1; color: var(--chalk-body); font-size: 0.74rem; letter-spacing: 0.015em; line-height: 1.5; }
+body.daylight .path-reset {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    grid-column: 2;
+    grid-row: 1;
+    gap: 0.4rem;
+    padding: 0.45rem 0.7rem;
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: var(--chalk-blue);
+    border: 1px solid #b9ccd3;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    transition: background-color 160ms ease-out, transform 160ms ease-out;
+}
+body.daylight .path-reset:hover { background: #e8effc; }
+body.daylight .path-reset[hidden] { display: none; }
+body.daylight .path-status { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+body.daylight button:disabled { cursor: default; opacity: 0.55; }
+
+/* Paper and pencil below the opening. Formulas retain their correct authored
+   content and scroll writing, but the document links carry the visual weight. */
+body.daylight .region { isolation: isolate; background: #f8faf6; }
+body.daylight .chalk-plane { z-index: 0; color: #285ec7; opacity: 0.2; }
+body.daylight .chalk-line { color: #285ec7 !important; }
+body.daylight .chalk-line > b { background: linear-gradient(90deg, transparent, rgba(40, 94, 199, 0.35)); filter: none; }
+body.daylight .work { gap: clamp(4rem, 7.5vw, 7rem); padding: 1rem var(--day-gutter) 0; }
+body.daylight .sheet { padding: 0; }
+body.daylight .sheet-head { position: relative; align-items: end; padding-bottom: 1.4rem; margin-bottom: 2rem; border-bottom: 1px solid var(--rule-mid); }
+body.daylight .sheet-head::after { content: ''; position: absolute; left: 0; right: 0; bottom: -1px; height: 1px; background: #7695b0; transform: scaleX(calc(0.18 + var(--sc-p, 0) * 0.82)); transform-origin: left; pointer-events: none; }
+body.daylight .sheet-title { font-size: clamp(1.6rem, 2.6vw, 2.25rem); text-transform: none; letter-spacing: -0.037em; font-variation-settings: 'wdth' 100; line-height: 1.2; font-weight: 620; }
+body.daylight .sheet-tally { font-size: 0.64rem; letter-spacing: 0.06em; color: var(--chalk-soft); }
+body.daylight .about-text-wrapper { max-width: 80ch; }
+body.daylight #about .about-text-wrapper p:first-child { font-size: clamp(1.15rem, 1.75vw, 1.35rem); line-height: 1.65; letter-spacing: -0.02em; color: var(--chalk); }
+body.daylight #about .about-text-wrapper p + p { max-width: 70ch; }
+body.daylight ul.project-list li { padding: 1.15rem 0 1.15rem 1.8rem; margin: 0; row-gap: 0.35rem; border-color: var(--rule); }
+body.daylight ul.project-list li::before { top: 1.85rem; width: 0.55rem; height: 0.55rem; border: 1px solid #91a9b6; border-radius: 50%; background: transparent; }
+body.daylight ul.project-list strong { font-size: 1rem; font-weight: 550; color: var(--chalk); }
+body.daylight ul.project-list strong::after { background: none; }
+body.daylight ul.project-list li a { display: inline-flex; min-height: 44px; align-items: center; padding: 0 0.25rem; font-size: 0.78rem; letter-spacing: 0; text-decoration-color: rgba(40, 94, 199, 0.4); }
+body.daylight ul.resource-list { column-gap: 4rem; }
+body.daylight ul.resource-list li { padding-left: 1.8rem; margin-bottom: 0; padding-bottom: 0.75rem; padding-top: 0.75rem; }
+body.daylight ul.resource-list li::before { top: 1.85rem; width: 0.75rem; background: #91a9b6; }
+body.daylight ul.resource-list li a { min-height: 44px; display: inline-flex; align-items: center; color: var(--chalk-blue); letter-spacing: -0.01em; font-size: 1rem; }
+body.daylight .academic-category { margin-bottom: 2.5rem; }
+body.daylight .academic-category h3 { color: #36566a; letter-spacing: 0.06em; font-size: 0.8rem; padding-bottom: 0.8rem; margin-bottom: 1.2rem; }
+body.daylight .academic-list-container li { font-size: 0.91rem; line-height: 1.55; margin-bottom: 0.6rem; }
+body.daylight .modules-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0 2.5rem; }
+body.daylight .module-btn { min-height: 56px; font-size: 0.93rem; padding: 0.9rem 0; color: var(--chalk); }
+body.daylight .module-btn:hover,
+body.daylight .module-item.expanded .module-btn { color: var(--chalk-blue); }
+body.daylight .module-btn:hover { transform: none; }
+body.daylight .toggle-icon::before,
+body.daylight .toggle-icon::after { background: var(--chalk-blue); }
+body.daylight .module-references li { color: var(--chalk-soft); font-size: 0.8rem; }
+body.daylight .module-references li em { color: var(--chalk); }
+body.daylight .colophon { margin-top: clamp(4rem, 8vw, 7rem); padding: 2rem var(--day-gutter) 3rem; background: transparent; }
+body.daylight .colophon-inner { display: grid; grid-template-columns: 1fr auto; gap: 1.5rem 2rem; }
+body.daylight .colophon-invite { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: baseline; gap: 2rem; padding: 0.75rem 0 1.75rem; font-size: clamp(1.45rem, 2.8vw, 2.1rem); line-height: 1.35; letter-spacing: -0.04em; color: var(--chalk); }
+body.daylight .colophon-invite a { display: inline-flex; align-items: center; gap: 0.55rem; min-height: 44px; font-size: 1rem; font-weight: 500; letter-spacing: 0; white-space: nowrap; }
+body.daylight .colophon-line { font-size: 0.78rem; letter-spacing: 0; }
+body.daylight .qed { background: #cc6951; width: 12px; height: 12px; transform: rotate(8deg); }
+
+/* Readable at first paint and with JavaScript unavailable. Only decorative
+   drawing responds to progress; content never needs a reveal to become usable. */
+.js body.daylight .sheet-head { border-bottom-color: var(--rule-mid); background: none; transition: none; }
+.js body.daylight .sheet-title,
+.js body.daylight .sheet-tally,
+.js body.daylight .sheet > *:not(.sheet-head),
+.js body.daylight .writes-across,
+.js body.daylight .writes-down,
+.js body.daylight .qed { clip-path: none; }
+body.daylight .module-item.expanded .module-references li { animation: none; }
+
+@media (hover: hover) and (pointer: fine) {
+    body.daylight .wires a:hover { transform: translateX(4px); }
+    body.daylight .module-btn:hover { transform: translateX(3px); }
+    body.daylight .chalkmark:hover { transform: translateY(-2px); }
+}
+
+@media (max-width: 1100px) {
+    body.daylight .index-inner { flex-wrap: wrap; gap: 0.6rem 1.5rem; padding-top: 0.55rem; padding-bottom: 0; }
+    body.daylight .index-cta { margin-left: auto; }
+    body.daylight .index-list { order: 3; flex: 1 1 100%; justify-content: flex-start; width: 100%; flex-wrap: nowrap; overflow-x: auto; gap: 1.5rem; padding: 0; scrollbar-width: none; }
+    body.daylight .index-list li { flex: 0 0 auto; }
+    body.daylight .index-list::-webkit-scrollbar { display: none; }
+    body.daylight .masthead-cols { gap: 3rem; grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); }
+    body.daylight .masthead-name,
+    body.daylight .masthead-title { font-size: clamp(2.9rem, 5.4vw, 4.3rem); }
+    body.daylight .masthead-bio { font-size: 0.97rem; }
+    body.daylight .path-label { font-size: 0.69rem; }
+    body.daylight .path-reset { font-size: 0.7rem; padding-inline: 0.55rem; }
+    body.daylight .modules-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* The phone is a separate reading composition: a full-width introduction,
+   then the tactile portrait. The scene has its own portrait asset. */
+@media (max-width: 760px) {
+    html:has(body.daylight) { scroll-padding-top: 8rem; }
+    body.daylight { --day-gutter: 1.35rem; --t-body: 1rem; }
+    body.daylight .index-inner { gap: 0.2rem 1rem; }
+    body.daylight .index-mark { font-size: 1.25rem; }
+    body.daylight .index-cta { font-size: 0.71rem; padding: 0.5rem 0.6rem; }
+    body.daylight .index-list { gap: 1.3rem; }
+    body.daylight .index-link { font-size: 0.76rem; }
+    body.daylight .masthead { padding-bottom: 3.5rem; }
+    body.daylight .masthead-inner { padding-top: 2.5rem; }
+    body.daylight .masthead-cols { display: flex; flex-direction: column; gap: 2.5rem; }
+    body.daylight .masthead-lead { width: 100%; }
+    body.daylight .hero-kicker { margin-bottom: 1rem; font-size: 0.78rem; }
+    body.daylight .masthead-name,
+    body.daylight .masthead-title { font-size: clamp(2.6rem, 11vw, 4.2rem); line-height: 1.02; letter-spacing: -0.06em; margin-bottom: 1.5rem; }
+    body.daylight .masthead-bio { font-size: 0.98rem; line-height: 1.72; max-width: none; }
+    body.daylight .wires a { padding: 0.5rem 0; gap: 0.4rem; grid-template-columns: 3.75rem minmax(0, 1fr); }
+    body.daylight .wire-val { font-size: 0.8rem; }
+    body.daylight .masthead-plate { align-self: center; justify-self: center; max-width: 370px; width: calc(100% - 0.85rem); margin: 0.5rem 0 0; }
+    body.daylight .portrait-mat { padding: 0.65rem 0.65rem 0.4rem; transform: rotate(1.4deg); }
+    body.daylight .portrait-note { font-size: 1.4rem; }
+    body.daylight .masthead-plate figcaption { margin-top: 1.5rem; }
+    body.daylight .daylight-backdrop { inset: 30% -10% 0 0; opacity: 0.55; -webkit-mask-image: linear-gradient(180deg, transparent, #000 30%, #000 75%, transparent); mask-image: linear-gradient(180deg, transparent, #000 30%, #000 75%, transparent); }
+    body.daylight .daylight-backdrop picture { transform: none; }
+    body.daylight .daylight-backdrop img { object-position: center; }
+    body.daylight .hero-orbit { top: auto; bottom: 13%; width: 95%; right: -28%; opacity: 0.35; }
+    body.daylight .path-label { font-size: 0.69rem; }
+    body.daylight .path-reset { font-size: 0.7rem; padding: 0.4rem 0.55rem; }
+    body.daylight [data-chance-path] { margin-top: 0.6rem; height: 65px; }
+    body.daylight .work { padding-top: 0; gap: 3.5rem; }
+    body.daylight .sheet-head { padding-bottom: 1rem; margin-bottom: 1.5rem; }
+    body.daylight .sheet-title { font-size: 1.65rem; line-height: 1.25; }
+    body.daylight .sheet-tally { margin-top: 0.25rem; white-space: normal; }
+    body.daylight #about .about-text-wrapper p:first-child { font-size: 1.17rem; }
+    body.daylight ul.project-list li { padding: 1rem 0 1rem 1.3rem; column-gap: 0.8rem; }
+    body.daylight ul.project-list li::before { top: 1.5rem; width: 0.4rem; height: 0.4rem; }
+    body.daylight ul.project-list strong { flex-basis: 100%; font-size: 0.97rem; }
+    body.daylight ul.resource-list { column-count: 1; }
+    body.daylight .academic-list-container { column-count: 1; }
+    body.daylight .academic-category h3 { font-size: 0.77rem; }
+    body.daylight .modules-grid { grid-template-columns: 1fr; }
+    body.daylight .module-btn { min-height: 56px; }
+    body.daylight .colophon { padding-top: 1.5rem; padding-bottom: 2.5rem; margin-top: 3.5rem; }
+    body.daylight .colophon-invite { display: block; padding-bottom: 0.5rem; font-size: 1.5rem; }
+    body.daylight .colophon-invite a { display: flex; width: fit-content; margin-top: 0.65rem; }
+    body.daylight .colophon-line { max-width: 31ch; line-height: 1.6; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.daylight .daylight-backdrop,
+    body.daylight .daylight-backdrop picture,
+    body.daylight .hero-orbit,
+    body.daylight [data-chance-path] { transform: none; }
+    body.daylight .portrait-mat { transform: rotate(1.4deg); }
+    body.daylight .sheet-head::after { transform: none; }
+    body.daylight .wires a:hover,
+    body.daylight .module-btn:hover,
+    body.daylight .chalkmark:hover { transform: none; }
+}

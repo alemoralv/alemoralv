@@ -1,0 +1,32 @@
+{
+  "operation": "Resize and WebP encode; right-aligned 9:16 crop for mobile",
+  "mobile_crop_pixels": [
+    1881,
+    0,
+    2736,
+    1520
+  ],
+  "files": [
+    {
+      "path": "scrollcraft/builds/daylight/originals/atelier-kie.png",
+      "width": 2736,
+      "height": 1520,
+      "bytes": 5838566,
+      "sha256": "42ad34caa501d62d59026261e5351ff2de73ca8d5d51f385d8c2f960ef7246bb"
+    },
+    {
+      "path": "assets/daylight/atelier-desktop.webp",
+      "width": 1920,
+      "height": 1067,
+      "bytes": 44220,
+      "sha256": "672a6507ecf71cc8c66429fcbeaca5dbfb01d8dbdbfde94040a29e1a193b7d85"
+    },
+    {
+      "path": "assets/daylight/atelier-mobile.webp",
+      "width": 768,
+      "height": 1365,
+      "bytes": 40394,
+      "sha256": "9fd0be42ebb4e7b0908ccb4885ff2a7b802842b11e11fbc4805f6c793ff1d0f4"
+    }
+  ]
+}

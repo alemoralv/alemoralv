@@ -4,3 +4,16 @@
 .impeccable/mocks/
 .impeccable/questions/
 .impeccable/hook.cache.json
+
+# Local credentials, including environment-specific overrides.
+.env
+.env.*
+!.env.example
+
+# Local design tooling and browser evidence.
+.scroll-craft-source/
+scrollcraft/builds/*/node_modules/
+scrollcraft/builds/*/review/
+scrollcraft/builds/*/originals/
+scrollcraft/builds/*/qa/**/*.png
+scrollcraft/builds/*/generation-audit.json

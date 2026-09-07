@@ -1,5 +1,7 @@
 # Product
 
+> **Homepage presentation update, 2026-09-07.** The current page uses `board.css` plus a homepage-only `daylight.css`/`daylight.js` layer, an unchanged Scroll Craft engine, and optimized KIE-generated decorative backgrounds. Existing copy and link targets remain fixed. The latest user request supersedes the historical dark visual direction below. The site remains static with no build step; optional browser/asset tools are isolated in `scrollcraft/builds/daylight`.
+
 <!-- impeccable:product-schema 1 -->
 
 ## Platform
