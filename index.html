@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="assets/scrollcraft/scrollcraft.css">
     <link rel="stylesheet" href="board.css">
     <link rel="stylesheet" href="daylight.css">
+    <link rel="stylesheet" href="stochastic.css">
     <noscript>
         <style>
             body.daylight .module-references { grid-template-rows: 1fr; }
@@ -38,13 +39,13 @@
 
 </head>
 
-<body class="daylight">
+<body class="daylight stochastic">
 
 <!--
-  DAYLIGHT: a bright mathematical notebook. Original content, links, portrait
-  and notation are preserved. Independent daylight, portrait and sketch planes
+  STOCHASTIC NOTEBOOK: a bright mathematical notebook. Original content, links, portrait
+  and notation are preserved. Independent stochastic paths, densities, particles, portrait and sketch planes
   add depth; all copy stays in natural reading flow. See
-  scrollcraft/builds/daylight/BRIEF.md for design and asset provenance.
+  scrollcraft/builds/stochastic/BRIEF.md for the current design and provenance.
 -->
 
     <div class="slate" aria-hidden="true"></div>
@@ -65,20 +66,27 @@
         </div>
     </nav>
 
+    <div class="stochastic-margins" data-stochastic-global aria-hidden="true">
+        <div class="stochastic-layer stochastic-margin-grid" data-depth="0.06"></div>
+        <div class="stochastic-layer stochastic-margin-paths" data-depth="-0.24"><img src="assets/stochastic/stochastic-paths.svg" alt="" width="1200" height="800"></div>
+        <div class="stochastic-layer stochastic-margin-density" data-depth="0.17"><img src="assets/stochastic/stochastic-density.svg" alt="" width="1200" height="800"></div>
+        <div class="stochastic-layer stochastic-margin-particles" data-depth="-0.42"><img src="assets/stochastic/stochastic-particles.svg" alt="" width="1200" height="800"></div>
+    </div>
+
     <header class="masthead" id="home" data-sc-act="flow">
 
-        <div class="daylight-backdrop" data-sc-parallax="-0.045" aria-hidden="true">
-            <picture>
-                <source media="(max-width: 700px)" srcset="assets/daylight/atelier-mobile.webp">
-                <img src="assets/daylight/atelier-desktop.webp" alt="" width="1920" height="1067" fetchpriority="high" decoding="async">
-            </picture>
+        <div class="stochastic-hero-world" aria-hidden="true">
+            <div class="stochastic-layer stochastic-layer--art" data-depth="-0.045">
+                <picture class="stochastic-art">
+                    <source media="(max-width: 700px)" srcset="assets/stochastic/stochastic-mobile.webp">
+                    <img src="assets/stochastic/stochastic-desktop.webp" alt="" width="1920" height="1067" fetchpriority="high" decoding="async">
+                </picture>
+            </div>
+            <div class="stochastic-layer stochastic-layer--grid" data-depth="0.07"></div>
+            <div class="stochastic-layer stochastic-layer--paths" data-depth="-0.20"><img src="assets/stochastic/stochastic-paths.svg" alt="" width="1200" height="800"></div>
+            <div class="stochastic-layer stochastic-layer--density" data-depth="0.13"><img src="assets/stochastic/stochastic-density.svg" alt="" width="1200" height="800"></div>
+            <div class="stochastic-layer stochastic-layer--particles" data-depth="-0.34"><img src="assets/stochastic/stochastic-particles.svg" alt="" width="1200" height="800"></div>
         </div>
-        <svg class="hero-orbit" viewBox="0 0 600 600" fill="none" aria-hidden="true">
-            <ellipse cx="300" cy="300" rx="258" ry="178" transform="rotate(-28 300 300)" stroke="currentColor" stroke-width="1.2" />
-            <ellipse cx="300" cy="300" rx="180" ry="260" transform="rotate(-28 300 300)" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 8" />
-            <circle cx="516" cy="159" r="9" fill="currentColor" />
-            <path d="M113 400v22m-11-11h22" stroke="currentColor" stroke-width="2" />
-        </svg>
 
         <div class="masthead-inner">
 
@@ -1186,6 +1194,7 @@
     <script src="chalkboard.js" defer></script>
     <script src="assets/scrollcraft/scrollcraft.js" defer></script>
     <script src="daylight.js" defer></script>
+    <script src="stochastic.js" defer></script>
 
 </body>
 

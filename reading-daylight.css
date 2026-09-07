@@ -1,0 +1,154 @@
+/* Thinking in Measures. A quiet reading desk in the stochastic visual world.
+   All source notes and mathematical statements keep their authored markup. */
+
+body.reading.daylight {
+    --reading-paper: #fffefa;
+    --reading-ink: #243e50;
+    --reading-muted: #526976;
+    --reading-measure: 75ch;
+    color: var(--reading-ink);
+}
+body.reading.daylight .masthead--reading {
+    padding-bottom: clamp(3rem, 7vw, 6rem);
+    min-height: 0;
+}
+body.reading.daylight .masthead--reading .masthead-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+    align-items: center;
+    gap: 3.5rem;
+    padding-top: clamp(3.25rem, 6vw, 5.5rem);
+}
+body.reading.daylight .reading-title-block { position: relative; z-index: 3; }
+body.reading.daylight .masthead--reading .stochastic-hero-world { left: 36%; -webkit-mask-image: linear-gradient(90deg, transparent, #000 38%); mask-image: linear-gradient(90deg, transparent, #000 38%); }
+body.reading.daylight .masthead--reading .masthead-name {
+    max-width: 12ch;
+    margin-bottom: 1.8rem;
+    font-size: clamp(3.1rem, 5.4vw, 5rem);
+    font-variation-settings: 'wdth' 97;
+    font-weight: 630;
+    letter-spacing: -0.06em;
+    line-height: 1.02;
+    color: #203c50;
+}
+body.reading.daylight .reading-lead { border: 0; padding: 0; max-width: 58ch; }
+body.reading.daylight .reading-lead::before { display: none; }
+body.reading.daylight .reading-tagline { color: #284966; font-size: 1.15rem; line-height: 1.55; font-weight: 520; letter-spacing: -0.02em; margin-bottom: 1rem; }
+body.reading.daylight .reading-sub { font-size: 0.98rem; line-height: 1.75; color: var(--reading-muted); }
+body.reading.daylight .reading-jumps { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-top: 1.5rem; }
+body.reading.daylight .reading-jumps a { display: inline-flex; min-height: 44px; align-items: center; gap: 0.75rem; font-size: 0.85rem; font-weight: 550; text-decoration-thickness: 1px; }
+body.reading.daylight .reading-sketch {
+    position: relative;
+    z-index: 2;
+    margin: 0;
+    min-width: 0;
+    padding: 1.5rem 0 0;
+}
+body.reading.daylight .reading-sketch img { width: 100%; height: 265px; object-fit: contain; opacity: 0.78; }
+body.reading.daylight .reading-sketch figcaption { margin-top: 0.5rem; padding-left: 0.5rem; font-family: 'Caveat', 'Segoe Script', cursive; color: #4c7286; font-size: 1.6rem; line-height: 1.2; text-align: center; transform: rotate(-3deg); }
+
+/* Every long text and equation has an opaque reading surface. Only the
+   surrounding gutters carry the moving paths, never the text's background. */
+body.reading.daylight .region { background: transparent; }
+body.reading.daylight .chalk-plane { opacity: 0.13; }
+body.reading.daylight .work { max-width: 1160px; gap: 3.5rem; padding-top: 0; }
+body.reading.daylight .sheet {
+    position: relative;
+    padding: clamp(1.5rem, 4vw, 3.5rem);
+    background: var(--reading-paper);
+    border: 1px solid #dce5e7;
+    border-radius: 2px;
+    box-shadow: 0 8px 30px rgba(34, 61, 79, 0.025);
+    color: var(--reading-ink);
+}
+body.reading.daylight .sheet-head { margin-bottom: 2rem; border-bottom-color: #d5e0e5; }
+body.reading.daylight .sheet-title { color: #203c50; font-size: clamp(1.65rem, 2.6vw, 2.25rem); }
+body.reading.daylight .sheet > p { max-width: var(--reading-measure); color: var(--reading-ink); font-size: 1.02rem; line-height: 1.82; }
+body.reading.daylight .sheet p + p { margin-top: 1.35rem; }
+body.reading.daylight .thesis-line { max-width: 62ch !important; color: #254c75 !important; font-size: clamp(1.12rem, 1.6vw, 1.35rem) !important; line-height: 1.55 !important; font-weight: 560; letter-spacing: -0.02em; margin-bottom: 2rem; }
+body.reading.daylight .thesis-abstract-head { color: #536d7b; font-size: 0.76rem; letter-spacing: 0.11em; font-weight: 600; border-bottom: 0; padding-bottom: 0; margin: 0 0 0.75rem; }
+body.reading.daylight .blog-equation {
+    max-width: 100%;
+    padding: 0.75rem 0.75rem 0.75rem 1.25rem;
+    margin: 2rem 0;
+    background: #f4f8fc;
+    border-left: 1px solid #8aa5c0;
+    color: #203f69;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-color: #8fa8bd #eaf0f6;
+}
+body.reading.daylight .blog-equation--theorem {
+    padding: 1.5rem;
+    border: 1px solid #b9ccdf;
+    border-radius: 2px;
+    background: #f1f6fc;
+}
+body.reading.daylight .blog-equation mjx-container { color: #203f69; }
+body.reading.daylight .blog-equation mjx-container[display='true'] { text-align: left; margin: 0.5rem 0 !important; }
+body.reading.daylight .blog-diagram { background: #fff; border-color: #cfdae3; padding: 1.5rem; }
+body.reading.daylight .blog-diagram svg { max-width: none; }
+
+/* The note list is a table of contents until a reader chooses an article.
+   Expanded articles inherit the same paper and measure as the thesis. */
+body.reading.daylight .blog-card { border-color: #d5e0e5; background: transparent; }
+body.reading.daylight .blog-card:first-child { border-top: 0; }
+body.reading.daylight .blog-card:last-child { border-bottom: 0; }
+body.reading.daylight .blog-toggle-btn { min-height: 64px; font-size: clamp(1.1rem, 2vw, 1.45rem); font-weight: 570; line-height: 1.4; letter-spacing: -0.025em; color: #23456a; padding: 1.3rem 0; gap: 1.5rem; }
+body.reading.daylight .blog-toggle-btn:hover { color: #285ec7; transform: none; }
+body.reading.daylight .blog-card.expanded .blog-toggle-btn { color: #203f69; }
+body.reading.daylight .blog-toggle-icon::before,
+body.reading.daylight .blog-toggle-icon::after { background: #285ec7; }
+body.reading.daylight .blog-meta { font-size: 0.71rem; letter-spacing: 0.035em; line-height: 1.65; text-transform: none; color: #536d7b; }
+body.reading.daylight .blog-header .blog-meta { margin-top: -0.5rem; margin-bottom: 1.35rem; }
+body.reading.daylight .blog-body > * { max-width: var(--reading-measure); }
+body.reading.daylight .blog-body > .blog-equation,
+body.reading.daylight .blog-body > .blog-diagram { max-width: 100%; }
+body.reading.daylight .blog-body p { font-size: 1.02rem; line-height: 1.82; margin-bottom: 1.35rem; color: var(--reading-ink); }
+body.reading.daylight .blog-body p + p { margin-top: 0; }
+body.reading.daylight .blog-section-title { font-size: 1.1rem; letter-spacing: -0.015em; text-transform: none; color: #254c75; margin-top: 2.5rem; padding-bottom: 0.6rem; border-bottom-color: #d5e0e5; }
+body.reading.daylight .blog-subsection-title { font-size: 1rem; text-transform: none; letter-spacing: 0; color: #254c75; }
+body.reading.daylight .blog-impact { border-top-color: #d5e0e5; color: #254c75; font-weight: 550; }
+body.reading.daylight .blog-caption { font-size: 0.8rem; line-height: 1.65; color: #536d7b; }
+.js body.reading.daylight .blog-card.expanded .blog-body > * { animation: none; clip-path: none; }
+body.reading.daylight .reading-fallback { list-style: none; }
+body.reading.daylight .reading-fallback li { border-bottom: 1px solid #d5e0e5; }
+body.reading.daylight .reading-fallback li:last-child { border-bottom: 0; }
+body.reading.daylight .reading-fallback a { display: flex; align-items: center; min-height: 52px; padding: 0.65rem 0; }
+body.reading.daylight .reading-fallback-note,
+body.reading.daylight .reading-error { color: #536d7b; margin-bottom: 1rem; }
+body.reading.daylight .colophon { max-width: 1160px; }
+
+@media (max-width: 900px) {
+    body.reading.daylight .masthead--reading .masthead-inner { gap: 1.5rem; grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.65fr); }
+    body.reading.daylight .masthead--reading .masthead-name { font-size: 3.65rem; }
+    body.reading.daylight .reading-sketch img { height: 230px; }
+    body.reading.daylight .reading-sketch figcaption { font-size: 1.35rem; }
+}
+@media (max-width: 700px) {
+    body.reading.daylight .masthead--reading { padding-bottom: 2rem; }
+    body.reading.daylight .masthead--reading .masthead-inner { display: block; padding-top: 2.75rem; }
+    body.reading.daylight .masthead--reading .stochastic-hero-world { left: 0; top: 42%; opacity: 0.38; -webkit-mask-image: linear-gradient(180deg, transparent, #000 55%); mask-image: linear-gradient(180deg, transparent, #000 55%); }
+    body.reading.daylight .masthead--reading .masthead-name { max-width: 12ch; font-size: clamp(2.75rem, 12vw, 4.25rem); margin-bottom: 1.5rem; }
+    body.reading.daylight .reading-tagline { font-size: 1.08rem; max-width: 33ch; }
+    body.reading.daylight .reading-sub { font-size: 0.95rem; }
+    body.reading.daylight .reading-sketch { margin: 1.25rem 0 0; padding: 0; }
+    body.reading.daylight .reading-sketch img { height: 130px; width: 90%; margin: 0 auto; opacity: 0.6; }
+    body.reading.daylight .reading-sketch figcaption { margin-top: -0.1rem; font-size: 1.4rem; }
+    body.reading.daylight .work { padding-inline: 0.85rem; gap: 2rem; }
+    body.reading.daylight .sheet { padding: 1.4rem 1rem; }
+    body.reading.daylight .sheet-head { margin-bottom: 1.5rem; }
+    body.reading.daylight .sheet > p,
+    body.reading.daylight .blog-body p { font-size: 0.98rem; line-height: 1.8; }
+    body.reading.daylight .thesis-line { font-size: 1.12rem !important; }
+    body.reading.daylight .blog-equation { padding: 0.75rem; margin: 1.5rem 0; font-size: 0.92rem; }
+    body.reading.daylight .blog-equation--theorem { padding: 1rem 0.75rem; }
+    body.reading.daylight .blog-toggle-btn { gap: 1rem; font-size: 1.13rem; }
+    body.reading.daylight .blog-diagram { padding: 1rem; }
+    body.reading.daylight .blog-meta { font-size: 0.69rem; }
+    body.reading.daylight .colophon { padding-inline: 1.5rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+    body.reading.daylight .reading-sketch figcaption { transform: none; }
+    body.reading.daylight .blog-content { transition: none; }
+}

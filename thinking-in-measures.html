@@ -7,12 +7,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thinking in Measures | Alejandro Morera Alvarez</title>
     <meta name="description" content="Brief notes on papers and core insights from measure theory, random dynamics and mathematical physics.">
+    <meta name="theme-color" content="#f8faf6">
+    <meta name="color-scheme" content="light">
+    <link rel="icon" type="image/svg+xml" href="assets/daylight/favicon.svg">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Caveat:wght@400;500;600&display=swap" rel="stylesheet">
 
+    <link rel="stylesheet" href="assets/scrollcraft/scrollcraft.css">
     <link rel="stylesheet" href="board.css">
+    <link rel="stylesheet" href="daylight.css">
+    <link rel="stylesheet" href="stochastic.css">
+    <link rel="stylesheet" href="reading-daylight.css">
 
     <script>
         /* Set before first paint so the armed entrance never flashes
@@ -26,7 +33,7 @@
 
 </head>
 
-<body class="reading">
+<body class="reading daylight stochastic">
 
 <!--
   THESIS: The reading room of the same board. Where the homepage is the board
@@ -66,12 +73,32 @@
         </div>
     </nav>
 
-    <header class="masthead masthead--reading" id="home">
+    <div class="stochastic-margins" data-stochastic-global aria-hidden="true">
+        <div class="stochastic-layer stochastic-margin-grid" data-depth=".06"></div>
+        <div class="stochastic-layer stochastic-margin-paths" data-depth="-.24"><img src="assets/stochastic/stochastic-paths.svg" alt=""></div>
+        <div class="stochastic-layer stochastic-margin-density" data-depth=".17"><img src="assets/stochastic/stochastic-density.svg" alt=""></div>
+        <div class="stochastic-layer stochastic-margin-particles" data-depth="-.42"><img src="assets/stochastic/stochastic-particles.svg" alt=""></div>
+    </div>
+
+    <header class="masthead masthead--reading" id="home" data-sc-act="flow">
 
         <div class="masthead-board" aria-hidden="true"></div>
+        <div class="stochastic-hero-world" aria-hidden="true">
+            <div class="stochastic-layer stochastic-layer--art" data-depth="-0.045">
+            <picture class="stochastic-art">
+                <source media="(max-width: 700px)" srcset="assets/stochastic/stochastic-mobile.webp">
+                <img src="assets/stochastic/stochastic-desktop.webp" alt="" width="1920" height="1067" decoding="async" fetchpriority="high">
+            </picture>
+            </div>
+            <div class="stochastic-layer stochastic-layer--grid" data-depth=".07"></div>
+            <div class="stochastic-layer stochastic-layer--paths" data-depth="-.20"><img src="assets/stochastic/stochastic-paths.svg" alt="" width="1200" height="800"></div>
+            <div class="stochastic-layer stochastic-layer--density" data-depth=".13"><img src="assets/stochastic/stochastic-density.svg" alt="" width="1200" height="800"></div>
+            <div class="stochastic-layer stochastic-layer--particles" data-depth="-.34"><img src="assets/stochastic/stochastic-particles.svg" alt="" width="1200" height="800"></div>
+        </div>
 
         <div class="masthead-inner">
 
+            <div class="reading-title-block">
             <h1 class="masthead-name">THINKING IN MEASURES</h1>
 
             <div class="reading-lead">
@@ -82,6 +109,15 @@
                     Posts on this page stay readable while keeping mathematical precision.
                 </p>
             </div>
+            <nav class="reading-jumps" aria-label="On this page">
+                <a href="#thesis">Master's Thesis <span aria-hidden="true">↗</span></a>
+                <a href="#notes">Notes <span aria-hidden="true">↗</span></a>
+            </nav>
+            </div>
+            <figure class="reading-sketch">
+                <img src="assets/stochastic/stochastic-paths.svg" alt="" width="1200" height="800">
+                <figcaption>Many paths. A shared structure.</figcaption>
+            </figure>
         </div>
     </header>
 
@@ -91,7 +127,7 @@
 
     <main id="reading" class="work">
 
-        <section id="thesis" class="sheet">
+        <section id="thesis" class="sheet" data-sc-act="flow">
 
             <header class="sheet-head">
                 <h2 class="sheet-title">Master's Thesis</h2>
@@ -132,14 +168,21 @@
         </div>
         </section>
 
-        <section id="notes" class="sheet">
+        <section id="notes" class="sheet" data-sc-act="flow">
 
             <header class="sheet-head">
                 <h2 class="sheet-title">Notes</h2>
                 <span class="sheet-tally" aria-hidden="true">3 notes</span>
             </header>
 
-            <div id="tim-posts-container" class="reading-notes"></div>
+            <noscript><p class="reading-fallback-note">Open the original note files below.</p></noscript>
+            <div id="tim-posts-container" class="reading-notes">
+                <ul class="reading-fallback">
+                    <li><a href="tim-posts/fractagon-convergence-theorem.html">Fractagon Convergence Theorem</a></li>
+                    <li><a href="tim-posts/fyodorov-bouchaud-formula.html">Fyodorov-Bouchaud Formula</a></li>
+                    <li><a href="tim-posts/bounded-spectral-theorem.html">From Borel Functional Calculus to the Bounded Spectral Theorem</a></li>
+                </ul>
+            </div>
 
         </section>
 
@@ -155,27 +198,51 @@
     </div><!-- /.region -->
 
     <script>
+        function syncReadingDisclosures() {
+            document.querySelectorAll('#tim-posts-container .blog-card').forEach((card, index) => {
+                const button = card.querySelector('.blog-toggle-btn');
+                const content = card.querySelector('.blog-content');
+                if (!button || !content) return;
+                const expanded = card.classList.contains('expanded');
+                content.id = 'reading-note-' + (index + 1);
+                button.setAttribute('aria-controls', content.id);
+                content.setAttribute('aria-hidden', String(!expanded));
+                content.inert = !expanded;
+            });
+        }
+        document.getElementById('tim-posts-container').addEventListener('click', (event) => {
+            const button = event.target.closest('.blog-toggle-btn');
+            if (!button) return;
+            syncReadingDisclosures();
+            // All notes are included in the single coordinated startup pass.
+            // Opening a disclosure changes visibility, not mathematical source.
+            // The existing toggleBlog handler refreshes geometry after opening.
+        });
+
         async function loadTimPosts() {
             const container = document.getElementById('tim-posts-container');
 
             try {
                 const response = await fetch('tim-posts/posts.json');
+                if (!response.ok) throw new Error('The note index could not be loaded.');
                 const posts = await response.json();
 
                 const htmlParts = await Promise.all(
                     posts.map(async (path) => {
                         const postResponse = await fetch(path);
+                        if (!postResponse.ok) throw new Error('A note could not be loaded: ' + path);
                         return postResponse.text();
                     })
                 );
 
                 container.innerHTML = htmlParts.join('\n');
+                syncReadingDisclosures();
 
-                if (window.MathJax?.typesetPromise) {
-                    await window.MathJax.typesetPromise([container]);
-                }
             } catch (error) {
-                container.innerHTML = '<p class="reading-error">Unable to load posts right now.</p>';
+                const message = document.createElement('p');
+                message.className = 'reading-error';
+                message.textContent = 'The notes could not be opened here. The original files are available below.';
+                container.prepend(message);
                 console.error('Failed to load Thinking in Measures posts:', error);
             } finally {
                 /* The notes arrive after first paint, so the board has to be
@@ -184,7 +251,9 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', loadTimPosts);
+        // The container is already parsed. Share the fetch promise with MathJax
+        // so its first typesetting pass always sees the complete note markup.
+        window.__timPostsReady = loadTimPosts();
     </script>
 
     <script>
@@ -197,13 +266,22 @@
                 skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
             },
             startup: {
-                pageReady: () => window.MathJax.startup.defaultPageReady()
-                    .then(() => { if (window.__chalkRefresh) window.__chalkRefresh(); })
+                pageReady: () => {
+                    window.__timMathReady = Promise.resolve(window.__timPostsReady)
+                        .then(() => window.MathJax.startup.defaultPageReady())
+                        .then(() => {
+                            document.body.dataset.mathReady = 'true';
+                            if (window.__chalkRefresh) window.__chalkRefresh();
+                        });
+                    return window.__timMathReady;
+                }
             }
         };
     </script>
-    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="chalkboard.js" defer></script>
+    <script src="assets/scrollcraft/scrollcraft.js" defer></script>
+    <script src="stochastic.js" defer></script>
 
 </body>
 

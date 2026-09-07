@@ -1,5 +1,7 @@
 # Product
 
+> **Scope extension, 2026-09-07.** The user explicitly requested the same lighter stochastic-analysis visual world for `thinking-in-measures.html`, together with stronger independent scroll layers on both pages. The historical homepage-only scope below is superseded. Thesis and note content and existing links are preserved; the reading-page loader now coordinates with MathJax and provides source-note links without JavaScript.
+
 > **Homepage presentation update, 2026-09-07.** The current page uses `board.css` plus a homepage-only `daylight.css`/`daylight.js` layer, an unchanged Scroll Craft engine, and optimized KIE-generated decorative backgrounds. Existing copy and link targets remain fixed. The latest user request supersedes the historical dark visual direction below. The site remains static with no build step; optional browser/asset tools are isolated in `scrollcraft/builds/daylight`.
 
 <!-- impeccable:product-schema 1 -->

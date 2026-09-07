@@ -1,0 +1,32 @@
+{
+  "operation": "Resize and WebP encode; right-aligned 9:16 crop for mobile",
+  "mobile_crop_pixels": [
+    1881,
+    0,
+    2736,
+    1520
+  ],
+  "files": [
+    {
+      "path": "scrollcraft/builds/stochastic/originals/stochastic-kie.png",
+      "width": 2736,
+      "height": 1520,
+      "bytes": 4837004,
+      "sha256": "4609ce13e058dfa237c7c45302c8f14667c17f9d2c31834d203ab9ade12bb9c2"
+    },
+    {
+      "path": "assets/stochastic/stochastic-desktop.webp",
+      "width": 1920,
+      "height": 1067,
+      "bytes": 68526,
+      "sha256": "cd8ff7c3ccaba03b893e1169aa1549c0dd1ebc057843024f13786d2d2e4e7dcd"
+    },
+    {
+      "path": "assets/stochastic/stochastic-mobile.webp",
+      "width": 768,
+      "height": 1365,
+      "bytes": 69982,
+      "sha256": "d9afa42d6d68c03c39102f5155b71228e038052684b0edcf1c6d70f7b7995df8"
+    }
+  ]
+}

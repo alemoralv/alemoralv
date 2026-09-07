@@ -1,0 +1,61 @@
+/* Stochastic analysis, in independently moving planes. Shared by both pages. */
+body.stochastic { position: relative; isolation: isolate; }
+body.stochastic .masthead { position: relative; background: transparent; }
+body.stochastic .stochastic-hero-world { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.stochastic-layer { position: absolute; pointer-events: none; }
+.stochastic-layer img, .stochastic-layer picture { display: block; width: 100%; height: 100%; }
+.stochastic-layer img { object-fit: contain; }
+.stochastic-layer--art { inset: -10% -4% -12% 20%; opacity: .65; }
+.stochastic-layer--art img { object-fit: cover; object-position: 70% center; }
+.stochastic-layer--art { mask-image: linear-gradient(90deg, transparent 0, #000 44%), linear-gradient(#000 58%, transparent 95%); mask-composite: intersect; }
+.stochastic-layer--grid { inset: -25% -10%; opacity: .22; background-image: linear-gradient(#6e9bad 1px, transparent 1px), linear-gradient(90deg, #6e9bad 1px, transparent 1px); background-size: 64px 64px; mask-image: linear-gradient(90deg, transparent 30%, #000 85%); }
+.stochastic-layer--paths { inset: -23% -17% -10% 28%; opacity: .67; }
+.stochastic-layer--paths img { object-fit: cover; object-position: center; }
+.stochastic-layer--density { width: 52%; height: 53%; right: -12%; top: -5%; opacity: .85; }
+.stochastic-layer--density img { object-fit: fill; }
+.stochastic-layer--particles { inset: -12% -14% 0 18%; opacity: .8; }
+.stochastic-layer--particles img { object-fit: cover; }
+body.stochastic .masthead-inner { position: relative; z-index: 2; }
+body.stochastic .masthead-lead { position: relative; }
+/* Keep light diffuse artwork away from the stable live copy column. */
+body.stochastic:not(.reading) .masthead-lead::before { content: ''; position: absolute; inset: -3rem -3rem -2rem; z-index: -1; pointer-events: none; background: #f8faf6; filter: blur(30px); opacity: .96; }
+body.stochastic .hero-kicker::before { background: #377f8f; }
+body.stochastic [data-chance-path] { color: #2b6882; }
+body.stochastic .wire-key { color: #334b55; }
+
+/* The fixed margin field continues through long essays. All four planes are
+   masked out under the reading measure, and use bounded independent travel. */
+.stochastic-margins { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; mask-image: linear-gradient(90deg, #000 0%, #000 4%, transparent 22%, transparent 78%, #000 96%, #000); }
+.stochastic-margins .stochastic-layer { inset: -35vh -14vw; }
+.stochastic-margins img { object-fit: cover; }
+.stochastic-margin-grid { opacity: .18; background-image: radial-gradient(#497897 .8px, transparent .8px); background-size: 28px 28px; }
+.stochastic-margin-paths { opacity: .20; }
+.stochastic-margin-density { opacity: .28; }
+.stochastic-margin-particles { opacity: .36; }
+body.stochastic .region { background: transparent; }
+body.stochastic .chalk-plane { opacity: .085; }
+body.stochastic .work { position: relative; z-index: 1; }
+body.stochastic .colophon { background: rgba(248,250,246,.96); }
+body.stochastic .sheet { position: relative; }
+body.stochastic:not(.reading) .sheet::after { content: ''; position: absolute; inset: -1rem; z-index: -1; pointer-events: none; background: rgba(248,250,246,.84); }
+
+@media (max-width: 1100px) {
+  .stochastic-margins { mask-image: linear-gradient(90deg, #000, transparent 12%, transparent 88%, #000); }
+}
+@media (max-width: 700px) {
+  .stochastic-layer--art { inset: 27% -25% -8% -10%; opacity: .46; mask-image: linear-gradient(transparent, #000 25%, #000 70%, transparent); }
+  .stochastic-layer--art img { object-position: center; }
+  .stochastic-layer--grid { inset: 28% -25% -20%; opacity: .14; background-size: 46px 46px; mask-image: linear-gradient(transparent, #000 25%, #000 65%, transparent); }
+  .stochastic-layer--paths { inset: 32% -38% -5% -30%; opacity: .48; }
+  .stochastic-layer--density { width: 110%; height: 30%; right: -45%; top: 51%; opacity: .65; }
+  .stochastic-layer--particles { inset: 30% -20% -10%; opacity: .55; }
+  .stochastic-margins { mask-image: linear-gradient(90deg, #000, transparent 6%, transparent 94%, #000); opacity: .7; }
+  body.stochastic:not(.reading) .masthead-lead::before { inset: -1rem -1.5rem; filter: blur(16px); }
+  body.stochastic .chalk-plane { opacity: .055; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stochastic-layer { transform: none !important; }
+}
+@media print {
+  .stochastic-hero-world, .stochastic-margins { display: none; }
+}

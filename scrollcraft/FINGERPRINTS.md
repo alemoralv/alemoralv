@@ -29,8 +29,11 @@ changes only grammar and world will fail it.
 | Build | Grammar | Nav treatment | Hero device | Act-sequence shape | Close pattern | Signature move | World | Port |
 |---|---|---|---|---|---|---|---|---|
 | daylight (2026-09-07) | Research notebook: natural-flow reference document | Sticky jumpable section index with separate reading-page link | Daylight clean plate, real paper-mounted portrait, independent orbit/sketch planes | Intro plus five preserved reference sections, no pinned runway | Contact line and personal colophon | Keyboard-operable random path beside the portrait, revealed on scroll | Cool paper, sunlit blue glass, blue pencil notation | 4519 |
+| stochastic revision (2026-09-07) | Same research notebook, extended to an essay reader | Shared sticky index plus local Thesis/Notes jumps | Open stochastic trajectories, density profiles and particles on five independent planes; real portrait on home | Home's preserved reference sections; reader introduction, thesis and three expandable notes | Preserved contact/footer in stable document flow | Five hero planes and four quieter margin planes travel at unequal speeds; existing New path control retained | Light scientific illustration, blue/teal ink, opaque reading paper | 4519 |
 
 The first build cleared an empty project-local registry.
+
+The stochastic entry is the user's requested revision of the same site, not a separate site claiming four new fingerprint dimensions. It preserves the notebook grammar, navigation family, home sequence and close while replacing rejected imagery, deepening the scroll layers and extending the design to Thinking in Measures. The original row remains historical.
 
 ---
 
@@ -42,6 +45,7 @@ act-count-and-length band. The shared columns are what the next build inherits
 as a constraint, so writing them down is the whole point.
 
 - Daylight claims the portrait-side chance sketch and the bright paper reference notebook with a contact colophon. Its exact composition should not be repeated under another palette.
+- The stochastic revision adds open Gaussian-increment paths, density curves and sampled particles as distinct scroll planes, continuing quietly in the margins around stable mathematical prose.
 
 ---
 
