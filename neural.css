@@ -1,17 +1,20 @@
 /* A FORWARD PASS. Homepage-only layer for the live network section.
-   The stage is a sheet of coordinate paper; the Blender still sits in it
+   A scroll journey: the stage of coordinate paper stays pinned while three
+   beats travel past it in native flow. The Blender still sits in the stage
    until the renderer takes over, and stays for every reader without one. */
 
-body.daylight .sheet--network .network-layout {
+body.daylight .sheet--network .network-journey {
     display: grid;
     grid-template-columns: minmax(0, 1.6fr) minmax(260px, 0.8fr);
-    gap: clamp(1.5rem, 4vw, 3.5rem);
-    align-items: center;
+    column-gap: clamp(1.5rem, 4vw, 3.5rem);
+    align-items: start;
 }
+body.daylight .network-stage-col { min-width: 0; align-self: stretch; }
 body.daylight .network-stage {
-    position: relative;
-    aspect-ratio: 16 / 10;
-    min-height: 280px;
+    position: sticky;
+    top: calc(var(--network-nav, 4.5rem) + 1rem);
+    height: min(calc(100vh - var(--network-nav, 4.5rem) - 2rem), 680px);
+    min-height: 320px;
     overflow: hidden;
     border: 1px solid #dce4dc;
     border-radius: 6px;
@@ -45,14 +48,32 @@ body.daylight .network-poster {
 }
 body.daylight .network-stage.is-live .network-poster { opacity: 0; }
 
-body.daylight .network-aside { min-width: 0; }
-body.daylight .network-aside .network-lede {
+/* Each beat owns one viewport of scroll so the text visibly progresses
+   while the object stays. The first beat starts level with the stage. */
+body.daylight .network-beats { min-width: 0; }
+body.daylight .network-beat {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: calc(100vh - var(--network-nav, 4.5rem) - 2rem);
+    padding: 1rem 0;
+}
+body.daylight .network-beat[data-network-beat="0"] { justify-content: flex-start; padding-top: 0.5rem; }
+body.daylight .network-chapter {
+    margin: 0 0 0.9rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+    color: var(--chalk-soft);
+}
+body.daylight .network-beat .network-lede {
     font-size: clamp(1.05rem, 1.45vw, 1.2rem);
     line-height: 1.6;
     letter-spacing: -0.015em;
     color: var(--chalk);
 }
-body.daylight .network-aside p + p { margin-top: 1rem; }
+body.daylight .network-beat p + p { margin-top: 1rem; }
 body.daylight .network-hint {
     font-size: 0.78rem;
     line-height: 1.5;
@@ -78,10 +99,13 @@ body.daylight .network-status {
     font-variant-numeric: tabular-nums;
 }
 
+/* Narrow screens read the still and the beats as plain flow. */
 @media (max-width: 900px) {
-    body.daylight .sheet--network .network-layout { display: block; }
-    body.daylight .network-stage { aspect-ratio: 16 / 11; min-height: 0; }
-    body.daylight .network-aside { margin-top: 1.5rem; }
+    body.daylight .sheet--network .network-journey { display: block; }
+    body.daylight .network-stage { position: relative; top: auto; height: auto; aspect-ratio: 16 / 11; min-height: 0; }
+    body.daylight .network-beats { margin-top: 1.5rem; }
+    body.daylight .network-beat { min-height: 0; padding: 0; }
+    body.daylight .network-beat + .network-beat { margin-top: 2rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

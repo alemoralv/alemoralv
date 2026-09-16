@@ -153,11 +153,15 @@ export async function createNetwork(host, options) {
     let passes = 0, lastOutputs = null;
     const rotation = new THREE.Vector2(0.28, -0.55), inertia = new THREE.Vector2(), restRotation = rotation.clone();
     let spin = 0; // accumulated idle turn, separate from the visitor's orientation
+    // Scroll story: scatter pulls the layers apart along x and each neuron outward; turn reveals the layers side-on.
+    let story = { active: false, progress: 0, scatter: 0, turn: 0 }, wasScattered = false;
+    const drift = nodes.map(n => { const v = new THREE.Vector3(0, n.p.y, n.p.z); if (v.lengthSq() < 1e-6) v.set(0, 1, 0); return v.normalize().multiplyScalar(0.26 + 0.3 * hash(n.id + 11)); });
+    const layerShift = nodes.map(n => (n.layer - (LAYERS.length - 1) / 2) * 1.45 * 0.75);
     const pointer = new THREE.Vector2(5, 5), raycaster = new THREE.Raycaster(), localRay = new THREE.Ray(), inverse = new THREE.Matrix4();
     const closest = new THREE.Vector3(), point = new THREE.Vector3(), delta = new THREE.Vector3(), a = new THREE.Vector3(), b = new THREE.Vector3(), dir = new THREE.Vector3();
     const matrix = new THREE.Matrix4(), q = new THREE.Quaternion(), identity = new THREE.Quaternion(), scale = new THREE.Vector3(), yAxis = new THREE.Vector3(0, 1, 0);
     const positions = nodes.map(() => new THREE.Vector3());
-    const diag = { active: false, frames: 0, nodes: nodeCount, edges: edgeCount, drawCalls: 0, triangles: 0, maxDisplacement: 0, disturbed: 0, rotation: [0, 0], fps: 0, gpu, pulse: -5, pulseGain: 0, passes: 0, outputs: null };
+    const diag = { active: false, frames: 0, nodes: nodeCount, edges: edgeCount, drawCalls: 0, triangles: 0, maxDisplacement: 0, disturbed: 0, rotation: [0, 0], fps: 0, gpu, pulse: -5, pulseGain: 0, passes: 0, outputs: null, storyProgress: 0, storyScatter: 0, storyTurn: 0 };
     Object.defineProperty(canvas, 'networkDiagnostics', { get: () => ({ ...diag }) });
 
     function hash(n) { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); }
@@ -248,7 +252,7 @@ export async function createNetwork(host, options) {
       camera.aspect = aspect;
       const vfov = THREE.MathUtils.degToRad(camera.fov), hfov = 2 * Math.atan(Math.tan(vfov / 2) * aspect);
       // Fit the object's rest extents (half-width 3.3, half-height 2.3) whatever the stage shape.
-      camera.position.z = Math.max(3.35 / Math.tan(hfov / 2), 2.35 / Math.tan(vfov / 2)) * 1.04;
+      camera.position.z = Math.max(3.35 / Math.tan(hfov / 2), 2.35 / Math.tan(vfov / 2)) * 1.1;
       camera.updateProjectionMatrix();
       renderer.setSize(r.width, r.height, false);
       if (!active) renderer.render(scene, camera);
@@ -266,20 +270,24 @@ export async function createNetwork(host, options) {
         rotation.x = THREE.MathUtils.clamp(rotation.x, -1.1, 1.1);
         spin += dt * 0.07;
       }
-      assembly.rotation.set(rotation.x + Math.sin(time * 0.31) * 0.02, rotation.y + spin, Math.sin(time * 0.19) * 0.015);
+      assembly.rotation.set(rotation.x + Math.sin(time * 0.31) * 0.02 + story.turn * 0.16, rotation.y + spin + story.turn * 0.95, Math.sin(time * 0.19) * 0.015 + story.turn * 0.06);
       assembly.position.y = Math.sin(time * 0.6) * 0.03;
+      assembly.scale.setScalar(1 - story.scatter * 0.3);
 
       // Signal timing: rise quickly, travel, then fade after the output layer.
       const end = LAYERS.length - 1 + 0.35;
       if (pulse.running) {
         pulse.t += dt * PULSE.speed;
-        const want = pulse.t > end ? 0 : pulse.target;
+        const want = (pulse.t > end ? 0 : pulse.target) * (1 - Math.min(1, story.scatter * 1.6));
         pulse.gain += (want - pulse.gain) * (1 - Math.exp(-dt * (pulse.t > end ? 2.2 : 9)));
         if (pulse.t > end && pulse.gain < 0.01) { pulse.running = false; pulse.gain = 0; }
       } else {
         pulse.sinceIdle += dt;
-        if (pulse.sinceIdle > PULSE.idleEvery && !gesture && !hover) fire(false);
+        if (pulse.sinceIdle > PULSE.idleEvery && !gesture && !hover && story.scatter < 0.15) fire(false);
       }
+      // Reconnection: when the scroll brings the layers back together, one full pass runs through the restored map.
+      if (story.scatter > 0.3) wasScattered = true;
+      else if (wasScattered && story.scatter < 0.06) { wasScattered = false; forward(1); }
       pulseUniforms.pulse.value = pulse.t; pulseUniforms.gain.value = pulse.gain;
 
       updateRay();
@@ -296,9 +304,9 @@ export async function createNetwork(host, options) {
           if (influence > 0.01) touched++;
           if (d > 0.001) delta.multiplyScalar(1 / d); else delta.copy(axes[i]);
         }
-        targets[k] = (delta.x * 0.3 + axes[i].x * 0.05) * influence;
-        targets[k + 1] = (delta.y * 0.3 + axes[i].y * 0.05) * influence;
-        targets[k + 2] = (delta.z * 0.3 + axes[i].z * 0.05) * influence;
+        targets[k] = (delta.x * 0.3 + axes[i].x * 0.05) * influence + story.scatter * layerShift[i];
+        targets[k + 1] = (delta.y * 0.3 + axes[i].y * 0.05) * influence + story.scatter * drift[i].y;
+        targets[k + 2] = (delta.z * 0.3 + axes[i].z * 0.05) * influence + story.scatter * drift[i].z;
       }
       for (let t = 0; t < dt; t += 1 / 120) {
         const h = Math.min(1 / 120, dt - t);
@@ -329,7 +337,7 @@ export async function createNetwork(host, options) {
         else if (slow > 6) { setActive(false); onFailure(Error('Sustained low frame rate')); return; }
         frameCounter = 0; elapsed = 0;
       }
-      Object.assign(diag, { active, frames: diag.frames + 1, drawCalls: renderer.info.render.calls, triangles: renderer.info.render.triangles, maxDisplacement: maximum, disturbed: touched, rotation: [rotation.x, rotation.y + spin], pulse: pulse.t, pulseGain: pulse.gain });
+      Object.assign(diag, { active, frames: diag.frames + 1, drawCalls: renderer.info.render.calls, triangles: renderer.info.render.triangles, maxDisplacement: maximum, disturbed: touched, rotation: [rotation.x, rotation.y + spin], pulse: pulse.t, pulseGain: pulse.gain, storyProgress: story.progress, storyScatter: story.scatter, storyTurn: story.turn });
       raf = requestAnimationFrame(tick);
     }
     function setActive(value) {
@@ -352,7 +360,9 @@ export async function createNetwork(host, options) {
     if (!renderer.info.programs.every(p => p.diagnostics?.runnable !== false)) throw Error('Shader compilation failed');
     pulse.sinceIdle = PULSE.idleEvery - 1.2; // first soft pass shortly after the object appears
     if (hint) hint.textContent = 'Click to fire a forward pass · Drag to rotate · Hover to nudge a neuron';
-    return { setActive, fire: () => fire(true), reset, dispose };
+    // Scroll adds motion on top of the visitor's orientation; it never resets it.
+    function setStory(value) { if (disposed) return; story = value; }
+    return { setActive, setStory, fire: () => fire(true), reset, dispose };
   } catch (e) {
     dispose();
     throw e;
