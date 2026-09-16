@@ -154,11 +154,11 @@
     </header>
 
     <!-- THE NETWORK: a feed-forward network built in Blender (blender/neural-net/build.py) and
-         instanced by neural.js. From 1024px it is a fixed layer over the free lane beside the copy,
-         built neuron by neuron as the page scrolls; below that, and for touch, reduced motion and
-         no WebGL, this Blender still stands in. The object carries no text. -->
+         instanced by neural.js. From 900px it is a fixed layer over the free lane beside the copy,
+         built neuron by neuron as the page scrolls; below that it is live inside this figure in flow. For
+         no WebGL or a failed asset the Blender still stands in. The object carries no text. -->
     <div class="network-layer" data-network-layer>
-        <img class="network-poster" src="assets/neural/poster.webp" srcset="assets/neural/poster-small.webp 700w, assets/neural/poster.webp 1400w" sizes="(max-width: 1023px) 100vw, 48vw" alt="A feed-forward neural network rendered as an object: nine stacked disks of dark spheres, 320 neurons in all, joined by fine graphite lines for every weight." width="1400" height="1400" loading="eager" decoding="async">
+        <img class="network-poster" src="assets/neural/poster.webp" srcset="assets/neural/poster-small.webp 700w, assets/neural/poster.webp 1400w" sizes="(max-width: 899px) 100vw, 48vw" alt="A feed-forward neural network rendered as an object: nine stacked disks of dark spheres, 320 neurons in all, joined by fine graphite lines for every weight." width="1400" height="1400" loading="eager" decoding="async">
     </div>
     <div class="network-controls" data-network-controls data-network-avoid hidden>
         <button type="button" class="boxed boxed--quiet" data-network-fire>Fire a pass</button>
@@ -1212,7 +1212,7 @@
     <script src="daylight.js" defer></script>
     <script src="stochastic.js" defer></script>
     <script type="importmap">{"imports":{"three":"./vendor/three/three.module.js"}}</script>
-    <script type="module" src="neural-boot.js"></script>
+    <script type="module" src="neural-boot.js?v=20260916b"></script>
 
 </body>
 

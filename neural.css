@@ -1,30 +1,46 @@
 /* THE NETWORK. Homepage-only layer for the live neural network that travels
-   the page. Under 1024px the Blender still sits in flow after the opening. From
-   1024px the page is two columns, copy left and a free lane right; the network
-   is a fixed layer over that lane, clipped around the portrait and the
-   controls by neural-boot.js, on the bare page ground: no panel, no grid. */
+   the page. Under 900px it lives in a figure in flow after the opening, live
+   where WebGL works. From 900px the page is two columns, copy left and a free
+   lane right; the network is a fixed layer over that lane, clipped around the
+   portrait and the controls by neural-boot.js, on the bare page ground: no
+   panel, no grid. The Blender still sits underneath as the accessible image. */
 
 body.daylight .network-layer {
     position: relative;
-    max-width: var(--shell);
+    width: min(100% - 2 * var(--day-gutter), 520px);
+    aspect-ratio: 1;
     margin: 0 auto;
-    padding: 0 var(--day-gutter);
-    pointer-events: none;
+    overflow: hidden;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
 }
-body.daylight .network-poster {
+body.daylight .network-layer:focus-visible { outline: 3px solid var(--chalk-blue); outline-offset: -3px; }
+body.daylight .network-layer canvas {
+    position: absolute;
+    inset: 0;
     display: block;
-    width: 100%;
-    max-width: 520px;
-    height: auto;
-    margin: 0 auto;
-    object-fit: contain;
+    width: 100% !important;
+    height: 100% !important;
+    cursor: grab;
 }
-body.daylight .network-layer canvas { display: none; }
+body.daylight .network-layer.is-dragging canvas { cursor: grabbing; }
+body.daylight .network-poster {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    object-fit: contain;
+    transition: opacity 600ms ease-out;
+}
+body.daylight .network-layer.is-live .network-poster { opacity: 0; }
 body.daylight .network-lane { display: none; }
 body.daylight .network-controls { display: none; }
 body.daylight .masthead-lane { display: grid; align-content: start; min-width: 0; }
 
-@media (min-width: 1024px) {
+@media (min-width: 900px) {
     /* Two columns share one template above and below the fold, so the lane
        is one continuous column from the opening to the foot of the page. */
     body.daylight .masthead-cols,
@@ -60,36 +76,9 @@ body.daylight .masthead-lane { display: grid; align-content: start; min-width: 0
         top: 0;
         width: 0;
         height: 0;
-        max-width: none;
+        aspect-ratio: auto;
         margin: 0;
-        padding: 0;
-        overflow: hidden;
-        pointer-events: auto;
-        touch-action: pan-y;
-        user-select: none;
-        -webkit-user-select: none;
     }
-    body.daylight .network-layer canvas {
-        position: absolute;
-        inset: 0;
-        display: block;
-        width: 100% !important;
-        height: 100% !important;
-        cursor: grab;
-    }
-    body.daylight .network-layer.is-dragging canvas { cursor: grabbing; }
-    body.daylight .network-poster {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        max-width: none;
-        margin: 0;
-        object-fit: contain;
-        transition: opacity 600ms ease-out;
-    }
-    body.daylight .network-layer.is-live .network-poster { opacity: 0; }
 
     body.daylight .network-controls {
         position: fixed;
@@ -119,8 +108,12 @@ body.daylight .masthead-lane { display: grid; align-content: start; min-width: 0
     body.daylight .network-status:empty { display: none; }
 }
 
+@media (min-width: 900px) and (max-width: 1099px) {
+    body.daylight .masthead-plate { max-width: 250px; }
+    body.daylight .modules-grid { grid-template-columns: 1fr; }
+}
+
 @media (min-width: 1280px) {
-    body.daylight .masthead-plate { max-width: 300px; }
     body.daylight .academic-list-container { column-count: 2; }
 }
 

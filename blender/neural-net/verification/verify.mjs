@@ -6,7 +6,8 @@
    the drawn network and any text, link, button or the portrait; the neuron
    count rises with scroll and falls on the way back; the frame rate with the
    full network; no horizontal overflow; the pointer gestures; the pause and
-   keyboard reach; and the still for touch and reduced motion. Writes
+   keyboard reach; the live figure in flow on touch widths with a tap; reduced
+   motion live but calm; the still only when the asset fails. Writes
    report.json and captures beside this file. */
 import fs from 'node:fs';
 import path from 'node:path';
@@ -65,7 +66,7 @@ async function check(page, label, width) {
     const f = s.free, dr = s.drawn, tol = 1.5;
     if (dr.x < f.x - tol || dr.y < f.y - tol || dr.r > f.r + tol || dr.b > f.b + tol) problems.push(`${label}: drawn bounds leave the free rectangle by ${[f.x - dr.x, f.y - dr.y, dr.r - f.r, dr.b - f.b].map(v => Math.round(v)).join('/')}px`);
     if (s.diag.drawCalls > 4) problems.push(`${label}: ${s.diag.drawCalls} draw calls`);
-    if (s.diag.born !== s.diag.wanted) problems.push(`${label}: born ${s.diag.born} but wanted ${s.diag.wanted} after settling`);
+    if (s.diag.active && s.diag.born !== s.diag.wanted) problems.push(`${label}: born ${s.diag.born} but wanted ${s.diag.wanted} after settling`);
   }
   report.problems.push(...problems);
   return { ...s, boxes: boxes.length, problems };
@@ -79,7 +80,7 @@ async function settle(page) {
     const d = await page.evaluate(() => document.querySelector('[data-network-layer] canvas')?.networkDiagnostics || null);
     if (!d) return;
     const key = d.born + ':' + d.wanted + ':' + Math.round(d.view.d * 20) + ':' + Math.round(d.bounds.left) + ':' + Math.round(d.bounds.top);
-    if (d.born === d.wanted && key === prev && i > 3) return;
+    if ((!d.active || d.born === d.wanted) && key === prev && i > 3) return;
     prev = key;
   }
 }
@@ -89,8 +90,8 @@ async function scrollTo(page, fraction) {
 }
 
 for (const width of [1920, 1440, 1024, 820, 390]) {
-  const height = width >= 1024 ? 900 : Math.round(width * 1.9);
-  const touch = width < 1024;
+  const height = width >= 900 ? 900 : Math.round(width * 1.9);
+  const touch = width < 900;
   const context = await browser.newContext({ viewport: { width, height }, deviceScaleFactor: 1, hasTouch: touch, isMobile: touch });
   const page = await context.newPage();
   const requests = [];
@@ -100,9 +101,7 @@ for (const width of [1920, 1440, 1024, 820, 390]) {
   await page.goto(URL, { waitUntil: 'networkidle' });
   const entry = { width, height, touch, positions: {}, descent: [], ascent: [] };
   report.widths[width] = entry;
-  if (!touch) {
-    try { await page.waitForSelector('[data-network-layer].is-live', { timeout: 20000 }); } catch { report.problems.push(`${width}: renderer never became live`); }
-  }
+  try { await page.waitForSelector('[data-network-layer].is-live', { timeout: 20000 }); } catch { report.problems.push(`${width}: renderer never became live`); }
   await sleep(600);
   for (const f of POSITIONS) {
     await scrollTo(page, f);
@@ -134,12 +133,26 @@ for (const width of [1920, 1440, 1024, 820, 390]) {
     if (up[0] === null || up.some((v, i) => i && v < up[i - 1])) report.problems.push(`${width}: neuron count is not monotone on the way down: ${up.join(' ')}`);
     if (down.some((v, i) => i && v > down[i - 1])) report.problems.push(`${width}: neuron count is not monotone on the way up: ${down.join(' ')}`);
     if (up[0] >= up[up.length - 1]) report.problems.push(`${width}: no growth from top to bottom`);
-    if (up[0] > 12) report.problems.push(`${width}: ${up[0]} neurons at the top of the page; only the first few should exist`);
+    if (up[0] > 16) report.problems.push(`${width}: ${up[0]} neurons at the top of the page; only the first few should exist`);
   } else {
-    if (requests.length) report.problems.push(`${width}: touch viewport requested the GLB`);
-    const still = await page.evaluate(() => { const img = document.querySelector('.network-poster'); const r = img.getBoundingClientRect(); return { w: r.width, h: r.height, complete: img.complete && img.naturalWidth > 0, fixed: getComputedStyle(img.closest('.network-layer')).position }; });
-    entry.still = still;
-    if (!still.complete || still.w < 200) report.problems.push(`${width}: the still is not shown in flow`);
+    // Touch: the figure in flow is live, builds as it passes through the viewport, pauses off screen, and a tap fires.
+    await page.evaluate(() => document.querySelector('[data-network-layer]').scrollIntoView({ block: 'center', behavior: 'instant' }));
+    await settle(page);
+    let s = await page.evaluate(inPage.state);
+    const boxes = await page.evaluate(inPage.boxes);
+    for (const b of boxes) if (overlaps(s.drawn, b)) report.problems.push(`${width}: the figure overlaps <${b.tag}> "${b.text}"`);
+    entry.figure = { host: s.host, born: s.diag.born, active: s.diag.active, position: await page.evaluate(() => getComputedStyle(document.querySelector('[data-network-layer]')).position), glbRequests: requests.length };
+    if (!s.live || !s.diag.active || s.diag.born < 24) report.problems.push(`${width}: the figure in flow is not live (${s.diag?.born} neurons)`);
+    const before = s.diag.passes;
+    await page.touchscreen.tap((s.drawn.x + s.drawn.r) / 2, (s.drawn.y + s.drawn.b) / 2); await sleep(400);
+    s = await page.evaluate(inPage.state);
+    entry.tap = { passes: s.diag.passes, status: s.status.slice(0, 60) };
+    if (s.diag.passes !== before + 1) report.problems.push(`${width}: a tap did not fire a pass`);
+    await page.screenshot({ path: path.join(here, `w${width}-tap.jpg`), type: 'jpeg', quality: 72 });
+    await scrollTo(page, 0.6);
+    s = await page.evaluate(inPage.state);
+    entry.offscreen = { active: s.diag.active };
+    if (s.diag.active) report.problems.push(`${width}: the figure kept rendering off screen`);
   }
 
   // Pointer gestures at the widest layout, with a large network on screen.
@@ -185,10 +198,11 @@ for (const width of [1920, 1440, 1024, 820, 390]) {
     if (!probe) report.problems.push('1440: no neuron found under the probe grid');
     else {
       await page.mouse.move(probe.x, probe.y); await sleep(60);
+      const beforeClick = (await page.evaluate(inPage.state)).diag.passes; // idle passes may have fired since the hover
       await page.mouse.down(); await sleep(40); await page.mouse.up(); await sleep(300);
       const after = await page.evaluate(inPage.state);
       entry.clickNeuron = { status: after.status, passes: after.diag.passes, pulse: after.diag.pulse, from: probe.hit };
-      if (after.diag.passes !== passesBefore + 1) report.problems.push('1440: clicking a neuron did not fire exactly one pass');
+      if (after.diag.passes !== beforeClick + 1) report.problems.push('1440: clicking a neuron did not fire exactly one pass');
       if (!/from neuron/.test(after.status)) report.problems.push('1440: the pass did not start from the clicked neuron: ' + after.status);
       await sleep(250);
       await page.screenshot({ path: path.join(here, 'w1440-click.jpg'), type: 'jpeg', quality: 72 });
@@ -226,19 +240,34 @@ for (const width of [1920, 1440, 1024, 820, 390]) {
     const cs = await page.evaluate(inPage.state);
     const controls = await page.evaluate(() => { const r = document.querySelector('[data-network-controls]').getBoundingClientRect(); return { x: r.left, y: r.top, r: r.right, b: r.bottom }; });
     if (overlaps(cs.drawn, controls)) report.problems.push('1440: the network overlaps the controls');
-    // Reduced motion: the still, no canvas, no GLB.
+    // Keyboard on the object itself: arrows turn it, Enter fires.
+    await page.focus('[data-network-layer]');
+    const kb0 = (await page.evaluate(inPage.state)).diag;
+    await page.keyboard.press('ArrowRight'); await page.keyboard.press('ArrowRight'); await sleep(150);
+    await page.keyboard.press('Enter'); await sleep(200);
+    const kb1 = (await page.evaluate(inPage.state)).diag;
+    entry.keyboardObject = { rotated: kb1.rotation[1] - kb0.rotation[1], passes: kb1.passes - kb0.passes };
+    if (kb1.rotation[1] - kb0.rotation[1] < 0.3) report.problems.push('1440: arrow keys did not turn the object');
+    if (kb1.passes !== kb0.passes + 1) report.problems.push('1440: Enter on the object did not fire');
+    // Reduced motion: live but calm. Nothing moves on its own; the visitor still gets an answer.
     const rm = await browser.newContext({ viewport: { width, height }, reducedMotion: 'reduce' });
-    const rp = await rm.newPage(); const glb = [];
-    rp.on('request', r => { if (/neural-net\.glb/.test(r.url())) glb.push(1); });
-    await rp.goto(URL, { waitUntil: 'networkidle' }); await sleep(1200);
-    entry.reducedMotion = await rp.evaluate(() => ({ canvas: Boolean(document.querySelector('[data-network-layer] canvas')), poster: getComputedStyle(document.querySelector('.network-poster')).opacity, controlsHidden: document.querySelector('[data-network-controls]').hidden }));
-    entry.reducedMotion.glbRequests = glb.length;
-    if (entry.reducedMotion.canvas || glb.length || entry.reducedMotion.poster !== '1') report.problems.push('1440: reduced motion still ran the renderer');
-    // With reduced motion the still must not overlap text either.
-    await rp.evaluate(() => scrollTo(0, 0)); await sleep(300);
-    const stillBox = await rp.evaluate(() => { const r = document.querySelector('.network-poster').getBoundingClientRect(); return { x: r.left, y: r.top, r: r.right, b: r.bottom }; });
-    const stillBoxes = await rp.evaluate(inPage.boxes);
-    for (const b of stillBoxes) if (overlaps(stillBox, b, 1)) report.problems.push(`1440 reduced motion: the still overlaps <${b.tag}> "${b.text}"`);
+    const rp = await rm.newPage();
+    await rp.goto(URL, { waitUntil: 'networkidle' });
+    try { await rp.waitForSelector('[data-network-layer].is-live', { timeout: 20000 }); } catch { report.problems.push('1440: reduced motion never became live'); }
+    await rp.evaluate(f => scrollTo({ top: Math.round((document.documentElement.scrollHeight - innerHeight) * f), behavior: 'instant' }), 0.5);
+    await sleep(1500);
+    const c0 = await rp.evaluate(inPage.state); await sleep(2500);
+    const c1 = await rp.evaluate(inPage.state);
+    entry.reducedMotion = { live: c1.live, calm: c1.diag?.calm, born: c1.diag?.born, passes: c1.diag?.passes, turned: c1.diag && c1.diag.rotation[1] - c0.diag.rotation[1], poster: c1.poster };
+    if (!c1.live || !c1.diag?.calm) report.problems.push('1440: reduced motion is not live and calm');
+    if (c1.diag && (c1.diag.passes > 0 || Math.abs(c1.diag.rotation[1] - c0.diag.rotation[1]) > 1e-6)) report.problems.push('1440: reduced motion moved on its own');
+    const cBoxes = await rp.evaluate(inPage.boxes);
+    for (const b of cBoxes) if (overlaps(c1.drawn, b)) report.problems.push(`1440 reduced motion: the network overlaps <${b.tag}> "${b.text}"`);
+    const cx2 = (c1.drawn.x + c1.drawn.r) / 2, cy2 = (c1.drawn.y + c1.drawn.b) / 2;
+    await rp.mouse.click(cx2, cy2); await sleep(300);
+    const c2 = await rp.evaluate(inPage.state);
+    entry.reducedMotion.clickFired = c2.diag.passes;
+    if (c2.diag.passes !== 1) report.problems.push('1440: reduced motion did not answer a click');
     await rp.screenshot({ path: path.join(here, 'w1440-reduced-motion.jpg'), type: 'jpeg', quality: 72 });
     await rm.close();
     // A failing GLB keeps the still.

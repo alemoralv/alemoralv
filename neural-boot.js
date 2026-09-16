@@ -1,10 +1,12 @@
-/* Boot for the live network that travels the whole page. On wide screens
-   with a fine pointer, no reduced motion and WebGL 2, the renderer runs in a
-   fixed layer over the free lane beside the copy; the layer is clipped around
-   every element marked data-network-avoid, so the object can never sit on the
-   portrait or the controls, and the composition is measured live from the
-   page. Everyone else gets the Blender-rendered still, which stays in the page
-   as the accessible image in every case. Scroll progress drives construction. */
+/* Boot for the live network that travels the whole page. Wherever WebGL 2
+   works the object is live: from 900px it is a fixed layer over the free lane
+   beside the copy, clipped around every element marked data-network-avoid so
+   it can never sit on the portrait or the controls, with the composition
+   measured live from the page; below 900px it lives inside a figure in flow
+   after the opening and builds as that figure passes through the viewport.
+   Reduced motion keeps it live but calm: nothing moves on its own, everything
+   still answers the visitor. The Blender still stays in the page as the
+   accessible image and takes over only when WebGL or the asset fails. */
 const host = document.querySelector('[data-network-layer]');
 if (host) {
   const poster = host.querySelector('.network-poster');
@@ -15,12 +17,11 @@ if (host) {
   const lanes = Array.from(document.querySelectorAll('[data-network-lane]'));
   const avoid = Array.from(document.querySelectorAll('[data-network-avoid]'));
   const nav = document.querySelector('.index');
-  const wide = matchMedia('(min-width: 1024px)');
+  const wide = matchMedia('(min-width: 900px)');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  const fine = matchMedia('(hover: hover) and (pointer: fine)');
   const connection = navigator.connection;
   const GAP = 22, EDGE = 14, MIN = 96;
-  let live = null, pending = false, failed = false, paused = false, layoutFrame = 0, room = false;
+  let live = null, pending = false, failed = false, paused = false, layoutFrame = 0, room = false, onscreen = true;
   let box = { x: -1, y: -1, w: 0, h: 0 }, free = null, clip = '';
 
   // The largest free rectangle of a box after removing holes: every hole edge
@@ -51,15 +52,28 @@ if (host) {
     }
     return best;
   }
-  function progress() { return Math.max(0, Math.min(1, scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight))); }
+  function pageProgress() { return Math.max(0, Math.min(1, scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight))); }
   function px(v) { return Math.round(v * 100) / 100; }
+  function place(next) {
+    if (next.x === box.x && next.y === box.y && next.w === box.w && next.h === box.h) return;
+    box = next;
+    if (wide.matches) { host.style.left = px(box.x) + 'px'; host.style.top = px(box.y) + 'px'; host.style.width = px(box.w) + 'px'; host.style.height = px(box.h) + 'px'; }
+  }
 
   function layout() {
     layoutFrame = 0;
     if (!wide.matches) {
-      if (box.w) { box = { x: -1, y: -1, w: 0, h: 0 }; host.style.cssText = ''; poster.style.cssText = ''; }
-      room = false; sync(); return;
+      // In flow: the figure is the frame, it builds as it travels up the viewport, and it runs only while on screen.
+      if (host.style.left) { host.style.cssText = ''; poster.style.cssText = ''; clip = ''; }
+      const r = host.getBoundingClientRect();
+      place({ x: 0, y: 0, w: r.width, h: r.height });
+      free = { x: 0, y: 0, w: r.width, h: r.height };
+      room = r.width >= MIN && r.height >= MIN;
+      onscreen = r.bottom > 0 && r.top < innerHeight;
+      if (live && room) { live.setFrame({ free, w: r.width, h: r.height }); live.setProgress((innerHeight - r.top) / (innerHeight + r.height) * 1.25); }
+      sync(); return;
     }
+    onscreen = true;
     const top = Math.max(0, nav ? nav.getBoundingClientRect().bottom : 0) + EDGE, bottom = innerHeight - EDGE;
     let left = -Infinity;
     for (const lane of lanes) { const r = lane.getBoundingClientRect(); if (r.width > 0) left = Math.max(left, r.left); }
@@ -67,10 +81,7 @@ if (host) {
     const next = { x: left, y: top, w: right - left, h: bottom - top };
     room = Number.isFinite(left) && next.w >= MIN && next.h >= MIN;
     if (!room) { sync(); return; }
-    if (next.x !== box.x || next.y !== box.y || next.w !== box.w || next.h !== box.h) {
-      box = next;
-      host.style.left = px(box.x) + 'px'; host.style.top = px(box.y) + 'px'; host.style.width = px(box.w) + 'px'; host.style.height = px(box.h) + 'px';
-    }
+    place(next);
     const holes = [];
     for (const el of avoid) {
       const r = el.getBoundingClientRect();
@@ -85,33 +96,37 @@ if (host) {
     if (path !== clip) { clip = path; host.style.clipPath = 'path(evenodd, "' + path + '")'; }
     if (free) { poster.style.left = px(free.x) + 'px'; poster.style.top = px(free.y) + 'px'; poster.style.width = px(free.w) + 'px'; poster.style.height = px(free.h) + 'px'; }
     room = Boolean(free);
-    if (live && room) { live.setFrame({ free, w: box.w, h: box.h }); live.setProgress(progress()); }
+    if (live && room) { live.setFrame({ free, w: box.w, h: box.h }); live.setProgress(pageProgress()); }
     sync();
   }
   function scheduleLayout() { if (!layoutFrame) layoutFrame = requestAnimationFrame(layout); }
 
-  function eligible() { return wide.matches && fine.matches && !reduced.matches && !connection?.saveData && Boolean(document.createElement('canvas').getContext('webgl2')); }
+  function eligible() { return !connection?.saveData && Boolean(document.createElement('canvas').getContext('webgl2')); }
   function fallback(error) {
     failed = true;
     live?.dispose(); live = null;
     host.classList.remove('is-live');
+    host.removeAttribute('tabindex');
     if (controls) controls.hidden = true;
     if (error) console.warn('Network still fallback:', error.message);
   }
   function sync() {
     if (!eligible()) {
-      if (live) { live.dispose(); live = null; host.classList.remove('is-live'); if (controls) controls.hidden = true; }
+      if (live) { live.dispose(); live = null; host.classList.remove('is-live'); host.removeAttribute('tabindex'); if (controls) controls.hidden = true; }
       return;
     }
-    if (live) { live.setActive(room && !document.hidden && !paused); return; }
+    if (live) { live.setActive(room && onscreen && !document.hidden && !paused); return; }
     if (pending || failed || !room) return;
     pending = true;
-    import('./neural.js')
-      .then(m => m.createNetwork(host, { onFailure: fallback, status, fireButton }))
+    import('./neural.js?v=20260916b')
+      .then(m => m.createNetwork(host, { onFailure: fallback, status, fireButton, calm: () => reduced.matches }))
       .then(result => {
         if (!eligible()) { result.dispose(); return; }
         live = result;
         host.classList.add('is-live');
+        host.tabIndex = 0;
+        host.setAttribute('role', 'application');
+        host.setAttribute('aria-label', 'Neural network. Arrow keys turn it, Enter fires a forward pass.');
         if (controls) controls.hidden = false;
         layout();
       })
@@ -127,9 +142,8 @@ if (host) {
   document.addEventListener('visibilitychange', sync);
   addEventListener('scroll', scheduleLayout, { passive: true });
   addEventListener('resize', scheduleLayout, { passive: true });
-  wide.addEventListener('change', scheduleLayout);
-  reduced.addEventListener('change', sync);
-  fine.addEventListener('change', sync);
+  wide.addEventListener('change', () => { box = { x: -1, y: -1, w: 0, h: 0 }; host.style.cssText = ''; poster.style.cssText = ''; clip = ''; scheduleLayout(); });
+  reduced.addEventListener('change', scheduleLayout);
   connection?.addEventListener?.('change', sync);
   if ('ResizeObserver' in window) new ResizeObserver(scheduleLayout).observe(document.body);
   if (document.fonts) document.fonts.ready.then(scheduleLayout);

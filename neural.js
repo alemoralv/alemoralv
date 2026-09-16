@@ -13,14 +13,15 @@ import { GLTFLoader } from './vendor/three/GLTFLoader.js';
 
 const LAYERS = [8, 24, 40, 56, 64, 56, 40, 24, 8];
 const FAN_IN = 12;
-const MIN_NODES = 5;                 // present at the top of the page
+const MIN_NODES = 12;                // present at the top of the page: the input layer and four of the next, so weights exist from the start
 const BIRTH_EVERY = 0.014;           // seconds between births when the scroll jumps
 const DEATH_EVERY = 0.008;
-const PULSE = { speed: 2.4, width: 0.075, idleEvery: 9, idleGain: 0.55 };
+const PULSE = { speed: 2.4, width: 0.075, idleEvery: 5, idleGain: 0.6 };
 const ACCENT = '#285ec7';
 
 export async function createNetwork(host, options) {
   const { onFailure, status, fireButton } = options;
+  const calm = options.calm || (() => false); // reduced motion: nothing moves on its own, everything still answers the visitor
   const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'high-performance' });
   const canvas = renderer.domElement;
   canvas.setAttribute('aria-hidden', 'true');
@@ -160,7 +161,8 @@ export async function createNetwork(host, options) {
     const offsets = new Float32Array(nodeCount * 3), velocities = new Float32Array(nodeCount * 3), targets = new Float32Array(nodeCount * 3);
     const grow = new Float32Array(nodeCount), hot = nodeHot.array, edgeHeat = edgeHot.array;
     const axes = nodes.map(n => new THREE.Vector3(hash(n.id + 3) - 0.5, hash(n.id + 5) - 0.5, hash(n.id + 7) - 0.5).normalize());
-    let gesture = null, hover = false, last = 0, time = 0, frameCounter = 0, elapsed = 0, slow = 0, quality = 1.5;
+    let gesture = null, hover = false, last = 0, time = 0, frameCounter = 0, elapsed = 0, slow = 0, quality = 0;
+    const ratios = [1.5, 1, 0.75]; // dropped one step at a time when the frame rate stays low; the object never gives way to the still for speed
     let pulse = { t: -5, gain: 0, target: 0, running: false, sinceIdle: 0, from: 0 };
     let passes = 0, lastOutputs = null;
     const rotation = new THREE.Vector2(0.34, -0.5), inertia = new THREE.Vector2(), restRotation = rotation.clone();
@@ -176,7 +178,7 @@ export async function createNetwork(host, options) {
     const matrix = new THREE.Matrix4(), q = new THREE.Quaternion(), identity = new THREE.Quaternion(), scale = new THREE.Vector3(), yAxis = new THREE.Vector3(0, 1, 0), spun = new THREE.Vector3();
     const positions = nodes.map(() => new THREE.Vector3());
     const bounds = { left: 0, top: 0, right: 0, bottom: 0 };
-    const diag = { active: false, frames: 0, nodes: nodeCount, edges: edgeCount, born: 0, bornEdges: 0, wanted: MIN_NODES, drawCalls: 0, triangles: 0, maxDisplacement: 0, disturbed: 0, hotEdges: 0, hotNodes: 0, rotation: [0, 0], tilt: [0, 0], fps: 0, gpu, pulse: -5, pulseGain: 0, passes: 0, outputs: null, progress: 0, bounds: { ...bounds }, free: { ...frame.free }, view: { ...view } };
+    const diag = { active: false, calm: false, quality: 1.5, frames: 0, nodes: nodeCount, edges: edgeCount, born: 0, bornEdges: 0, wanted: MIN_NODES, drawCalls: 0, triangles: 0, maxDisplacement: 0, disturbed: 0, hotEdges: 0, hotNodes: 0, rotation: [0, 0], tilt: [0, 0], fps: 0, gpu, pulse: -5, pulseGain: 0, passes: 0, outputs: null, progress: 0, bounds: { ...bounds }, free: { ...frame.free }, view: { ...view } };
     Object.defineProperty(canvas, 'networkDiagnostics', { get: () => ({ ...diag, bounds: { ...bounds }, free: { ...frame.free }, view: { ...view } }) });
     // Verification probe: the id of the neuron under a host pixel, or -1.
     Object.defineProperty(canvas, 'networkProbe', { value: (x, y) => { pointer.set(x / frame.w * 2 - 1, 1 - y / frame.h * 2); const n = pick(); return n ? { id: n.id, layer: n.layer, index: n.index } : null; } });
@@ -285,6 +287,16 @@ export async function createNetwork(host, options) {
     listen(host, 'pointercancel', cancel);
     listen(host, 'lostpointercapture', () => { if (gesture) cancel(); });
     listen(host, 'pointerleave', () => { if (!gesture) hover = false; });
+    listen(host, 'pointerup', e => { if (e.pointerType === 'touch') hover = false; });
+    // Keyboard reach on the object itself: arrows turn it, Enter or Space fires a pass.
+    listen(host, 'keydown', e => {
+      if (!active) return;
+      const step = 0.18;
+      if (e.key === 'ArrowLeft') rotation.y -= step; else if (e.key === 'ArrowRight') rotation.y += step;
+      else if (e.key === 'ArrowUp') rotation.x = THREE.MathUtils.clamp(rotation.x - step, -1.1, 1.1); else if (e.key === 'ArrowDown') rotation.x = THREE.MathUtils.clamp(rotation.x + step, -1.1, 1.1);
+      else if (e.key === 'Enter' || e.key === ' ') fire(true); else return;
+      e.preventDefault();
+    });
     if (fireButton) listen(fireButton, 'click', () => fire(true));
     cleanup.push(cancel);
 
@@ -331,10 +343,10 @@ export async function createNetwork(host, options) {
       viewTarget.x = cx * tanH * viewTarget.d - (minX + maxX) / 2;
       viewTarget.y = cy * tanV * viewTarget.d - (minY + maxY) / 2;
       // Shrinking to fit is quick; growing into new room is gentle.
-      const rate = viewTarget.d > view.d ? 12 : 4;
+      const rate = calm() ? 20 : viewTarget.d > view.d ? 12 : 4;
       const k = 1 - Math.exp(-dt * rate);
       view.d += (viewTarget.d - view.d) * k; view.x += (viewTarget.x - view.x) * k; view.y += (viewTarget.y - view.y) * k;
-      assembly.position.set(view.x, view.y + Math.sin(time * 0.6) * 0.03, -view.d);
+      assembly.position.set(view.x, view.y + (calm() ? 0 : Math.sin(time * 0.6) * 0.03), -view.d);
       // Projected bounds of what is drawn, in host pixels, for the page and the verification.
       let l = Infinity, t = Infinity, r = -Infinity, bt = -Infinity;
       for (let i = 0; i < count; i++) {
@@ -355,6 +367,8 @@ export async function createNetwork(host, options) {
 
       // Construction follows the scroll: births in the authored order, deaths in reverse.
       sinceBirth += dt; sinceDeath += dt;
+      const quiet = calm();
+      if (quiet) { born = wanted; }
       while (born < wanted && sinceBirth >= BIRTH_EVERY) { born++; sinceBirth -= BIRTH_EVERY; }
       if (born >= wanted) sinceBirth = Math.min(sinceBirth, BIRTH_EVERY);
       while (born > wanted && sinceDeath >= DEATH_EVERY) { born--; sinceDeath -= DEATH_EVERY; }
@@ -369,12 +383,13 @@ export async function createNetwork(host, options) {
       if (!gesture) {
         rotation.addScaledVector(inertia, dt); inertia.multiplyScalar(Math.exp(-dt * 5));
         rotation.x = THREE.MathUtils.clamp(rotation.x, -1.1, 1.1);
-        spin += dt * 0.07;
+        if (!quiet) spin += dt * 0.16;
       }
       // The whole object leans a little toward the cursor and settles back when it leaves.
       if (hover && !gesture) tiltTarget.set(-pointer.y * 0.09, pointer.x * 0.13); else tiltTarget.set(0, 0);
       tilt.lerp(tiltTarget, 1 - Math.exp(-dt * 4));
-      assembly.rotation.set(rotation.x + tilt.x + Math.sin(time * 0.31) * 0.02, rotation.y + spin + tilt.y + progress * 1.4, Math.sin(time * 0.19) * 0.015);
+      const sway = quiet ? 0 : 1;
+      assembly.rotation.set(rotation.x + tilt.x + Math.sin(time * 0.31) * 0.02 * sway, rotation.y + spin + tilt.y + progress * 2.2, Math.sin(time * 0.19) * 0.015 * sway);
 
       // Signal timing: rise quickly, travel, then fade after the deepest layer that exists.
       const end = bornLayers() + 0.35;
@@ -385,7 +400,7 @@ export async function createNetwork(host, options) {
         if (pulse.t > end && pulse.gain < 0.01) { pulse.running = false; pulse.gain = 0; }
       } else {
         pulse.sinceIdle += dt;
-        if (pulse.sinceIdle > PULSE.idleEvery && !gesture && !hover) fire(false);
+        if (pulse.sinceIdle > PULSE.idleEvery && !gesture && !hover && !quiet) fire(false);
       }
       pulseUniforms.pulse.value = pulse.t; pulseUniforms.gain.value = pulse.gain;
 
@@ -401,8 +416,8 @@ export async function createNetwork(host, options) {
           delta.copy(point).sub(closest);
           const d = delta.length();
           // Near the ray a neuron is nudged away; from further out it leans toward the cursor.
-          push = Math.max(0, 1 - d / 0.5); push *= push;
-          pull = d > 0.5 ? Math.max(0, 1 - (d - 0.5) / 1.6) : 0; pull *= pull;
+          push = Math.max(0, 1 - d / 0.6); push *= push;
+          pull = d > 0.6 ? Math.max(0, 1 - (d - 0.6) / 2.2) : 0; pull *= pull;
           if (push > 0.01) touched++;
           if (d > 0.001) delta.multiplyScalar(1 / d); else delta.copy(axes[i]);
           // The cursor leaves a trail: a neuron it passes stays lit and fades.
@@ -411,7 +426,7 @@ export async function createNetwork(host, options) {
         }
         hot[i] *= Math.exp(-dt / 0.55);
         if (hot[i] < 0.003) hot[i] = 0;
-        const amount = push * 0.3 - pull * 0.14;
+        const amount = push * 0.36 - pull * 0.18;
         targets[k] = (delta.x * amount + axes[i].x * 0.05 * push);
         targets[k + 1] = (delta.y * amount + axes[i].y * 0.05 * push);
         targets[k + 2] = (delta.z * amount + axes[i].z * 0.05 * push);
@@ -459,11 +474,10 @@ export async function createNetwork(host, options) {
       frameCounter++; elapsed += wall;
       if (frameCounter >= 60) {
         diag.fps = frameCounter / elapsed; slow = diag.fps < 30 ? slow + elapsed : 0;
-        if (slow > 4 && quality > 1) { quality = 1; renderer.setPixelRatio(Math.min(devicePixelRatio, 1)); resize(); slow = 0; }
-        else if (slow > 6) { setActive(false); onFailure(Error('Sustained low frame rate')); return; }
+        if (slow > 4 && quality < ratios.length - 1) { quality++; renderer.setPixelRatio(Math.min(devicePixelRatio, ratios[quality])); resize(); slow = 0; diag.quality = ratios[quality]; }
         frameCounter = 0; elapsed = 0;
       }
-      Object.assign(diag, { active, frames: diag.frames + 1, born, bornEdges: drawnEdges, drawCalls: renderer.info.render.calls, triangles: renderer.info.render.triangles, maxDisplacement: maximum, disturbed: touched, hotEdges, hotNodes, rotation: [rotation.x, rotation.y + spin], tilt: [tilt.x, tilt.y], pulse: pulse.t, pulseGain: pulse.gain });
+      Object.assign(diag, { active, calm: quiet, frames: diag.frames + 1, born, bornEdges: drawnEdges, drawCalls: renderer.info.render.calls, triangles: renderer.info.render.triangles, maxDisplacement: maximum, disturbed: touched, hotEdges, hotNodes, rotation: [rotation.x, rotation.y + spin], tilt: [tilt.x, tilt.y], pulse: pulse.t, pulseGain: pulse.gain });
       raf = requestAnimationFrame(tick);
     }
     function setActive(value) {
