@@ -229,16 +229,6 @@ body.daylight .portrait-mat::after {
     transform: rotate(-7deg);
 }
 body.daylight .masthead-plate img { width: 100%; height: auto; border: 0; filter: none; }
-body.daylight .portrait-note {
-    display: block;
-    padding: 0.65rem 0.15rem 0.3rem;
-    margin: 0;
-    font-family: 'Caveat', 'Segoe Script', cursive;
-    font-size: clamp(1.2rem, 2vw, 1.5rem);
-    line-height: 1.2;
-    text-align: center;
-    color: #36566a;
-}
 body.daylight .masthead-plate figcaption { margin-top: 1.8rem; display: grid; grid-template-columns: 1.45fr 0.8fr; gap: 0.75rem; }
 body.daylight .masthead-plate figcaption .boxed { width: auto; }
 body.daylight .hero-orbit {
@@ -391,7 +381,6 @@ body.daylight .module-item.expanded .module-references li { animation: none; }
     body.daylight .wire-val { font-size: 0.8rem; }
     body.daylight .masthead-plate { align-self: center; justify-self: center; max-width: 370px; width: calc(100% - 0.85rem); margin: 0.5rem 0 0; }
     body.daylight .portrait-mat { padding: 0.65rem 0.65rem 0.4rem; transform: rotate(1.4deg); }
-    body.daylight .portrait-note { font-size: 1.4rem; }
     body.daylight .masthead-plate figcaption { margin-top: 1.5rem; }
     body.daylight .daylight-backdrop { inset: 30% -10% 0 0; opacity: 0.55; -webkit-mask-image: linear-gradient(180deg, transparent, #000 30%, #000 75%, transparent); mask-image: linear-gradient(180deg, transparent, #000 30%, #000 75%, transparent); }
     body.daylight .daylight-backdrop picture { transform: none; }

@@ -57,7 +57,6 @@
         <div class="index-inner">
             <a href="#home" class="index-mark">alemoralv.</a>
             <ul class="index-list">
-                <li><a href="#network" class="index-link" data-index-for="network">Network</a></li>
                 <li><a href="#about" class="index-link" data-index-for="about">About Me</a></li>
                 <li><a href="#projects" class="index-link" data-index-for="projects">Projects</a></li>
                 <li><a href="#notes" class="index-link" data-index-for="notes">Notes</a></li>
@@ -127,10 +126,11 @@
                     </div>
                 </div>
 
-                <figure class="masthead-plate">
+                <!-- The portrait shares the right column with the network lane; the live layer is clipped around it. -->
+                <div class="masthead-lane" data-network-lane>
+                <figure class="masthead-plate" data-network-avoid>
                     <div class="portrait-mat">
                     <img src="whiteboard.png" alt="Alejandro Morera Alvarez teaching mathematics at a whiteboard" width="800" height="800" loading="eager" decoding="async">
-                        <p class="portrait-note">A little curiosity goes a long way.</p>
                     </div>
                     <figcaption>
                         <a href="pdfs/MT_MoreraAlvarez.pdf" class="boxed" target="_blank" rel="noopener noreferrer">Master's Thesis</a>
@@ -147,60 +147,30 @@
                     </div>
                     </figcaption>
                 </figure>
+                </div>
 
             </div>
         </div>
     </header>
+
+    <!-- THE NETWORK: a feed-forward network built in Blender (blender/neural-net/build.py) and
+         instanced by neural.js. From 1024px it is a fixed layer over the free lane beside the copy,
+         built neuron by neuron as the page scrolls; below that, and for touch, reduced motion and
+         no WebGL, this Blender still stands in. The object carries no text. -->
+    <div class="network-layer" data-network-layer>
+        <img class="network-poster" src="assets/neural/poster.webp" srcset="assets/neural/poster-small.webp 700w, assets/neural/poster.webp 1400w" sizes="(max-width: 1023px) 100vw, 48vw" alt="A feed-forward neural network rendered as an object: nine stacked disks of dark spheres, 320 neurons in all, joined by fine graphite lines for every weight." width="1400" height="1400" loading="eager" decoding="async">
+    </div>
+    <div class="network-controls" data-network-controls data-network-avoid hidden>
+        <button type="button" class="boxed boxed--quiet" data-network-fire>Fire a pass</button>
+        <button type="button" class="boxed boxed--quiet" data-network-pause aria-pressed="false">Pause motion</button>
+        <span class="network-status" data-network-status role="status" aria-live="polite"></span>
+    </div>
 
     <div class="region">
 
         <div class="chalk-plane" data-chalk-plane aria-hidden="true"></div>
 
     <main id="work" class="work">
-
-        <!-- A FORWARD PASS: a feed-forward network built in Blender (blender/neural-net/build.py),
-             instanced in the browser by neural.js. The object carries no text; the still
-             below is the accessible image and the fallback for touch, reduced motion and no WebGL. -->
-        <section id="network" class="sheet sheet--network" data-sheet="0" data-sc-act="flow">
-
-            <header class="sheet-head">
-                <h2 class="sheet-title">A Forward Pass</h2>
-                <span class="sheet-tally" aria-hidden="true">31 neurons · 182 weights</span>
-            </header>
-
-            <!-- Scroll journey: the object stays pinned while three beats travel past it.
-                 Scroll pulls the layers apart, turns the object, then reconnects it. -->
-            <div class="network-journey" data-network-journey>
-                <div class="network-stage-col">
-                    <div class="network-stage" data-network-stage>
-                        <img class="network-poster" src="assets/neural/poster.webp" srcset="assets/neural/poster-small.webp 800w, assets/neural/poster.webp 1600w" sizes="(max-width: 900px) 100vw, 60vw" alt="A feed-forward neural network rendered as an object: five rings of dark spheres, one per layer, joined by fine graphite lines for every weight." width="1600" height="900" loading="lazy" decoding="async">
-                    </div>
-                </div>
-                <div class="network-beats">
-                    <div class="network-beat" data-network-beat="0">
-                        <p class="network-chapter" aria-hidden="true">01 · Signal</p>
-                        <p class="network-lede">A feed-forward network as an object rather than a diagram: five fully connected layers, weights drawn once at random and never trained. Each click sends a fresh random input through it. The signal travels weight by weight, and every neuron lights with the size of its activation.</p>
-                        <p class="network-hint" data-network-hint>Built in Blender, rendered live in your browser on desktop.</p>
-                        <div class="network-controls" data-network-controls hidden>
-                            <button type="button" class="boxed" data-network-fire>Fire a pass <span aria-hidden="true">↗</span></button>
-                            <button type="button" class="boxed boxed--quiet" data-network-reset>Reset view</button>
-                            <button type="button" class="boxed boxed--quiet" data-network-pause aria-pressed="false">Pause motion</button>
-                        </div>
-                        <span class="network-status" data-network-status role="status" aria-live="polite"></span>
-                    </div>
-                    <div class="network-beat" data-network-beat="1">
-                        <p class="network-chapter" aria-hidden="true">02 · Weights</p>
-                        <p class="network-lede">Pulled apart, the object shows what it is: five layers, and between each pair a complete bipartite graph of weights. A thicker line is a larger weight. Nothing was fitted to anything; the values were drawn once and frozen.</p>
-                        <p>Scroll on to let the layers find each other again.</p>
-                    </div>
-                    <div class="network-beat" data-network-beat="2">
-                        <p class="network-chapter" aria-hidden="true">03 · Composition</p>
-                        <p class="network-lede">Back together, it is one map: the composition of five simple functions. Read the layers as time steps and let the depth grow, and the same object becomes a neural stochastic differential equation, which is where my interest in it begins.</p>
-                    </div>
-                </div>
-            </div>
-
-        </section>
 
         <section id="about" class="sheet" data-sheet="1" data-sc-act="flow">
 
@@ -1223,7 +1193,7 @@
     </div>
 </section>
 
-        
+        <div class="network-lane" data-network-lane aria-hidden="true"></div>
 
     </main>
 

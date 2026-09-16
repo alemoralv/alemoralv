@@ -1,46 +1,54 @@
-# A Forward Pass: asset contract
+# The network: asset contract
 
-The homepage section `#network` shows a feed-forward neural network as an object. Built with the blender-to-web workflow (https://github.com/cth9191/blender-to-web): deterministic Blender Python is the source, a GLB is the handoff, and every motion is browser code.
+The homepage carries a feed-forward neural network as an object that travels the whole page: present beside the portrait at the top, built neuron by neuron as the visitor scrolls, complete at the foot. Built with the blender-to-web workflow (https://github.com/cth9191/blender-to-web): deterministic Blender Python is the source, a GLB is the handoff, and every motion is browser code. No copy accompanies it; the object carries no text.
 
 ## Files
 
 | File | Role |
 | --- | --- |
-| `build.py` | Deterministic builder. `blender --background --python blender/neural-net/build.py` (add `-- --graybox` for the proportion study). Writes the GLB, `.blend`, `hero.png` and `authored-metrics.json` beside itself. |
-| `validate.py` | Fresh import of the GLB: counts, shared meshes, extras, edge axis, endpoint error, six fixed views (`import-*.png`) and `import-validation.json`. |
-| `neural-net.blend` | Editable scene with the poster camera and paper-light studio. |
-| `neural-net.glb` | Runtime export, copied to `assets/neural/neural-net.glb` (76 KB). |
-| `hero.png` | Cycles still, converted to `assets/neural/poster.webp` and `poster-small.webp`: the accessible image and the fallback for touch, reduced motion, data saving and WebGL failure. |
+| `build.py` | Deterministic builder. `blender --background --python blender/neural-net/build.py` (add `-- --graybox` for the proportion study). Writes the GLB, `.blend`, `hero.png`, `poster.webp`, `poster-small.webp` and `authored-metrics.json` beside itself. |
+| `validate.py` | Fresh import of the GLB: counts, shared meshes, extras, birth order, weight table checksums, the unit weight axis, then every weight rebuilt from the extras alone and six fixed views (`import-*.png`) rendered from the imported data, with `import-validation.json`. |
+| `neural-net.blend` | Editable scene with all 3,648 weight objects, the poster camera and the paper-light studio. |
+| `neural-net.glb` | Runtime export, copied to `assets/neural/neural-net.glb` (97 KB). |
+| `poster.webp`, `poster-small.webp` | Cycles stills straight from Blender, copied to `assets/neural/`: the accessible image and the fallback for narrow screens, touch, reduced motion, data saving and WebGL failure. |
 | `../../neural.js` | Three.js r186 runtime (vendored under `vendor/three/`). |
-| `../../neural-boot.js` | Eligibility, lazy load near the viewport, offscreen and hidden-tab suspension, pause control, fallback. |
-| `../../neural.css` | Section layout: stage of coordinate paper beside the copy, stacked under 900px. |
+| `../../neural-boot.js` | Eligibility, live composition of the free lane, clipping around the portrait and the controls, scroll progress, pause, hidden-tab suspension, fallback. |
+| `../../neural.css` | The two-column page from 1024px (copy left, lane right), the fixed layer, the still in flow below 1024px, the control cluster. |
+| `verification/verify.mjs`, `verification/server.mjs` | Playwright run and the static server it needs. Report and captures beside them. |
 
 Blender 5.2.2 LTS, glTF exporter with `export_extras=True`, `export_apply=True`, CPU Cycles for the stills.
 
 ## Geometry
 
-- Layers `[4, 7, 9, 7, 4]` along x, 1.45 apart. Each layer is a ring in the y-z plane with a seeded wobble (seed 20260915) so the object has depth when rotated.
-- 31 `Node_<layer>_<index>` objects share one icosphere (radius 0.115, 320 triangles). Extras: `layer`, `index`.
-- 182 `Edge_<layer>_<src>_<dst>` objects share one 10-sided unit cylinder that runs from local z = 0 to z = 1 in Blender, which becomes +Y in glTF. Location is the source neuron, rotation tracks the target, scale is `(0.55 + 0.9|w|, same, length)`. Extras: `layer`, `src`, `dst`, `weight` with `w ~ N(0, 0.55)` clipped to `[-1, 1]`.
-- No text or letters exist in the geometry. Labels live in the page.
-- Total 16,472 triangles; the browser draws two instanced batches.
+- Layers `[8, 24, 40, 56, 64, 56, 40, 24, 8]`, 320 neurons, stacked along Blender z (glTF y) 1.6 apart with the input layer on top, so the object is a column that is built top to bottom. Each layer is a disk in the layer plane laid out on a sunflower spiral (radius `0.36 * sqrt(i + 0.5)`, golden angle), centre first, with a seeded wobble (seed 20260916).
+- 320 `Node_<layer>_<index>` objects share one icosphere (radius 0.13, 320 triangles). Extras: `layer`, `index`, `birth` (0 to 319, layer-major then spiral index: the reveal order), and for every layer below the input `src` (indices of its sources in the layer above) and `w` (their weights, same order, `N(0, 0.55)` clipped to `[-1, 1]`, three decimals).
+- Sparse weights: every neuron takes 12 sources drawn at random from the layer above (all 8 when the layer above is the input), 3,648 weights in all. They are real `Edge_<layer>_<src>_<dst>` objects in the `.blend` for the stills and inspection, but they are not exported: the GLB carries one `WeightProto` object with the shared 10-sided open unit cylinder (Blender local z from 0 to 1, glTF +Y) and the browser instances it once per weight, stretched between its two neurons, radius `0.55 + 0.9|w|`. That keeps the GLB at 97 KB where 3,648 objects would cost over a megabyte.
+- No text or letters exist in the geometry.
+- Total 175,360 triangles when everything is born; the browser draws two instanced batches.
 
-Changing `LAYERS` in `build.py` requires the same change in `neural.js` (`LAYERS`), which derives the expected node and edge counts from it.
+`LAYERS` and `FAN_IN` in `build.py` must match `LAYERS` and `FAN_IN` in `neural.js`, which derives the expected neuron and weight counts from them and refuses an asset that disagrees. `validate.py` checks the same table against `authored-metrics.json` (count, weight sum, source-index sum).
+
+## Page composition
+
+- From 1024px the page is two columns with one template above and below the fold: `.masthead-cols` and `.work` both use `52fr / 48fr`, so the lane is one continuous column from the opening to the foot. The portrait (`data-network-avoid`) sits at the right of the hero lane; Projects, Notes, Academic Background (one column below 1280px, two above) and Recommended Literature (two auto-fill columns) live in the copy column; the colophon is limited to the copy column too. The hero's line grid and the right half of the margin field and chalk plane are removed under the lane, so the object sits on the bare page ground.
+- The live layer is `position: fixed` over the lane band between the sticky index and the bottom of the viewport. Each scroll frame `neural-boot.js` measures the lane and every `data-network-avoid` box (portrait, control cluster), inflates them by 22px, cuts them out of the layer with `clip-path: path(evenodd, ...)` (which also removes them from hit testing, so the portrait, its buttons and the chance experiment stay clickable), and finds the largest free rectangle by area with a little hysteresis. The still is placed in that rectangle for the fallback; the renderer receives it through `setFrame`.
+- `neural.js` composes into that rectangle every frame: it measures the born neurons in view space, chooses the camera distance that fits them into 92 percent of the rectangle and the offset that centres them, and eases both (fast when shrinking to fit, gentle when growing into new room). The clip is the hard guarantee; the composition is the intent. Diagnostics expose the projected bounds so the verification can assert them against every text, link, button and image box.
+- Below 1024px the layer is a plain figure in flow after the opening with the Blender still; no lane, no controls.
 
 ## Browser behaviour
 
-- Forward pass: a random input in `[0.15, 1]`, `tanh` layers with the authored weights. Per-instance `aLevel` attributes carry each neuron's activation and each weight's signal; the shader lights a Gaussian wave along `position.y` of the edge as `uPulse - layer` sweeps 0 to 1, and each neuron peaks when the pulse reaches its layer. A soft pass fires on its own every 8.5 s of idle; a click or the Fire button fires at full gain and announces the output activations in the status line.
-- Hover: neurons within 0.62 of the pointer ray are pushed away (spring 60, damping 11, fixed 120 Hz steps); edges are recomputed from the moved neurons every frame.
-- Drag: rotation after a 6 px threshold, inertia on release, x clamped to plus or minus 1.1 rad. A click that did not move fires a pass; a drag never does. An idle turn of 0.07 rad/s is kept separate from the visitor's orientation; Reset restores the rest orientation.
-- Scroll story: the stage is `position: sticky` beside three beats that each own one viewport of native scroll. `neural-boot.js` maps journey progress p to `scatter = smooth(.12,.42,p) * (1 - smooth(.58,.84,p))` and `turn = smooth(.1,.5,p) * (1 - .45 * smooth(.62,.92,p))`. Scatter moves each layer along x by `(layer - 2) * 1.45 * 0.75` and each neuron outward in its ring by 0.26 to 0.56, scales the assembly by `1 - 0.3 * scatter`, and suppresses the pulse; turn adds 0.95 rad about y and a 0.16 rad tilt on top of the visitor's orientation without resetting it. When scatter falls back below 0.06 after exceeding 0.3, one full pass fires through the reconnected map. Under 901px the journey is plain flow with no pinning.
-- Eligibility: fine pointer, no reduced motion, no data saver, WebGL 2, not a software renderer. Otherwise the still stays. Rendering pauses offscreen, in hidden tabs and on Pause. Sustained low frame rate drops pixel ratio, then falls back to the still. Context loss falls back.
+- Construction: scroll progress `p = scrollY / (scrollHeight - innerHeight)` asks for `round(5 + 315 p)` neurons. Births happen in the authored `birth` order at most one every 14 ms (so a jump cascades), deaths in reverse order at most one every 8 ms. Each neuron eases in with an overshoot (`g (1 + 0.35 sin(pi g))` on its scale); its incoming weights grow with it, extending from their sources. `InstancedMesh.count` follows the born prefix, so unborn neurons cost nothing.
+- Forward pass: a random input in `[0.15, 1]`, `tanh` layers with the authored weights, through the layers that exist. Per-instance `aLevel` attributes carry each neuron's activation and each weight's signal; the shader lights a Gaussian wave along the weight as `uPulse - layer` sweeps 0 to 1 and each neuron peaks when the pulse reaches its layer. A soft pass fires on its own every 9 s of idle; a click or the Fire button fires at full gain and reports the deepest existing layer's activations in the status line. A click on a neuron starts the pass there: that neuron alone carries the signal, everything above it stays dark.
+- Pointer, gestures separated: hover is any movement without a button; a drag begins after 6 px of movement with the button down; a release that never moved is a click. Hover: neurons within 0.5 of the pointer ray are pushed away (spring 60, damping 11, fixed 120 Hz steps) and neurons from 0.5 to 2.1 out lean toward it by up to 0.14; a neuron the ray passes within 0.42 of is lit (`aHot`) and fades with a 0.55 s time constant, so a stroke across the object leaves a trail; weights whose midpoint is within 0.8 of the ray brighten toward the accent and fade over 0.35 s; the whole object tilts toward the cursor by up to 0.09 / 0.13 rad and settles back when the pointer leaves. Drag: rotation with inertia on release, x clamped to plus or minus 1.1 rad. An idle turn of 0.07 rad/s and a scroll-linked turn of `1.4 p` rad sit on top of the visitor's orientation.
+- Eligibility: 1024px or wider, fine pointer, no reduced motion, no data saver, WebGL 2, not a software renderer. Otherwise the still stays. Rendering pauses in hidden tabs and on Pause; sustained low frame rate drops pixel ratio, then falls back to the still; context loss or a failed GLB falls back. Fire and Pause are ordinary buttons in a fixed cluster at the bottom right, so both are in the tab order; the status line is a live region.
 
-## Verified (2026-09-15)
+## Verified (2026-09-16)
 
-Headless Chrome, ANGLE D3D11 on an Intel Arc 140V: 60 fps, 2 draw calls, 16,472 triangles. Checked: idle, click pass (gain 1.0, status text), hover displacement, drag rotation without firing, Reset, Fire and Pause buttons, keyboard Enter on Fire, offscreen suspension, reduced motion removes the canvas, GLB failure keeps the still, touch viewports (390, 820) never request the GLB, no horizontal overflow at 390 / 820 / 1024 / 1440 / 1920, and no bounding-box overlap between the hero, section head, stage, the three beats, controls, status and About Me, at five scroll positions through the journey. At every position the pinned stage stayed fully inside the viewport; scatter measured 0 / 0.44 / 1.0 / 0.36 / 0 at 0 / 30 / 50 / 75 / 100 percent of the journey and the reconnection pass fired. Report and captures in `verification/`.
+See `verification/report.json` and the captures beside it. Headless Chrome, ANGLE D3D11, `--use-angle=d3d11 --ignore-gpu-blocklist`, at 1920, 1440 and 1024 px live and 820 and 390 px touch, eight scroll positions down the page and back: no overlap between the projected network bounds and any text, link, button, image or the portrait; the neuron count rises monotonically on the way down and falls on the way up; all 320 neurons and 3,648 weights at the foot; two draw calls; frame rate near 60 with the full network; no horizontal overflow. Hover lit neurons and weights, displaced neurons and tilted the object; a drag rotated without firing; a click on a neuron fired one pass from that neuron and a click beside them a full pass; Enter on Fire fired; Pause froze the frames and Resume restarted them; reduced motion and a failed GLB kept the still; touch viewports never requested the GLB.
 
 ## Limitations
 
-- Mobile and touch get the still, not the live object.
-- The Cycles still and the Three.js render differ in edge weight and lighting; both are the same geometry.
+- Below 1024px and on touch the visitor gets the still, not the live object.
+- The Cycles still and the Three.js render differ in line weight and lighting; both are the same geometry.
 - Weights are random and untrained; the activations are illustrative, not a research result.
+- A large scroll jump (a nav link) builds or unbuilds the missing neurons over a few seconds rather than instantly; that is deliberate.

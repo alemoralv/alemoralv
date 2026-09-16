@@ -1,28 +1,39 @@
 {
   "blender": "5.2.2 LTS",
-  "seed": 20260915,
+  "seed": 20260916,
   "layers": [
-    4,
-    7,
-    9,
-    7,
-    4
+    8,
+    24,
+    40,
+    56,
+    64,
+    56,
+    40,
+    24,
+    8
   ],
-  "nodes": 31,
-  "edges": 182,
+  "fan_in": 12,
+  "spacing": 1.6,
+  "nodes": 320,
+  "edges": 3648,
+  "weight_sum": -59.888,
+  "source_sum": 82752,
   "node_triangles": 320,
-  "edge_triangles": 36,
-  "total_triangles": 16472,
+  "edge_triangles": 20,
+  "total_triangles": 175360,
   "materials": [
     "Ink neuron",
     "Graphite weight"
   ],
   "edge_axis": "local +Z from 0 to 1 in Blender, exported as +Y in glTF",
+  "exported_objects": 321,
+  "glb_bytes": 97092,
   "stages": [
-    "ring layout",
+    "stacked sunflower disks",
     "icosphere neuron",
-    "unit cylinder weight",
-    "two ink materials",
-    "export with extras"
+    "unit cylinder weight prototype",
+    "sparse fan-in weights",
+    "birth order in extras",
+    "export neurons and prototype"
   ]
 }
