@@ -74,7 +74,7 @@ export async function createNetwork(host, options) {
     const key = new THREE.DirectionalLight(0xfff8ec, 2.0); key.position.set(-3, 5, 6); scene.add(key);
     const fill = new THREE.DirectionalLight(0xeaf2ff, 0.8); fill.position.set(4, 1, -3); scene.add(fill);
 
-    const gltf = await new GLTFLoader().loadAsync('./assets/neural/neural-net.glb');
+    const gltf = await new GLTFLoader().loadAsync('./assets/neural/neural-net.glb?v=20260916c');
     gltf.scene.updateMatrixWorld(true);
     const nodeObjects = []; let proto = null;
     gltf.scene.traverse(o => {

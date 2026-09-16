@@ -20,8 +20,20 @@ if (host) {
   const wide = matchMedia('(min-width: 900px)');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const connection = navigator.connection;
-  const GAP = 22, EDGE = 14, MIN = 96;
-  let live = null, pending = false, failed = false, paused = false, layoutFrame = 0, room = false, onscreen = true;
+  const GAP = 22, EDGE = 14, MIN = 96, RETRIES = 3;
+  let live = null, pending = false, failed = false, paused = false, layoutFrame = 0, room = false, onscreen = true, attempts = 0, retryTimer = 0;
+  // WebGL 2 is probed once and the probe context released at once: a probe per
+  // scroll frame would pile up contexts until the browser dropped the live one.
+  let webgl = null;
+  function webglAvailable() {
+    if (webgl !== null) return webgl;
+    try {
+      const c = document.createElement('canvas'), gl = c.getContext('webgl2');
+      webgl = Boolean(gl);
+      gl?.getExtension('WEBGL_lose_context')?.loseContext();
+    } catch (e) { webgl = false; }
+    return webgl;
+  }
   let box = { x: -1, y: -1, w: 0, h: 0 }, free = null, clip = '';
 
   // The largest free rectangle of a box after removing holes: every hole edge
@@ -101,14 +113,22 @@ if (host) {
   }
   function scheduleLayout() { if (!layoutFrame) layoutFrame = requestAnimationFrame(layout); }
 
-  function eligible() { return !connection?.saveData && Boolean(document.createElement('canvas').getContext('webgl2')); }
+  function eligible() { return !connection?.saveData && webglAvailable(); }
+  // A lost context or a failed start is retried a few times before the still
+  // stands in for good; a GPU reset or a crowded tab should not end the object.
   function fallback(error) {
-    failed = true;
     live?.dispose(); live = null;
     host.classList.remove('is-live');
     host.removeAttribute('tabindex');
     if (controls) controls.hidden = true;
-    if (error) console.warn('Network still fallback:', error.message);
+    if (error) console.warn('Network paused:', error.message);
+    if (attempts < RETRIES) {
+      clearTimeout(retryTimer);
+      retryTimer = setTimeout(() => { retryTimer = 0; failed = false; layout(); }, 1200 * attempts + 800);
+      return;
+    }
+    failed = true;
+    console.warn('Network still fallback after ' + attempts + ' attempts.');
   }
   function sync() {
     if (!eligible()) {
@@ -116,9 +136,9 @@ if (host) {
       return;
     }
     if (live) { live.setActive(room && onscreen && !document.hidden && !paused); return; }
-    if (pending || failed || !room) return;
-    pending = true;
-    import('./neural.js?v=20260916b')
+    if (pending || failed || !room || retryTimer) return;
+    pending = true; attempts++;
+    import('./neural.js?v=20260916c')
       .then(m => m.createNetwork(host, { onFailure: fallback, status, fireButton, calm: () => reduced.matches }))
       .then(result => {
         if (!eligible()) { result.dispose(); return; }
