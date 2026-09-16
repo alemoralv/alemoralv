@@ -1,0 +1,89 @@
+/* A FORWARD PASS. Homepage-only layer for the live network section.
+   The stage is a sheet of coordinate paper; the Blender still sits in it
+   until the renderer takes over, and stays for every reader without one. */
+
+body.daylight .sheet--network .network-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(260px, 0.8fr);
+    gap: clamp(1.5rem, 4vw, 3.5rem);
+    align-items: center;
+}
+body.daylight .network-stage {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    min-height: 280px;
+    overflow: hidden;
+    border: 1px solid #dce4dc;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.58);
+    background-image:
+        linear-gradient(rgba(37, 70, 80, 0.075) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37, 70, 80, 0.075) 1px, transparent 1px);
+    background-size: 28px 28px;
+    background-position: center;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+}
+body.daylight .network-stage canvas {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    cursor: grab;
+}
+body.daylight .network-stage.is-dragging canvas { cursor: grabbing; }
+body.daylight .network-poster {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 3%;
+    object-fit: contain;
+    transition: opacity 600ms ease-out;
+}
+body.daylight .network-stage.is-live .network-poster { opacity: 0; }
+
+body.daylight .network-aside { min-width: 0; }
+body.daylight .network-aside .network-lede {
+    font-size: clamp(1.05rem, 1.45vw, 1.2rem);
+    line-height: 1.6;
+    letter-spacing: -0.015em;
+    color: var(--chalk);
+}
+body.daylight .network-aside p + p { margin-top: 1rem; }
+body.daylight .network-hint {
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--chalk-soft);
+}
+body.daylight .network-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 1.1rem;
+}
+body.daylight .network-controls[hidden] { display: none; }
+body.daylight .network-controls .boxed { font-size: 0.82rem; min-height: 44px; padding: 0.55rem 0.95rem; }
+body.daylight .network-controls .boxed span { margin-left: 0.35rem; }
+body.daylight .network-controls .boxed:disabled { opacity: 0.55; cursor: default; }
+body.daylight .network-status {
+    display: block;
+    min-height: 1.5em;
+    margin-top: 0.85rem;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--chalk-soft);
+    font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 900px) {
+    body.daylight .sheet--network .network-layout { display: block; }
+    body.daylight .network-stage { aspect-ratio: 16 / 11; min-height: 0; }
+    body.daylight .network-aside { margin-top: 1.5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.daylight .network-poster { transition: none; }
+}

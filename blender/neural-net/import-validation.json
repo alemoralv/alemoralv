@@ -1,0 +1,44 @@
+{
+  "status": "passed",
+  "authored": {
+    "blender": "5.2.2 LTS",
+    "seed": 20260915,
+    "layers": [
+      4,
+      7,
+      9,
+      7,
+      4
+    ],
+    "nodes": 31,
+    "edges": 182,
+    "node_triangles": 320,
+    "edge_triangles": 36,
+    "total_triangles": 16472,
+    "materials": [
+      "Ink neuron",
+      "Graphite weight"
+    ],
+    "edge_axis": "local +Z from 0 to 1 in Blender, exported as +Y in glTF",
+    "stages": [
+      "ring layout",
+      "icosphere neuron",
+      "unit cylinder weight",
+      "two ink materials",
+      "export with extras"
+    ]
+  },
+  "imported": {
+    "nodes": 31,
+    "edges": 182,
+    "triangles": 16472,
+    "degenerate_faces": 0,
+    "max_edge_endpoint_error": 1.986788125903883e-06,
+    "glb_bytes": 76116
+  },
+  "observations": [
+    "Neurons and weights are two shared meshes; the browser instances them.",
+    "Six fixed views rendered from the fresh import.",
+    "Signal propagation, hover springs and rotation are browser code, not baked animation."
+  ]
+}
