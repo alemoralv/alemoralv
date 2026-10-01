@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="board.css">
     <link rel="stylesheet" href="daylight.css">
     <link rel="stylesheet" href="stochastic.css">
+    <link rel="stylesheet" href="mosaic.css">
     <link rel="stylesheet" href="reading-daylight.css">
 
     <script>
@@ -33,7 +34,7 @@
 
 </head>
 
-<body class="reading daylight stochastic">
+<body class="reading daylight stochastic mosaic-page">
 
 <!--
   THESIS: The reading room of the same board. Where the homepage is the board
@@ -55,7 +56,7 @@
   provenance.
 -->
 
-    <div class="slate" aria-hidden="true"></div>
+    <canvas class="mosaic-background" data-mosaic-background aria-hidden="true"></canvas>
 
     <a class="skip" href="#reading">Skip to the notes</a>
 
@@ -191,6 +192,7 @@
     <footer class="colophon">
         <div class="colophon-inner">
             <p class="colophon-line">&copy; 2026 Alejandro Morera Alvarez. All Rights Reserved.</p>
+            <button type="button" class="boxed boxed--quiet mosaic-pause" data-mosaic-pause aria-pressed="false" hidden>Pause background</button>
             <span class="qed" aria-hidden="true"></span>
         </div>
     </footer>
@@ -282,6 +284,7 @@
     <script src="chalkboard.js" defer></script>
     <script src="assets/scrollcraft/scrollcraft.js" defer></script>
     <script src="stochastic.js" defer></script>
+    <script src="mosaic.js" defer></script>
 
 </body>
 

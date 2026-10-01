@@ -1,4 +1,4 @@
-/* Homepage background only. Canvas < mathematical planes < readable content.
+/* Shared page background. Canvas < mathematical planes < readable content.
    The reference mosaic uses Canvas 2D; no Blender, Three.js or WebGL needed. */
 body.mosaic-page .mosaic-background {
     position: fixed;
