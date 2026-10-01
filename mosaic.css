@@ -1,0 +1,45 @@
+/* Homepage background only. Canvas < mathematical planes < readable content.
+   The reference mosaic uses Canvas 2D; no Blender, Three.js or WebGL needed. */
+body.mosaic-page .mosaic-background {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: -2;
+    display: block;
+    width: 100%;
+    /* Overscan gives the far plane real travel without exposing an edge. */
+    height: calc(100% + var(--mosaic-travel, 80vh));
+    transform: translate3d(0, var(--mosaic-offset, 0px), 0);
+    will-change: transform;
+    pointer-events: none;
+    background: #e7efed;
+}
+
+body.mosaic-page .masthead-lane {
+    display: grid;
+    align-content: start;
+    min-width: 0;
+    width: 100%;
+}
+
+/* The existing drawings and formulas keep their own DOM and scroll motion. */
+body.mosaic-page .chalk-plane { opacity: .5; }
+body.mosaic-page .stochastic-margin-paths { opacity: .32; }
+body.mosaic-page .stochastic-margin-density { opacity: .36; }
+body.mosaic-page .stochastic-layer--art { opacity: .4; }
+body.mosaic-page .sheet::after { background: rgba(248, 250, 246, .91); }
+body.mosaic-page .mosaic-pause { margin-top: 1rem; font-size: .75rem; }
+body.mosaic-page .mosaic-pause[hidden] { display: none; }
+
+@media (max-width: 760px) {
+    body.mosaic-page .masthead-lane { justify-items: center; }
+    body.mosaic-page .chalk-plane { opacity: .36; }
+}
+
+@media print {
+    body.mosaic-page .mosaic-background,
+    body.mosaic-page .mosaic-pause { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.mosaic-page .mosaic-background { transform: none; will-change: auto; }
+}
